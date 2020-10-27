@@ -82,7 +82,6 @@ void sync_network_data_nodes_database(void)
   color_print("Syncing the statistics database","yellow"); \
   sync_statistics_database(0,NETWORK_DATA_NODE); \
   color_print("Successfully synced all databases","yellow"); \
-  network_data_nodes_sync_databases_settings = 1; \
   return;
 
   memset(data,0,sizeof(data));
@@ -151,9 +150,6 @@ void sync_network_data_nodes_database(void)
   // wait for all of the network data nodes to process the data
   sync_block_verifiers_minutes_and_seconds(1,10);
 
-  // set the network data nodes sync database settings so that if the network data node takes longer than the amount of time, a block verifier will not sync from them
-  network_data_nodes_sync_databases_settings = 0;
-
   // check if a consensus was reached and get the majority database data hash
   for (network_data_nodes_valid_count = 0, count2 = 0; count2 < NETWORK_DATA_NODES_AMOUNT; count2++)
   {
@@ -189,7 +185,6 @@ void sync_network_data_nodes_database(void)
         }
         else
         {
-          network_data_nodes_sync_databases_settings = 1;
           color_print("Successfully synced all databases","yellow");
           return;
         }      
@@ -204,7 +199,6 @@ void sync_network_data_nodes_database(void)
       }
       else
       {
-        network_data_nodes_sync_databases_settings = 1;
         color_print("Successfully synced all databases","yellow");
         return;
       }
@@ -218,7 +212,6 @@ void sync_network_data_nodes_database(void)
     {
       // the network data node is in the majority
       color_print("A majority has been reached and the network data node is already synced with the majority\n","yellow");
-      network_data_nodes_sync_databases_settings = 1;
       return;
     }
   }
@@ -243,7 +236,6 @@ void sync_network_data_nodes_database(void)
   sync_statistics_database(0,SYNCED_NETWORK_DATA_NODES_STRING);
   color_print("Successfully synced all databases","yellow");
 
-  network_data_nodes_sync_databases_settings = 1;
   return;
 
   #undef SYNC_NETWORK_DATA_NODES
@@ -427,9 +419,6 @@ void sync_block_verifiers_database(void)
   // wait for all of the block verifiers to process the data
   sync_block_verifiers_minutes_and_seconds(1,10);
 
-  // set the network data nodes sync database settings so that if the network data node takes longer than the amount of time, a block verifier will not sync from them
-  network_data_nodes_sync_databases_settings = 0;
-
   // get the majority database data hash, and every block verifier that is in the majority
   for (database_count = 0; database_count < DATABASE_TOTAL; database_count++)
   {
@@ -487,7 +476,6 @@ void sync_block_verifiers_database(void)
       {
         // the block verifier is in the majority
         color_print("A majority has been reached and the block verifier is already synced with the majority\n","yellow");
-        network_data_nodes_sync_databases_settings = 1;
         if (database_count == DATABASE_TOTAL-1)
         {
           return;
@@ -521,7 +509,6 @@ void sync_block_verifiers_database(void)
         color_print("Successfully synced the database\n","yellow");
 
         start2:
-        network_data_nodes_sync_databases_settings = 1;
         if (database_count == DATABASE_TOTAL-1)
         {
           return;
@@ -545,7 +532,6 @@ void sync_block_verifiers_database(void)
           if (strncmp(block_verifiers_sync_database_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
           {
             SYNC_BLOCK_VERIFIERS_FROM_SPECIFIC_BLOCK_VERIFIER(block_verifiers_sync_database_list.block_verifiers_IP_address[count]);
-            network_data_nodes_sync_databases_settings = 1;
             if (database_count == DATABASE_TOTAL-1)
             {
               return;
@@ -557,7 +543,6 @@ void sync_block_verifiers_database(void)
           }
           else
           {
-            network_data_nodes_sync_databases_settings = 1;
             color_print("Successfully synced all databases\n","yellow");
             if (database_count == DATABASE_TOTAL-1)
             {
@@ -575,7 +560,6 @@ void sync_block_verifiers_database(void)
       if (settings == 0)
       {
         SYNC_BLOCK_VERIFIERS_FROM_RANDOM_NETWORK_DATA_NODE;
-        network_data_nodes_sync_databases_settings = 1;
       }
     }
     start: ;

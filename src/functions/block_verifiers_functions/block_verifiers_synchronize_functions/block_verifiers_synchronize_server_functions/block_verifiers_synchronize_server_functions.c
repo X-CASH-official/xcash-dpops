@@ -596,12 +596,6 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proof
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
-  // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
-  if (network_data_nodes_sync_databases_settings == 0)
-  {
-    ERROR_DATA_MESSAGE;
-  }
-
   // parse the message
   if (parse_json_data(MESSAGE,"reserve_proofs_data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
   {
@@ -679,12 +673,6 @@ Parameters:
 
 void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
-  // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
-  if (network_data_nodes_sync_databases_settings == 0)
-  {
-    ERROR_DATA_MESSAGE;
-  }
-  
   // Variables
   char buffer[1024];
   time_t current_date_and_time;
@@ -806,12 +794,6 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
 
-  // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
-  if (network_data_nodes_sync_databases_settings == 0)
-  {
-    ERROR_DATA_MESSAGE;
-  }
-
   // parse the message
   if (parse_json_data(MESSAGE,"reserve_bytes_data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH || parse_json_data(MESSAGE,"reserve_bytes_settings",data3,sizeof(data3)) == 0 || (strncmp(data3,"0",1) != 0 && strncmp(data3,"1",1) != 0))
   {
@@ -891,12 +873,6 @@ Parameters:
 
 void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update(const int CLIENT_SOCKET, const char* MESSAGE)
 {
-  // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
-  if (network_data_nodes_sync_databases_settings == 0)
-  {
-    ERROR_DATA_MESSAGE;
-  }
-
   // Variables
   char buffer[1024];
   time_t current_date_and_time;
@@ -1063,12 +1039,6 @@ Parameters:
 
 void server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update(const int CLIENT_SOCKET)
 {
-  // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
-  if (network_data_nodes_sync_databases_settings == 0)
-  {
-    ERROR_DATA_MESSAGE;
-  }
-
   // define macros
   #define DATABASE_COLLECTION "delegates"
   
@@ -1229,12 +1199,6 @@ Parameters:
 
 void server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update(const int CLIENT_SOCKET)
 {
-  // check if the network data node is syncing and dont allow for other block verifiers to sync while the network data node is syncing
-  if (network_data_nodes_sync_databases_settings == 0)
-  {
-    ERROR_DATA_MESSAGE;
-  }
-
   // define macros
   #define DATABASE_COLLECTION "statistics"
   
