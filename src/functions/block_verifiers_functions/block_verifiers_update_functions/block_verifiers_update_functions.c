@@ -121,7 +121,7 @@ int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, const stru
       memcpy(data,database_path_read,strnlen(database_path_read,sizeof(data)));
       snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%zu",block_height);
       memcpy(data+strlen(data),"/",1);
-      count = system(database_path_read);
+      count = system(data);
       exit(0);
     }
     else if (production_settings == 1 && network_data_node_settings == 0)
