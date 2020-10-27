@@ -105,13 +105,6 @@ int start_new_round(void)
   {
     color_print("Getting the delegates online status","blue");
     get_delegates_online_status();
-  }
-
-  // save a copy of the database
-  if (production_settings == 1 && network_data_node_settings == 1)
-  {
-    color_print("Saving a copy of the database","blue");
-    count2 = system(database_path_write);
   }  
 
   // wait so everyone has got the online status
@@ -121,6 +114,17 @@ int start_new_round(void)
   if (get_current_block_height(current_block_height) == 0)
   {
     START_NEW_ROUND_ERROR("Could not get the current block height");
+  }
+
+  // save a copy of the database
+  if (production_settings == 1 && network_data_node_settings == 1)
+  {
+    color_print("Saving a copy of the database","blue");
+    memcpy(data,database_path_write,strnlen(database_path_write,sizeof(data)));
+    memcpy(data+strlen(data),current_block_height,strnlen(current_block_height,sizeof(data)));
+    memcpy(data+strlen(data),"/",1);
+    count2 = system(database_path_write);
+    memset(data,0,sizeof(data));
   }
   
   // check if it is running in registration mode only
