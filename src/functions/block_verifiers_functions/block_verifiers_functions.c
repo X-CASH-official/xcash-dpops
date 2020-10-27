@@ -123,7 +123,7 @@ int start_new_round(void)
     memcpy(data,database_path_write,strnlen(database_path_write,sizeof(data)));
     memcpy(data+strlen(data),current_block_height,strnlen(current_block_height,sizeof(data)));
     memcpy(data+strlen(data),"/",1);
-    count2 = system(database_path_write);
+    count2 = system(data);
     memset(data,0,sizeof(data));
   }
   

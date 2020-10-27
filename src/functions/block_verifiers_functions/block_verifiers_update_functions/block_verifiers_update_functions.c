@@ -95,7 +95,7 @@ int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, const stru
 
   // create the message  
   memcpy(data,"{\"block_height\":\"",17);
-  snprintf(data+17,sizeof(data)-18,"%zu",block_height);
+  snprintf(data+17,MAXIMUM_NUMBER_SIZE,"%zu",block_height);
   memcpy(data+strlen(data),"\"}",2);
 
   // get the reserve bytes database for the block
@@ -117,12 +117,17 @@ int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, const stru
     if (production_settings == 1 && network_data_node_settings == 1)
     {
       color_print("Could not get the previous blocks reserve bytes, restoring the database from the backup","red");
+      memset(data,0,sizeof(data));
+      memcpy(data,database_path_read,strnlen(database_path_read,sizeof(data)));
+      snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%zu",block_height);
+      memcpy(data+strlen(data),"/",1);
       count = system(database_path_read);
       exit(0);
     }
     else if (production_settings == 1 && network_data_node_settings == 0)
     {
       color_print("Could not get the previous blocks reserve bytes, syncing from a random network data node","red");
+      sleep(60);
       sync_reserve_bytes_database(2,1,"");
     }
   }

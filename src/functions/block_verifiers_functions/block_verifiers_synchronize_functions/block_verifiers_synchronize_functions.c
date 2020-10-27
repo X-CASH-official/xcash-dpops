@@ -443,7 +443,7 @@ void sync_block_verifiers_database(void)
   }
 
   // check if there is a majority
-  for (database_count = 0, reset_count = 1; database_count < DATABASE_TOTAL; database_count++)
+  for (database_count = 0; database_count < DATABASE_TOTAL; database_count++, reset_count = 1)
   {
     if (database_count == 0)
     {

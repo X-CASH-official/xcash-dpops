@@ -88,7 +88,6 @@ int error_message_count; // The error message count
 int main_network_data_node_create_block; // 1 if the main network data node can create a block, 0 if not
 int main_network_data_node_receive_block; // 1 if you have received the block from the main network data node, 0 if not
 int network_data_node_valid_amount; // The amount of network data nodes that were valid
-int network_data_nodes_sync_databases_settings; // 1 if a block verifier can sync from a network data node, 0 if not
 int log_file_settings; // 0 to use the terminal, 1 to use a log file, 2 to use a log file with color output
 char log_file[BUFFER_SIZE_NETWORK_BLOCK_DATA]; // The log file
 char XCASH_DPOPS_delegates_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH]; // The  block verifiers IP address to run the server on
@@ -187,7 +186,6 @@ void initialize_data(int parameters_count, char* parameters[])
   debug_settings = 0;
   registration_settings = 0;
   block_height_start_time.block_height_start_time = 0;
-  network_data_nodes_sync_databases_settings = 1;
   production_settings = 1;
   production_settings_database_data_settings = 0;
   sync_previous_current_next_block_verifiers_settings = 1;
@@ -516,30 +514,22 @@ void get_delegates_data(void)
     GET_DELEGATES_DATA_ERROR("Could not get the previous block hash");
   }
 
+  // check if the block verifier is a network data node
+  CHECK_IF_BLOCK_VERIFIERS_IS_NETWORK_DATA_NODE;
+
   // get the database paths
   if (production_settings == 1 && network_data_node_settings == 1)
   {
-    // get the database_path_write
-    memcpy(database_path_write,"cd ~ && rm -r dump_copy ; mv dump dump_copy ; ",46);
-
+    // get the database path
     file = popen("sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name 'mongodb-linux-x86_64-ubuntu1804-*' -print", "r");
 
-    if (fgets(database_path_write+strlen(database_path_write),(int)(sizeof(database_path_write)-strlen(database_path_write)),file) == NULL)
+    if (fgets(database_path_write,(int)(sizeof(database_path_write)),file) == NULL)
     {
       GET_DELEGATES_DATA_ERROR("Could not get the mongo database path");
     }
-    memcpy(database_path_write+strlen(database_path_write)-1,"/bin/mongodump --quiet",22);
-
-    // get the database_path_read
-    memcpy(database_path_read,"cd ~ && ",8);
-
-    file = popen("sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name 'mongodb-linux-x86_64-ubuntu1804-*' -print", "r");
-
-    if (fgets(database_path_read+strlen(database_path_read),(int)(sizeof(database_path_read)-strlen(database_path_read)),file) == NULL)
-    {
-      GET_DELEGATES_DATA_ERROR("Could not get the mongo database path");
-    }
-    memcpy(database_path_read+strlen(database_path_read)-1,"/bin/mongorestore --quiet",25);
+    memcpy(database_path_read,database_path_write,strnlen(database_path_write,sizeof(database_path_read)));
+    memcpy(database_path_write+strlen(database_path_write)-1,"/bin/mongodump --quiet --out /root/database_backup/",51);
+    memcpy(database_path_read+strlen(database_path_read)-1,"/bin/mongorestore --quiet --dir /root/database_backup/",54);
   }
 
   // get the website path
@@ -1288,9 +1278,6 @@ int main(int parameters_count, char* parameters[])
   }
 
   print_settings();
-
-  // check if the block verifier is a network data node
-  CHECK_IF_BLOCK_VERIFIERS_IS_NETWORK_DATA_NODE; 
 
   // check if the wallets public address is loaded
   if (network_data_node_settings == 0 && strlen(xcash_wallet_public_address) != XCASH_WALLET_LENGTH)
