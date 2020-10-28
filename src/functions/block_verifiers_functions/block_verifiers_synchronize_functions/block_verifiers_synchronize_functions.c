@@ -330,6 +330,8 @@ void sync_block_verifiers_database(void)
     sync_statistics_database(2,""); \
   }
 
+  #define MAXIMUM_DATABASE_MAJORITY_SYNC_CONNECTIONS_ATTEMPTS 5
+
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
@@ -498,7 +500,7 @@ void sync_block_verifiers_database(void)
           // check if you received the same database data as the database_data_hash_majority, otherwise sync from a different block verifier
           memset(data,0,sizeof(data));
 
-          if (reset_count >= MAXIMUM_DATABASE_SYNC_CONNECTIONS_ATTEMPTS)
+          if (reset_count >= MAXIMUM_DATABASE_MAJORITY_SYNC_CONNECTIONS_ATTEMPTS)
           {
             color_print("Could not sync the database, maximum connection attempts has been reached\n","red");
             goto start2;
@@ -570,6 +572,7 @@ void sync_block_verifiers_database(void)
   #undef SYNC_BLOCK_VERIFIERS
   #undef SYNC_BLOCK_VERIFIERS_FROM_SPECIFIC_BLOCK_VERIFIER
   #undef SYNC_BLOCK_VERIFIERS_FROM_RANDOM_NETWORK_DATA_NODE
+  #undef MAXIMUM_DATABASE_MAJORITY_SYNC_CONNECTIONS_ATTEMPTS
 }
 
 
