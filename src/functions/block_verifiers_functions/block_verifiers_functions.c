@@ -115,17 +115,6 @@ int start_new_round(void)
   {
     START_NEW_ROUND_ERROR("Could not get the current block height");
   }
-
-  // save a copy of the database
-  if (production_settings == 1 && network_data_node_settings == 1)
-  {
-    color_print("Saving a copy of the database","blue");
-    memcpy(data,database_path_write,strnlen(database_path_write,sizeof(data)));
-    memcpy(data+strlen(data),current_block_height,strnlen(current_block_height,sizeof(data)));
-    memcpy(data+strlen(data),"/",1);
-    count2 = system(data);
-    memset(data,0,sizeof(data));
-  }
   
   // check if it is running in registration mode only
   if (registration_settings == 0)
@@ -1146,7 +1135,7 @@ int block_verifiers_create_block_and_update_database(void)
     pthread_detach(thread_id);
   }
 
-  sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);  
+  sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS); 
 
   // let the block producer try to submit the block first, then loop through all of the network data nodes to make sure it was submitted
   if ((strncmp(current_round_part_backup_node,"0",1) == 0 && strncmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"1",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"2",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"3",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"4",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"5",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
@@ -1161,6 +1150,17 @@ int block_verifiers_create_block_and_update_database(void)
     {
       submit_block_template(data);
     }
+  }
+
+  // save a copy of the database
+  if (production_settings == 1 && network_data_node_settings == 1)
+  {
+    color_print("Saving a copy of the database","blue");
+    memset(data,0,sizeof(data));
+    memcpy(data,database_path_write,strnlen(database_path_write,sizeof(data)));
+    memcpy(data+strlen(data),current_block_height,strnlen(current_block_height,sizeof(data)));
+    memcpy(data+strlen(data),"/",1);
+    count = system(data);
   }
   return 1;
 

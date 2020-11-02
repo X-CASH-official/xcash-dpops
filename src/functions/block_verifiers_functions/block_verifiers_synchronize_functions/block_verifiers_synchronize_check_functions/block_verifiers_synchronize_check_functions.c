@@ -289,7 +289,8 @@ int sync_check_reserve_proofs_database(int settings)
   // check to see if the block verifiers database is now in the majority, and if not directly sync the database from the main network data node
   if (settings != 3)
   {
-    sync_check_majority_reserve_proofs_database();
+    /*disable this for now
+    sync_check_majority_reserve_proofs_database();*/
   }
 
   if (test_settings == 0)
@@ -548,7 +549,8 @@ int sync_check_reserve_bytes_database(int settings, const int RESERVE_BYTES_STAR
   // check to see if the block verifiers database is now in the majority, and if not directly sync the database from the main network data node
   if ((settings == 1 && RESERVE_BYTES_START_SETTINGS != 2) || (settings == 2))
   {
-    sync_check_majority_reserve_bytes_database(RESERVE_BYTES_START_SETTINGS);
+    /*disable this for now
+    sync_check_majority_reserve_bytes_database(RESERVE_BYTES_START_SETTINGS);*/
   }
 
   if (test_settings == 0)
@@ -786,7 +788,8 @@ int sync_check_delegates_database(int settings)
   // check to see if the block verifiers database is now in the majority, and if not directly sync the database from the main network data node
   if (settings != 3)
   {
-    sync_check_majority_delegates_database();
+    /*disable this for now
+    sync_check_majority_delegates_database();*/
   }
 
   if (test_settings == 0)
@@ -1001,7 +1004,8 @@ int sync_check_statistics_database(int settings)
   // check to see if the block verifiers database is now in the majority, and if not directly sync the database from the main network data node
   if (settings != 3)
   {
-    sync_check_majority_statistics_database();
+    /*disable this for now
+    sync_check_majority_statistics_database();*/
   }
 
   if (test_settings == 0)
