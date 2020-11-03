@@ -116,12 +116,12 @@ int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, const stru
     // restore the database from the backup
     if (production_settings == 1 && network_data_node_settings == 1)
     {
-      color_print("Could not get the previous blocks reserve bytes, restoring the database from the backup","red");
+      /*color_print("Could not get the previous blocks reserve bytes, restoring the database from the backup","red");
       memset(data,0,sizeof(data));
       memcpy(data,database_path_read,strnlen(database_path_read,sizeof(data)));
       snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%zu",block_height);
       memcpy(data+strlen(data),"/",1);
-      count = system(data);
+      count = system(data);*/
     }
     else if (production_settings == 1 && network_data_node_settings == 0)
     {

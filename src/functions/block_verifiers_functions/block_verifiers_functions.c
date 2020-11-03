@@ -1152,7 +1152,7 @@ int block_verifiers_create_block_and_update_database(void)
     }
   }
 
-  // save a copy of the database
+  /*// save a copy of the database
   if (production_settings == 1 && network_data_node_settings == 1)
   {
     color_print("Saving a copy of the database","blue");
@@ -1161,7 +1161,7 @@ int block_verifiers_create_block_and_update_database(void)
     memcpy(data+strlen(data),current_block_height,strnlen(current_block_height,sizeof(data)));
     memcpy(data+strlen(data),"/",1);
     count = system(data);
-  }
+  }*/
   return 1;
 
   #undef BLOCK_VERIFIERS_CREATE_BLOCK_TIMEOUT_SETTINGS
