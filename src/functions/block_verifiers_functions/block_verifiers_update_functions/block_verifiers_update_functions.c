@@ -126,8 +126,8 @@ int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, const stru
     else if (production_settings == 1 && network_data_node_settings == 0)
     {
       color_print("Could not get the previous blocks reserve bytes, syncing from a random network data node","red");
-      sleep(60);
-      sync_reserve_bytes_database(2,1,"");
+      sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
+      exit(0);
     }
   }
   
