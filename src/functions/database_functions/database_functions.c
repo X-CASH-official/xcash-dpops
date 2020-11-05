@@ -203,6 +203,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
 
   // get all of the database collections
+  memcpy(data,"{\"dbHash\":1,\"collections\":[\"",28);
 
   if (strncmp(COLLECTION,"reserve_bytes",BUFFER_SIZE) == 0)
   {
@@ -215,7 +216,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       snprintf(data+strlen(data),sizeof(data)-15,"%zu",count);
       if (count != count2)
       {
-        memcpy(data+strlen(data),",",sizeof(char));
+        memcpy(data+strlen(data),"\",\"",3);
       }
     }
   }
@@ -231,20 +232,22 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
       snprintf(data2+strlen(data2),sizeof(data2)-16,"%zu",count+1);
       if (check_if_database_collection_exist(database_name,data2) == 1)
       {
-        memcpy(data+strlen(data),",",sizeof(char));
+        memcpy(data+strlen(data),"\",\"",3);
       }
       else
       {
         break;
       }      
-    }
+    }    
   }
   else
   {
     memcpy(data+strlen(data),COLLECTION,strnlen(COLLECTION,sizeof(data)));
   }
+  memcpy(data+strlen(data),"\"]}",3);
+
+  command = strncmp(COLLECTION,"ALL",3) == 0 ? BCON_NEW ("dbHash", BCON_INT32 (1)) : bson_new_from_json((const uint8_t *)data, -1, &error);
   
-  command = strncmp(COLLECTION,"ALL",3) == 0 ? BCON_NEW ("dbHash", BCON_INT32 (1)) : BCON_NEW ("dbHash",BCON_INT32 (1),"collections","[",data,"]");
   memset(data,0,sizeof(data));
 
   if (!command)
