@@ -1151,17 +1151,6 @@ int block_verifiers_create_block_and_update_database(void)
       submit_block_template(data);
     }
   }
-
-  /*// save a copy of the database
-  if (production_settings == 1 && network_data_node_settings == 1)
-  {
-    color_print("Saving a copy of the database","blue");
-    memset(data,0,sizeof(data));
-    memcpy(data,database_path_write,strnlen(database_path_write,sizeof(data)));
-    memcpy(data+strlen(data),current_block_height,strnlen(current_block_height,sizeof(data)));
-    memcpy(data+strlen(data),"/",1);
-    count = system(data);
-  }*/
   return 1;
 
   #undef BLOCK_VERIFIERS_CREATE_BLOCK_TIMEOUT_SETTINGS
@@ -1270,6 +1259,7 @@ int block_verifiers_create_block(void)
   struct tm current_UTC_date_and_time;
   size_t count;
   size_t count2;
+  int count3;
 
   // define macros
   #define RESTART_ROUND(message) \
@@ -1331,6 +1321,18 @@ int block_verifiers_create_block(void)
   
   // wait for all block verifiers to sync
   sync_block_verifiers_minutes_and_seconds(1,50);
+
+  // if this is the AAA save a copy of the database and skip the round
+  if (production_settings == 1 && strncmp(xcash_wallet_public_address,OFFICIAL_SHARED_DELEGATE_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0)
+  {
+    color_print("Saving a copy of the database","blue");
+    memset(data,0,sizeof(data));
+    memcpy(data,database_path_write,strnlen(database_path_write,sizeof(data)));
+    memcpy(data+strlen(data),current_block_height,strnlen(current_block_height,sizeof(data)));
+    memcpy(data+strlen(data),"/",1);
+    count3 = system(data);
+    return 1;
+  }
 
   // check if this is a false postive replayed round and sit out the round, this way the block verifier does not remove a valid blocks data from the database
   if (get_current_block_height(data) == 1 && strncmp(current_block_height,data,BUFFER_SIZE) != 0)
