@@ -1331,7 +1331,8 @@ int block_verifiers_create_block(void)
     memcpy(data+strlen(data),current_block_height,strnlen(current_block_height,sizeof(data)));
     memcpy(data+strlen(data),"/",1);
     count3 = system(data);
-    return 1;
+    count3 = 1;
+    return count3;
   }
 
   // check if this is a false postive replayed round and sit out the round, this way the block verifier does not remove a valid blocks data from the database

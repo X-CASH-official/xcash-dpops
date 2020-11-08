@@ -137,6 +137,7 @@ int database_test(void)
   }
   else
   {
+    color_print(data_test,"yellow");
     color_print("FAILED! Test for get_database_data_hash for all reserve bytes collections","red");
   }
 
