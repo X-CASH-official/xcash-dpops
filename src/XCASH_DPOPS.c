@@ -518,7 +518,7 @@ void get_delegates_data(void)
   CHECK_IF_BLOCK_VERIFIERS_IS_NETWORK_DATA_NODE;
 
   // get the database paths
-  if (production_settings == 1 && network_data_node_settings == 1)
+  if (production_settings == 1 && strncmp(xcash_wallet_public_address,OFFICIAL_SHARED_DELEGATE_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0)
   {
     // get the database path
     file = popen("sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name 'mongodb-linux-x86_64-ubuntu1804-*' -print", "r");
