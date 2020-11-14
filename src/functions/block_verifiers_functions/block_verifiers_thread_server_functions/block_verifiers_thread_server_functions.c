@@ -245,7 +245,7 @@ void* current_block_height_timer_thread(void* parameters)
         }
       }  
     }
-    sleep(1);
+    nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);
   }
   pthread_exit((void *)(intptr_t)1);
 }
