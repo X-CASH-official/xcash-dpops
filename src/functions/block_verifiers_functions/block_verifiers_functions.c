@@ -1322,7 +1322,7 @@ int block_verifiers_create_block(void)
   // wait for all block verifiers to sync
   sync_block_verifiers_minutes_and_seconds(1,50);
 
-  // if this is the AAA save a copy of the database and skip the round
+  // if this is the xcash official shared delegate save a copy of the database and skip the round
   if (production_settings == 1 && strncmp(xcash_wallet_public_address,OFFICIAL_SHARED_DELEGATE_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0)
   {
     color_print("Saving a copy of the database","blue");
@@ -1339,6 +1339,7 @@ int block_verifiers_create_block(void)
   if (get_current_block_height(data) == 1 && strncmp(current_block_height,data,BUFFER_SIZE) != 0)
   {
     color_print("Your block height is not synced correctly, waiting for the next round to begin","red");
+    replayed_round_settings = 1;
     return 0;
   }
 
