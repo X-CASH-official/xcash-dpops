@@ -25,7 +25,6 @@ extern char secret_key[VRF_SECRET_KEY_LENGTH+1]; // Holds the secret key text fo
 extern struct previous_block_verifiers_list previous_block_verifiers_list; // The list of block verifiers name, public address and IP address for the previous round
 extern struct current_block_verifiers_list current_block_verifiers_list; // The list of block verifiers name, public address and IP address for the current round
 extern struct next_block_verifiers_list next_block_verifiers_list; // The list of block verifiers name, public address and IP address for the next round
-struct current_block_verifiers_list current_block_verifiers_list_database_syncing; // The current_block_verifiers_list for database syncing that sorts delegates by only vote count
 extern struct synced_block_verifiers synced_block_verifiers; // The list of block verifiers for syncing the databases
 extern struct main_nodes_list main_nodes_list; // The list of main nodes public address and IP address
 extern struct network_data_nodes_list network_data_nodes_list; // The network data nodes

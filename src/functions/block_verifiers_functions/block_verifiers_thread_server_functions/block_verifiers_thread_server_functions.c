@@ -622,7 +622,7 @@ Return: 0 if the reserve proof is not unique, 1 if it is unique and needs to be 
 int select_random_unique_reserve_proof(struct reserve_proof* reserve_proof)
 {
   // Variables
-  char data[100];
+  char data[SMALL_BUFFER_SIZE];
   int count;
   int count2;
   int counter;
