@@ -85,7 +85,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   } \
   freeaddrinfo(settings); \
   pointer_reset(message); \
-  if (socket_settings == 1) \
+  if ((socket_settings) == 1) \
   { \
     close(network_socket); \
   } \
@@ -289,7 +289,7 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
   } \
   freeaddrinfo(settings); \
   pointer_reset(message); \
-  if (socket_settings == 1) \
+  if ((socket_settings) == 1) \
   { \
     close(network_socket); \
   } \
@@ -452,7 +452,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
     error_message.total++; \
   } \
   freeaddrinfo(settings); \
-  if (socket_settings == 1) \
+  if ((socket_settings) == 1) \
   { \
     close(network_socket); \
   } \

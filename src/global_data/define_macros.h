@@ -109,7 +109,7 @@ Using define statements instead of constants for increased efficiency
 #define SYNCED_NETWORK_DATA_NODES_STRING "synced_network_data_nodes" // The synced network data nodes string
 #define SYNCED_BLOCK_VERIFIER_STRING "synced_block_verifiers" // The synced block verifiers string
 #define ERROR_DATA "ERROR" // The data to send the delegate when there is an error
-#define GET_SYNCED_BLOCK_VERIFIERS_REFRESH_SETTINGS BLOCK_TIME * 60 // The time in seconds to refresh the synced block verifiers
+#define GET_SYNCED_BLOCK_VERIFIERS_REFRESH_SETTINGS (BLOCK_TIME * 60) // The time in seconds to refresh the synced block verifiers
 
 // Lengths
 #define BUFFER_SIZE 200000
@@ -454,7 +454,7 @@ if (test_settings == 0) \
 { \
 color_print("Initializing database data","yellow"); \
 } \
-if (settings == 0) \
+if ((settings) == 0) \
 { \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1_PRODUCTION); \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_2_PRODUCTION); \
@@ -464,7 +464,7 @@ insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTI
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_6_PRODUCTION); \
 insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA_PRODUCTION); \
 } \
-else if (settings == 1) \
+else if ((settings) == 1) \
 { \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1); \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_2); \
@@ -508,7 +508,7 @@ insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_C
 insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_20); \
 insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA); \
 } \
-else if (settings == 2) \
+else if ((settings) == 2) \
 { \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1); \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_2); \
@@ -552,7 +552,7 @@ insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_C
 insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_20); \
 insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA); \
 } \
-else if (settings == 3) \
+else if ((settings) == 3) \
 { \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_1); \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_2); \
@@ -596,7 +596,7 @@ insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_C
 insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_20); \
 insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA); \
 } \
-else if (settings == 4) \
+else if ((settings) == 4) \
 { \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1); \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_2); \
@@ -620,7 +620,7 @@ insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_C
 insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_10); \
 insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA); \
 } \
-else if (settings == 5) \
+else if ((settings) == 5) \
 { \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1); \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_2); \
@@ -644,7 +644,7 @@ insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_C
 insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_10); \
 insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA); \
 } \
-else if (settings == 6) \
+else if ((settings) == 6) \
 { \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_1_FOR_10_BLOCK_VERIFIERS); \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_2_FOR_10_BLOCK_VERIFIERS); \
@@ -668,7 +668,7 @@ insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_C
 insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_10_FOR_10_BLOCK_VERIFIERS); \
 insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA); \
 } \
-else if (settings == 7) \
+else if ((settings) == 7) \
 { \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1); \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_2); \
@@ -682,7 +682,7 @@ insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_C
 insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_5); \
 insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA); \
 } \
-else if (settings == 8) \
+else if ((settings) == 8) \
 { \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1); \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_2); \
@@ -696,7 +696,7 @@ insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_C
 insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_5); \
 insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA); \
 } \
-else if (settings == 9) \
+else if ((settings) == 9) \
 { \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_1_FOR_5_BLOCK_VERIFIERS); \
 insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_2_FOR_5_BLOCK_VERIFIERS); \

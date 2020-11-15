@@ -858,7 +858,7 @@ RESET_ERROR_MESSAGES;
 #define CHECK_SERVER_FUNCTIONS_ERROR(FUNCTION_NAME,MESSAGE,STRING_REPLACE_SETTINGS,CURRENT_STRING,NEW_STRING,TEST) \
 memset(result_test,0,sizeof(result_test)); \
 memcpy(result_test,MESSAGE,sizeof(MESSAGE)-1); \
-if (STRING_REPLACE_SETTINGS == 1) \
+if ((STRING_REPLACE_SETTINGS) == 1) \
 { \
   if (sign_data(result_test) == 1) \
   { \

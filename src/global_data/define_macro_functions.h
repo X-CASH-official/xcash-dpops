@@ -130,7 +130,7 @@ Return: Writes the correct code
 */
 
 #define append_string(data1,data2,data1_length) \
-memcpy(data1+strlen(data1),data2,strnlen(data2,data1_length - strlen(data1) - 1));
+memcpy(data1+strlen(data1),data2,strnlen(data2,(data1_length) - strlen(data1) - 1));
 
 
 
@@ -214,19 +214,20 @@ Name: get_current_reserve_bytes_database
 Description: gets the reserve bytes database
 Parameters:
   count - count
+  settings - 0 to get the current blocks reserve bytes database, 1 to get the previous blocks reserve bytes database
 Return: Writes the correct code
 -----------------------------------------------------------------------------------------------------------
 */
 
 #define get_reserve_bytes_database(count,settings) \
 sscanf(current_block_height,"%zu", &count); \
-if (test_settings == 1) \
+if ((test_settings) == 1) \
 { \
   count = 1; \
 } \
 else \
 { \
-  if (settings == 1) \
+  if ((settings) == 1) \
   { \
     count--; \
   } \

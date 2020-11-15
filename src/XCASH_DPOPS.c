@@ -220,7 +220,7 @@ void initialize_data(int parameters_count, char* parameters[])
 
     if (error_message.function[count] == NULL || error_message.data[count] == NULL)
     {
-      INITIALIZE_DATA_ERROR;
+      exit(0);
     }
   }
   error_message.total = 0;
