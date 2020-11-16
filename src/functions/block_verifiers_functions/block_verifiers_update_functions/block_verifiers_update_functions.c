@@ -1047,11 +1047,11 @@ void check_for_updates(void)
   // define macros
   #define UPDATE_XCASH_DPOPS \
   color_print("Updating xcash-dpops","yellow"); \
-  count = system("(cd ~/xcash-official/xcash-dpops/ && git reset --hard HEAD --quiet && git pull && make clean ; make release -j $(nproc)) >/dev/null 2>&1");
+  count = system("(data=$(awk '/WorkingDirectory=/' /lib/systemd/system/xcash-dpops.service) && data=$(echo $data | cut -d'=' -f 2) && data=$(echo $data | rev | cut -c 6- | rev) && cd $data && git reset --hard HEAD --quiet && git pull && make clean ; make release -j $(nproc)) >/dev/null 2>&1");
 
   #define UPDATE_XCASH_CORE \
   color_print("Updating xcash-core","yellow"); \
-  count = system("(cd ~/xcash-official/xcash-core/ && git reset --hard HEAD --quiet && git pull && echo \"y\" | make clean ; make release -j $(nproc)) >/dev/null 2>&1");
+  count = system("(data=$(awk '/ExecStart=/' /lib/systemd/system/xcash-daemon.service) && data=$(echo $data | cut -d'=' -f 2) && data=$(echo $data | awk -F '--' '{print $1;}') && data=$(echo $data | rev | cut -c 25- | rev) && cd $data && git reset --hard HEAD --quiet && git pull && echo \"y\" | make clean ; make release -j $(nproc)) >/dev/null 2>&1");
 
   #define SYNC_BLOCK_VERIFIER \
   color_print("Waiting for all block verifier to update","yellow"); \
@@ -1073,8 +1073,8 @@ void check_for_updates(void)
   minute = current_UTC_date_and_time.tm_min;
 
   // check if xcash-dpops and xcash-core are up to date
-  file = popen("cd ~/xcash-official/xcash-dpops/ && data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\\// /g') | cut -f1) ] && echo \"1\" || echo \"0\") && echo $data", "r");
-  file2 = popen("cd ~/xcash-official/xcash-core/ && data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\\// /g') | cut -f1) ] && echo \"1\" || echo \"0\") && echo $data", "r");
+  file = popen("data=$(awk '/WorkingDirectory=/' /lib/systemd/system/xcash-dpops.service) && data=$(echo $data | cut -d'=' -f 2) && data=$(echo $data | rev | cut -c 6- | rev) && cd $data && data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\\// /g') | cut -f1) ] && echo \"1\" || echo \"0\") && echo $data", "r");
+  file2 = popen("data=$(awk '/ExecStart=/' /lib/systemd/system/xcash-daemon.service) && data=$(echo $data | cut -d'=' -f 2) && data=$(echo $data | awk -F '--' '{print $1;}') && data=$(echo $data | rev | cut -c 25- | rev) && cd $data && data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\\// /g') | cut -f1) ] && echo \"1\" || echo \"0\") && echo $data", "r");
 
   if (fgets(data,(int)(sizeof(data)),file) == NULL || fgets(data2,(int)(sizeof(data2)),file2) == NULL)
   {
