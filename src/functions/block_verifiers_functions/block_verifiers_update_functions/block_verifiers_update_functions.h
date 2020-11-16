@@ -13,5 +13,6 @@ int update_databases(void);
 int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT);
 int add_round_statistics(void);
 int calculate_main_nodes_roles(void);
+void check_for_updates(void);
 int get_delegates_online_status(void);
 #endif

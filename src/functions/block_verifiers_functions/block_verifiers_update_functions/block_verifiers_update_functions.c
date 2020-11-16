@@ -1026,6 +1026,102 @@ int calculate_main_nodes_roles(void)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: check_for_updates
+Description: Checks if xcash-dpops and xcash-core are up to date, and updates xcash-dpops and xcash-core
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void check_for_updates(void)
+{
+  // Variables
+  FILE* file;
+  FILE* file2;
+  char data[sizeof(char)+1];
+  char data2[sizeof(char)+1];
+  int hour;
+  int minute;
+  int count;
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+
+  // define macros
+  #define UPDATE_XCASH_DPOPS \
+  color_print("Updating xcash-dpops","yellow"); \
+  count = system("(cd ~/xcash-official/xcash-dpops/ && git reset --hard HEAD --quiet && git pull && make clean ; make release -j $(nproc)) >/dev/null 2>&1");
+
+  #define UPDATE_XCASH_CORE \
+  color_print("Updating xcash-core","yellow"); \
+  count = system("(cd ~/xcash-official/xcash-core/ && git reset --hard HEAD --quiet && git pull && echo \"y\" | make clean ; make release -j $(nproc)) >/dev/null 2>&1");
+
+  #define SYNC_BLOCK_VERIFIER \
+  color_print("Waiting for all block verifier to update","yellow"); \
+  do \
+  { \
+    nanosleep((const struct timespec[]){{0, 200000000L}}, NULL); \
+    time(&current_date_and_time); \
+    gmtime_r(&current_date_and_time,&current_UTC_date_and_time); \
+  } while (current_UTC_date_and_time.tm_hour != hour+1 || current_UTC_date_and_time.tm_min != minute); \
+  sync_block_verifiers_minutes_and_seconds(0,5); \
+  strncmp(xcash_wallet_public_address,network_data_nodes_list.network_data_nodes_public_address[0],BUFFER_SIZE) == 0 ? sync_block_verifiers_minutes_and_seconds(0,10) : network_data_node_settings == 1 ? sync_block_verifiers_minutes_and_seconds(0,40) : sync_block_verifiers_minutes_and_seconds(1,30);
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+
+  // get the current hour and minute as we will wait one hour to restart if we need an update
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+  hour = current_UTC_date_and_time.tm_hour;
+  minute = current_UTC_date_and_time.tm_min;
+
+  // check if xcash-dpops and xcash-core are up to date
+  file = popen("cd ~/xcash-official/xcash-dpops/ && data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\\// /g') | cut -f1) ] && echo \"1\" || echo \"0\") && echo $data", "r");
+  file2 = popen("cd ~/xcash-official/xcash-core/ && data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\\// /g') | cut -f1) ] && echo \"1\" || echo \"0\") && echo $data", "r");
+
+  if (fgets(data,(int)(sizeof(data)),file) == NULL || fgets(data2,(int)(sizeof(data2)),file2) == NULL)
+  {
+    // error
+    return;
+  }
+  else if (strncmp(data,"0",1) == 0 && strncmp(data2,"0",1) == 0)
+  {
+    // both are not up to date
+    color_print("Updating, this will take around an hour or more","yellow");
+    UPDATE_XCASH_DPOPS;
+    UPDATE_XCASH_CORE;
+    SYNC_BLOCK_VERIFIER;
+    count = 0;
+    exit(count);
+    return;
+  }
+  else if (strncmp(data,"0",1) == 0 && strncmp(data2,"1",1) == 0)
+  {
+    // only xcash-core is up to date
+    color_print("Updating, this will take around an hour or more","yellow");
+    UPDATE_XCASH_DPOPS;
+    SYNC_BLOCK_VERIFIER;
+    exit(0);
+    return;
+  }
+  else if (strncmp(data,"1",1) == 0 && strncmp(data2,"0",1) == 0)
+  {
+    // only xcash-dpops is up to date
+    color_print("Updating, this will take around an hour or more","yellow");
+    UPDATE_XCASH_CORE;
+    SYNC_BLOCK_VERIFIER;
+    exit(0);
+    return;
+  }
+  else if (strncmp(data,"1",1) == 0 && strncmp(data2,"1",1) == 0)
+  {
+    // both are up to date
+    return;
+  }
+  return;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: get_delegates_online_status
 Description: Get all of the delegates online status. They are only online if they are running the xcash-dpops program
 Return: 0 if an error has occured, otherwise the amount of online delegates

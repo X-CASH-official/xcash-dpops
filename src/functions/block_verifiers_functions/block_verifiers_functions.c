@@ -231,6 +231,9 @@ int start_new_round(void)
     // wait for all block verifiers to sync, as this will ensure when we calculate the main node roles we have the same buffer
     sync_block_verifiers_minutes_and_seconds(1,45);
 
+    // check if there are any updates that need to be downloaded, and if so update and wait 1 hour so all block verifiers restart at the same time
+    check_for_updates();
+
     if (calculate_main_nodes_roles() == 0)
     {
       print_error_message(current_date_and_time,current_UTC_date_and_time,data);
