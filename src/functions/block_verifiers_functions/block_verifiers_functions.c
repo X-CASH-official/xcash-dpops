@@ -232,7 +232,10 @@ int start_new_round(void)
     sync_block_verifiers_minutes_and_seconds(1,45);
 
     // check if there are any updates that need to be downloaded, and if so update and wait 1 hour so all block verifiers restart at the same time
-    check_for_updates();
+    if (production_settings == 1)
+    {
+      check_for_updates();
+    }
 
     if (calculate_main_nodes_roles() == 0)
     {
