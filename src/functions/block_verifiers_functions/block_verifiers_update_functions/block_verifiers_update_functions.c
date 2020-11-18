@@ -1051,7 +1051,7 @@ void check_for_updates(void)
 
   #define UPDATE_XCASH_CORE \
   color_print("Updating xcash-core","yellow"); \
-  count = system("(data=$(awk '/ExecStart=/' /lib/systemd/system/xcash-daemon.service) && data=$(echo $data | cut -d'=' -f 2) && data=$(echo $data | awk -F '--' '{print $1;}') && data=$(echo $data | rev | cut -c 25- | rev) && cd $data && git reset --hard HEAD --quiet && git pull && echo \"y\" | make clean ; make release -j $(nproc)) >/dev/null 2>&1");
+  count = system("(data=$(awk '/ExecStart=/' /lib/systemd/system/xcash-daemon.service) && data=$(echo $data | cut -d'=' -f 2) && data=$(echo $data | awk -F '--' '{print $1;}') && data=$(echo $data | rev | cut -c 25- | rev) && cd $data && git reset --hard HEAD --quiet && git pull && echo \"y\" | make clean ; make release -j $(nproc) && sudo systemctl restart xcash-daemon && sleep 30s && sudo systemctl restart xcash-rpc-wallet) >/dev/null 2>&1");
 
   #define SYNC_BLOCK_VERIFIER \
   color_print("Waiting for all block verifier to update","yellow"); \
