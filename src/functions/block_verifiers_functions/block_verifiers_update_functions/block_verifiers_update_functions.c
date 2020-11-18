@@ -1076,10 +1076,12 @@ void check_for_updates(void)
   file = popen("data=$(awk '/WorkingDirectory=/' /lib/systemd/system/xcash-dpops.service) && data=$(echo $data | cut -d'=' -f 2) && data=$(echo $data | rev | cut -c 6- | rev) && cd $data && data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\\// /g') | cut -f1) ] && echo \"1\" || echo \"0\") && echo $data", "r");
   file2 = popen("data=$(awk '/ExecStart=/' /lib/systemd/system/xcash-daemon.service) && data=$(echo $data | cut -d'=' -f 2) && data=$(echo $data | awk -F '--' '{print $1;}') && data=$(echo $data | rev | cut -c 25- | rev) && cd $data && data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\\// /g') | cut -f1) ] && echo \"1\" || echo \"0\") && echo $data", "r");
 
-  fgets(data,(int)(sizeof(data)),file);
-  fgets(data2,(int)(sizeof(data2)),file2);
-
-  if (strncmp(data,"0",1) == 0 && strncmp(data2,"0",1) == 0)
+  if (fgets(data,(int)(sizeof(data)),file) == NULL || fgets(data2,(int)(sizeof(data2)),file2) == NULL)
+  {
+    // error
+    return;
+  }
+  else if (strncmp(data,"0",1) == 0 && strncmp(data2,"0",1) == 0)
   {
     // both are not up to date
     color_print("Updating xcash-dpops and xcash-core, this will take around an hour or more","yellow");
