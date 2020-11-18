@@ -1076,44 +1076,34 @@ void check_for_updates(void)
   file = popen("data=$(awk '/WorkingDirectory=/' /lib/systemd/system/xcash-dpops.service) && data=$(echo $data | cut -d'=' -f 2) && data=$(echo $data | rev | cut -c 6- | rev) && cd $data && data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\\// /g') | cut -f1) ] && echo \"1\" || echo \"0\") && echo $data", "r");
   file2 = popen("data=$(awk '/ExecStart=/' /lib/systemd/system/xcash-daemon.service) && data=$(echo $data | cut -d'=' -f 2) && data=$(echo $data | awk -F '--' '{print $1;}') && data=$(echo $data | rev | cut -c 25- | rev) && cd $data && data=$([ $(git rev-parse HEAD) = $(git ls-remote $(git rev-parse --abbrev-ref @{u} | sed 's/\\// /g') | cut -f1) ] && echo \"1\" || echo \"0\") && echo $data", "r");
 
-  if (fgets(data,(int)(sizeof(data)),file) == NULL || fgets(data2,(int)(sizeof(data2)),file2) == NULL)
-  {
-    // error
-    return;
-  }
-  else if (strncmp(data,"0",1) == 0 && strncmp(data2,"0",1) == 0)
+  fgets(data,(int)(sizeof(data)),file);
+  fgets(data2,(int)(sizeof(data2)),file2);
+
+  if (strncmp(data,"0",1) == 0 && strncmp(data2,"0",1) == 0)
   {
     // both are not up to date
-    color_print("Updating, this will take around an hour or more","yellow");
+    color_print("Updating xcash-dpops and xcash-core, this will take around an hour or more","yellow");
     UPDATE_XCASH_DPOPS;
     UPDATE_XCASH_CORE;
     SYNC_BLOCK_VERIFIER;
     count = 0;
     exit(count);
-    return;
   }
   else if (strncmp(data,"0",1) == 0 && strncmp(data2,"1",1) == 0)
   {
-    // only xcash-core is up to date
-    color_print("Updating, this will take around an hour or more","yellow");
+    // only xcash-dpops is not up to date
+    color_print("Updating xcash-dpops, this will take around an hour or more","yellow");
     UPDATE_XCASH_DPOPS;
     SYNC_BLOCK_VERIFIER;
     exit(0);
-    return;
   }
   else if (strncmp(data,"1",1) == 0 && strncmp(data2,"0",1) == 0)
   {
-    // only xcash-dpops is up to date
-    color_print("Updating, this will take around an hour or more","yellow");
+    // only xcash-core is not up to date
+    color_print("Updating xcash-core, this will take around an hour or more","yellow");
     UPDATE_XCASH_CORE;
     SYNC_BLOCK_VERIFIER;
     exit(0);
-    return;
-  }
-  else if (strncmp(data,"1",1) == 0 && strncmp(data2,"1",1) == 0)
-  {
-    // both are up to date
-    return;
   }
   return;
 }
