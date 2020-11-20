@@ -77,6 +77,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
 
   // define macros
   #define SEND_HTTP_REQUEST_ERROR(data_settings,socket_settings) \
+  color_print(data_settings,"red"); \
   if (test_settings == 1) \
   { \
     memcpy(error_message.function[error_message.total],"send_http_request",17); \
@@ -198,7 +199,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   // connect to the socket
   if (connect(network_socket,settings->ai_addr, settings->ai_addrlen) != 0)
   {    
-    count = poll(&socket_file_descriptors,1,CONNECTION_TIMEOUT_SETTINGS * 1000);  
+    count = poll(&socket_file_descriptors,1,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS * 1000);  
     if ((count != 1) || (count == 1 && getsockopt(network_socket,SOL_SOCKET,SO_ERROR,&socket_settings,&socket_option_settings) == 0 && socket_settings != 0))
     { 
       SEND_HTTP_REQUEST_ERROR("Error connecting to host",1);
