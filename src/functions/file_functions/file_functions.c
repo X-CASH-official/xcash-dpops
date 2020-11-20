@@ -22,7 +22,6 @@ Return: 0 if an error has occured, otherwise the file length
 long get_file_size(const char* FILE_NAME)
 {
   // Variables
-  int test;
   FILE* file;
   long file_size = 0;
 

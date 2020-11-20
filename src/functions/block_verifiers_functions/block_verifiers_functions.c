@@ -108,7 +108,7 @@ int start_new_round(void)
   }  
 
   // wait so everyone has got the online status
-  sync_block_verifiers_minutes_and_seconds(0,15);
+  sync_block_verifiers_minutes_and_seconds(0,20);
 
   // start a new round
   if (get_current_block_height(current_block_height) == 0)

@@ -103,7 +103,7 @@ void sync_network_data_nodes_database(void)
   print_start_message(current_date_and_time,current_UTC_date_and_time,"Network data nodes are now checking if all network data nodes databases are synced",data);
 
   // wait so all network data nodes start at the same time, this way one is not reseting the variables as another one is sending them data
-  sync_block_verifiers_minutes_and_seconds(0,35);
+  sync_block_verifiers_minutes_and_seconds(0,40);
 
   memset(data2,0,sizeof(data2));
   memcpy(data2,"true",4);
@@ -148,7 +148,7 @@ void sync_network_data_nodes_database(void)
   }
 
   // wait for all of the network data nodes to process the data
-  sync_block_verifiers_minutes_and_seconds(1,10);
+  sync_block_verifiers_minutes_and_seconds(1,15);
 
   // check if a consensus was reached and get the majority database data hash
   for (network_data_nodes_valid_count = 0, count2 = 0; count2 < NETWORK_DATA_NODES_AMOUNT; count2++)
