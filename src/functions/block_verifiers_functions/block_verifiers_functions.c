@@ -71,6 +71,7 @@ int start_new_round(void)
   memcpy(error_message.function[error_message.total],"start_new_round",15); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
+  sleep(1); \
   return 0;
 
   #define RESET_VARIABLES \
