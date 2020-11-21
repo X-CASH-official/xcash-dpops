@@ -420,6 +420,7 @@ void server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databa
     memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
     error_message.total++;
     print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
+    send_data(CLIENT_SOCKET,(unsigned char*)"Could not get the network blocks reserve bytes database hash}",0,0,"");
     exit(0);
   }
 
