@@ -102,10 +102,10 @@ int start_new_round(void)
   memset(data2,0,sizeof(data2));
 
   // check if there are any updates that need to be downloaded, and if so update and wait 1 hour so all block verifiers restart at the same time
-  if (production_settings == 1)
+  /*if (production_settings == 1)
   {
     check_for_updates();
-  }
+  }*/
 
   // get the delegates online status
   if (registration_settings == 0)
