@@ -150,7 +150,7 @@ function get_installation_settings()
   echo -ne "${COLOR_PRINT_GREEN}X-Cash DPoPS Delegate Management\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_YELLOW}11 = Restart Programs\n12 = Stop Programs\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}X-Cash DPoPS Testing\n${END_COLOR_PRINT}"
-  echo -ne "${COLOR_PRINT_YELLOW}13 = Test Update\n14 = Test Update Reset Delegates\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}13 = Mainnet Reset\n14 = Beta/Alpha Test Reset\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}Miscellaneous\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_YELLOW}15 = Configure Installation\n16 = Firewall\n17 = Shared Delegates Firewall\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}Enter the number of the chosen option (default 1): ${END_COLOR_PRINT}"
@@ -2038,12 +2038,7 @@ function test_update()
   echo
   source ~/.profile || true
   echo -ne "${COLOR_PRINT_YELLOW}Resetting the Database${END_COLOR_PRINT}"
-  (echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_1.drop()"; echo "exit";) | mongo &>/dev/null
-  (echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_2.drop()"; echo "exit";) | mongo &>/dev/null
-  (echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_3.drop()"; echo "exit";) | mongo &>/dev/null
-  (echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_4.drop()"; echo "exit";) | mongo &>/dev/null
-  (echo "use XCASH_PROOF_OF_STAKE"; echo "db.reserve_bytes_5.drop()"; echo "exit";) | mongo &>/dev/null
-  (echo "use XCASH_PROOF_OF_STAKE_DELEGATES"; echo "db.dropDatabase()"; echo "exit";) | mongo &>/dev/null
+  (echo "use XCASH_PROOF_OF_STAKE"; echo "db.dropDatabase()"; echo "exit";) | mongo &>/dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Resetting the Database${END_COLOR_PRINT}"
   echo
   update
