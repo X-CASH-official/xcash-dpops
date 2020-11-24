@@ -905,7 +905,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     {
       send_invalid_reserve_proof_to_block_verifiers(&reserve_proof);
     }
-    sleep(3);
+    sleep(BLOCK_VERIFIERS_SETTINGS);
   }
 }
 
