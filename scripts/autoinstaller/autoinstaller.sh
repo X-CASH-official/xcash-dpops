@@ -2124,6 +2124,8 @@ function install_or_update_blockchain()
 {
   echo -e "${COLOR_PRINT_GREEN}Installing / Updating The BlockChain (This Might Take a While, please follow the progress)${END_COLOR_PRINT}"
 
+  stop_systemd_service_files
+
   # wait for the blockchain file to be created
   hour=$(date +"%H")
   while [ $hour == 0 ]
