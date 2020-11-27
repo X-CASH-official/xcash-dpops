@@ -590,7 +590,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   { 
     memset(data2,0,strlen(data2));
     memcpy(data2,"reserve_proofs_",15);
-    snprintf(data2+15,sizeof(data2)-16,"%d",count);
+    snprintf(data2+15,MAXIMUM_NUMBER_SIZE,"%d",count);
     if ((count2 = count_documents_in_collection(database_name,data2,buffer)) == -1)
     {
       continue;
@@ -613,7 +613,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   { 
     memset(data2,0,strlen(data2));
     memcpy(data2,"reserve_proofs_",15);
-    snprintf(data2+15,sizeof(data2)-16,"%d",count);
+    snprintf(data2+15,sMAXIMUM_NUMBER_SIZE,"%d",count);
 
     if ((count2 = count_documents_in_collection(database_name,data2,buffer)) > 0)
     {      
@@ -722,7 +722,7 @@ int server_receive_data_socket_get_round_statistics(const int CLIENT_SOCKET, con
 
   count = ((count - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
   memcpy(data3,"reserve_bytes_",14);
-  snprintf(data3+14,sizeof(data3)-15,"%zu",count);
+  snprintf(data3+14,MAXIMUM_NUMBER_SIZE,"%zu",count);
 
   // create the message
   memcpy(message,"{\"block_height\":\"",17);

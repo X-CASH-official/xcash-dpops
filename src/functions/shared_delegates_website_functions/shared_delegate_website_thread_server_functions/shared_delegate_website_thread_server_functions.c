@@ -240,7 +240,7 @@ int get_delegates_total_voters_count(const char* DELEGATES_PUBLIC_ADDRESS)
   { 
     memset(data2,0,strlen(data2));
     memcpy(data2,"reserve_proofs_",15);
-    snprintf(data2+15,sizeof(data2)-16,"%d",count);
+    snprintf(data2+15,MAXIMUM_NUMBER_SIZE,"%d",count);
     if ((counter = count_documents_in_collection(database_name,data2,data)) != -1)
     {
       public_address_count += counter;
@@ -296,7 +296,7 @@ long long int get_delegates_total_voters(struct voters* voters)
   { 
     memset(data2,0,strlen(data2));
     memcpy(data2,"reserve_proofs_",15);
-    snprintf(data2+15,sizeof(data2)-16,"%d",counter);
+    snprintf(data2+15,MAXIMUM_NUMBER_SIZE,"%d",counter);
 
     if ((count2 = count_documents_in_collection(database_name,data2,data)) > 0)
     {

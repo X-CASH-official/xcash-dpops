@@ -110,7 +110,7 @@ int get_block_verifiers_from_network_block(const int TOTAL_DELEGATES, const stru
 
   // get the blocks reserve bytes
   memcpy(data3,"reserve_bytes_",14);
-  snprintf(data3+14,sizeof(data3)-15,"%zu",block_height);
+  snprintf(data3+14,MAXIMUM_NUMBER_SIZE,"%zu",block_height);
   if (read_document_field_from_collection(database_name,data3,data,"reserve_bytes",message) == 0)
   {
     // restore the database from the backup
@@ -853,7 +853,7 @@ int calculate_main_nodes_roles(void)
   get_reserve_bytes_database(count,1);
   block_height = count;
   memcpy(data,"reserve_bytes_",14);
-  snprintf(data+14,sizeof(data)-15,"%zu",block_height);
+  snprintf(data+14,MAXIMUM_NUMBER_SIZE,"%zu",block_height);
 
   // create the message
   memcpy(data3,"{\"block_height\":\"",17);

@@ -366,7 +366,7 @@ void sync_block_verifiers_database(void)
   memcpy(data2+strlen(data2),"\"}",2);
   get_reserve_bytes_database(count2,1);
   memcpy(data,"reserve_bytes_",14);
-  snprintf(data+strlen(data),sizeof(data)-15,"%zu",count2);
+  snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%zu",count2);
   if (count_documents_in_collection(database_name,data,data2) == 1 && check_if_blockchain_is_fully_synced() == 1)
   {
     memset(data2,0,sizeof(data2));
@@ -1098,7 +1098,7 @@ int sync_check_reserve_proofs_specific_database(const char* DATABASE_DATA, const
       // add the data to the database
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_proofs_",15);
-      snprintf(data2+15,sizeof(data2)-16,"%d",count);
+      snprintf(data2+15,MAXIMUM_NUMBER_SIZE,"%d",count);
 
       // delete the collection from the database
       delete_collection_from_database(database_name,data2);
@@ -1256,7 +1256,7 @@ int sync_check_reserve_bytes_specific_database(const char* DATABASE_DATA, const 
       // add the data to the database
       memset(data2,0,strlen(data2));
       memcpy(data2,"reserve_bytes_",14);
-      snprintf(data2+14,sizeof(data2)-15,"%zu",starting_reserve_bytes_database);
+      snprintf(data2+14,MAXIMUM_NUMBER_SIZE,"%zu",starting_reserve_bytes_database);
 
       // delete the collection from the database
       delete_collection_from_database(database_name,data2);
@@ -1377,7 +1377,7 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
     memset(data,0,strlen(data));
     memset(data2,0,strlen(data2));  
     memcpy(data2,"reserve_proofs_",15);  
-    snprintf(data2+15,sizeof(data2)-16,"%d",count);
+    snprintf(data2+15,MAXIMUM_NUMBER_SIZE,"%d",count);
     if (get_database_data_hash(data,database_name,data2) == 0)
     {
       SYNC_RESERVE_PROOFS_DATABASE_ERROR("Could not get the database data hash for the reserve proofs database from ");
@@ -1510,7 +1510,7 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
     memset(data,0,strlen(data));
     memset(data2,0,strlen(data2));  
     memcpy(data2,"reserve_bytes_",14);  
-    snprintf(data2+14,sizeof(data2)-15,"%zu",count);
+    snprintf(data2+14,MAXIMUM_NUMBER_SIZE,"%zu",count);
     if (get_database_data_hash(data,database_name,data2) == 0)
     {
       SYNC_RESERVE_BYTES_DATABASE_ERROR("Could not get the database data hash for the reserve bytes database from ");

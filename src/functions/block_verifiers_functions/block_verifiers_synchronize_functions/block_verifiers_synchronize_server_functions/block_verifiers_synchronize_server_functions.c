@@ -505,7 +505,7 @@ void server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databa
     count2 = test_settings == 0 ? ((current_block_height_reserve_bytes - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1 : ((current_block_height_reserve_bytes - 521850) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
   
     memcpy(data,"reserve_bytes_",14);
-    snprintf(data+14,sizeof(data)-15,"%zu",count2);
+    snprintf(data+14,MAXIMUM_NUMBER_SIZE,"%zu",count2);
     
     // get the data hash
     if (read_document_field_from_collection(database_name,data,data2,"reserve_bytes_data_hash",message) == 0)
@@ -635,7 +635,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proof
       // get the database data hash for the reserve proofs database
       memset(data2,0,strlen(data2));  
       memcpy(data2,"reserve_proofs_",15);  
-      snprintf(data2+15,sizeof(data2)-16,"%d",count);
+      snprintf(data2+15,MAXIMUM_NUMBER_SIZE,"%d",count);
       if (get_database_data_hash(reserve_proofs_database,database_name,data2) == 0)
       {
         SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve proofs database");
@@ -836,7 +836,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes
     // get the database data hash for the reserve proofs database
     memset(data2,0,strlen(data2));  
     memcpy(data2,"reserve_bytes_",14);  
-    snprintf(data2+14,sizeof(data2)-15,"%zu",count);
+    snprintf(data2+14,MAXIMUM_NUMBER_SIZE,"%zu",count);
     if (get_database_data_hash(reserve_bytes_database,database_name,data2) == 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE_ERROR("Could not get the database data hash for the reserve bytes database");

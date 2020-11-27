@@ -177,7 +177,7 @@ int block_verifiers_add_reserve_proof_check_if_data_is_valid(const char* MESSAGE
   {
     memset(data2,0,sizeof(data2));
     memcpy(data2,"reserve_proofs_",15);
-    snprintf(data2+15,sizeof(data2)-16,"%d",count);
+    snprintf(data2+15,MAXIMUM_NUMBER_SIZE,"%d",count);
 
     // check if the reserve proof is in the database
     if (count_documents_in_collection(database_name,data2,data) > 0)
@@ -221,7 +221,7 @@ int add_reserve_proof_remove_previous_vote(const char* PUBLIC_ADDRESS_CREATE_RES
   {
     memset(data,0,sizeof(data));
     memcpy(data,"reserve_proofs_",15);
-    snprintf(data+15,sizeof(data)-16,"%d",count);
+    snprintf(data+15,MAXIMUM_NUMBER_SIZE,"%d",count);
     count2 = count_documents_in_collection(database_name,data,PUBLIC_ADDRESS_CREATE_RESERVE_PROOF_DATA);
     if (count2 <= 0)
     {
@@ -412,7 +412,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   {
     memset(data3,0,sizeof(data3));
     memcpy(data3,"reserve_proofs_",15);
-    snprintf(data3+15,sizeof(data3)-16,"%zu",count);
+    snprintf(data3+15,MAXIMUM_NUMBER_SIZE,"%zu",count);
     if (count_documents_in_collection(database_name,data3,data) < (MAXIMUM_INVALID_RESERVE_PROOFS / TOTAL_RESERVE_PROOFS_DATABASES))
     {
       if (insert_document_into_collection_json(database_name,data3,data) == 1)

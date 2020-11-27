@@ -213,7 +213,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     for (count = 1; count <= count2; count++)
     {
       memcpy(data+strlen(data),"reserve_bytes_",14);
-      snprintf(data+strlen(data),sizeof(data)-15,"%zu",count);
+      snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%zu",count);
       if (count != count2)
       {
         memcpy(data+strlen(data),"\",\"",3);
@@ -225,11 +225,11 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
     {
       memcpy(data+strlen(data),"reserve_proofs_",15);
-      snprintf(data+strlen(data),sizeof(data)-16,"%zu",count);
+      snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%zu",count);
 
       memset(data2,0,sizeof(data2));
       memcpy(data2,"reserve_proofs_",15);
-      snprintf(data2+strlen(data2),sizeof(data2)-16,"%zu",count+1);
+      snprintf(data2+strlen(data2),MAXIMUM_NUMBER_SIZE,"%zu",count+1);
       if (check_if_database_collection_exist(database_name,data2) == 1)
       {
         memcpy(data+strlen(data),"\",\"",3);

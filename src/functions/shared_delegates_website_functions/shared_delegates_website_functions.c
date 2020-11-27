@@ -165,7 +165,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   { 
     memset(data,0,strlen(data));
     memcpy(data,"reserve_proofs_",15);
-    snprintf(data+15,sizeof(data)-16,"%d",count);
+    snprintf(data+15,MAXIMUM_NUMBER_SIZE,"%d",count);
 
     if ((counter = count_documents_in_collection(database_name,data,message)) <= 0)
     {

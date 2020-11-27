@@ -247,7 +247,7 @@ void server_receive_data_socket_main_network_data_node_to_block_verifier_start_b
   get_reserve_bytes_database(count,0);
   memset(data,0,sizeof(data));
   memcpy(data,"reserve_bytes_",14);
-  snprintf(data+strlen(data),sizeof(data)-15,"%zu",count);
+  snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%zu",count);
   if (insert_document_into_collection_json(database_name,data,data2) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Could not add the start block to the database");

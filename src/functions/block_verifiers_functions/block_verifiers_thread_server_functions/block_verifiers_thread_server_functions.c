@@ -88,7 +88,7 @@ int check_if_replayed_round(void)
   // calculate the database to get the reserve byte data
   get_reserve_bytes_database(count,0);
   memcpy(data2,"reserve_bytes_",14);
-  snprintf(data2+14,sizeof(data2)-15,"%zu",count);
+  snprintf(data2+14,MAXIMUM_NUMBER_SIZE,"%zu",count);
 
   memcpy(data,"{\"block_height\":\"",17);
   snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%zu",count2);
@@ -375,7 +375,7 @@ int check_reserve_proofs_timer_get_database_data(const int CURRENT_RESERVE_PROOF
   {
     memset(data,0,sizeof(data));
     memcpy(data,"reserve_proofs_",15);
-    snprintf(data+15,sizeof(data)-16,"%d",count);
+    snprintf(data+15,MAXIMUM_NUMBER_SIZE,"%d",count);
 
     // check if the reserve proof is in the database
     if (count_all_documents_in_collection(database_name,data) > 0)
@@ -541,7 +541,7 @@ void check_reserve_proofs_timer_delete_reserve_proof(const int CURRENT_RESERVE_P
   {
     memset(data,0,strlen(data));
     memcpy(data,"reserve_proofs_",15);
-    snprintf(data+15,sizeof(data)-16,"%d",count);
+    snprintf(data+15,MAXIMUM_NUMBER_SIZE,"%d",count);
 
     memset(data2,0,strlen(data2));
     memcpy(data2,"{\"reserve_proof\":\"",18);
@@ -669,7 +669,7 @@ int select_random_unique_reserve_proof(struct reserve_proof* reserve_proof)
   {
     memset(data,0,sizeof(data));
     memcpy(data,"reserve_proofs_",15);
-    snprintf(data+15,sizeof(data)-16,"%d",((rand() % (TOTAL_RESERVE_PROOFS_DATABASES - 1 + 1)) + 1));
+    snprintf(data+15,MAXIMUM_NUMBER_SIZE,"%d",((rand() % (TOTAL_RESERVE_PROOFS_DATABASES - 1 + 1)) + 1));
   } while ((count = count_all_documents_in_collection(database_name,data)) <= 0);
   pthread_rwlock_wrlock(&rwlock_reserve_proofs);
   RESET_ERROR_MESSAGES; 
@@ -822,11 +822,11 @@ void* check_reserve_proofs_timer_thread(void* parameters)
   color_print("Part 1 - Randomly select reserve proofs and check if they are valid","yellow");
 
   // check if there are any reserve proofs in the database
-  for (count = 0, settings = 0; count < TOTAL_RESERVE_PROOFS_DATABASES; count++)
+  for (count = 1, settings = 0; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
   {
     memset(data,0,sizeof(data));
     memcpy(data,"reserve_proofs_",15);
-    snprintf(data+15,sizeof(data)-16,"%d",count);
+    snprintf(data+15,MAXIMUM_NUMBER_SIZE,"%d",count);
     if (count_all_documents_in_collection(database_name,data) > 0)
     {
       settings = 1;
