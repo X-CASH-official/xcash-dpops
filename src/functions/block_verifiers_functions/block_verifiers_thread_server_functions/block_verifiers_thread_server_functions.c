@@ -782,7 +782,7 @@ Return: NULL
 void* check_reserve_proofs_timer_thread(void* parameters)
 {
   // Variables
-  char data[MAXIMUM_NUMBER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
   char data2[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;

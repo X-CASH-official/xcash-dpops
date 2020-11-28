@@ -613,7 +613,7 @@ int server_receive_data_socket_get_delegates_voters_list(const int CLIENT_SOCKET
   { 
     memset(data2,0,strlen(data2));
     memcpy(data2,"reserve_proofs_",15);
-    snprintf(data2+15,sMAXIMUM_NUMBER_SIZE,"%d",count);
+    snprintf(data2+15,MAXIMUM_NUMBER_SIZE,"%d",count);
 
     if ((count2 = count_documents_in_collection(database_name,data2,buffer)) > 0)
     {      
