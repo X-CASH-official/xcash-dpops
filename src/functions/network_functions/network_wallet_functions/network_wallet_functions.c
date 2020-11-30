@@ -77,39 +77,31 @@ int get_public_address(void)
 Name: send_payment
 Description: Sends a payment
 Parameters:
-  PUBLIC_ADDRESS - The public address to send the payment to
-  TOTAL - The total amount for the payment (in atomic units)
+  DATA - The data
   tx_hash - The transaction hash of the payment
   tx_key - The transaction key of the payment
+  SETTINGS - 0 to not send the payment, 1 to send the payment
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int send_payment(const char* PUBLIC_ADDRESS, const char* TOTAL, char *tx_hash, char *tx_key)
+int send_payment(const char* DATA, char *tx_hash, char *tx_key, const int SETTINGS)
 {
   // Constants
   const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char data[SMALL_BUFFER_SIZE];
-  char message[SMALL_BUFFER_SIZE];
+  char data[5000];
+  char message[5000];
 
   memset(data,0,sizeof(data));
   memset(message,0,sizeof(message));
 
-  // create the message
-  memcpy(message,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"transfer_split\",\"params\":{\"destinations\":[{\"amount\":",88);
-  memcpy(message+88,TOTAL,strnlen(TOTAL,sizeof(message)));
-  memcpy(message+strlen(message),",\"address\":\"",12);
-  memcpy(message+strlen(message),PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
-  memcpy(message+strlen(message),"\"}],\"priority\":0,\"ring_size\":21,\"get_tx_keys\": true}}",53);
+  memcpy(message,DATA,strnlen(DATA,sizeof(message))-2);
+  SETTINGS == 1 ? memcpy(message+strlen(message),",\"do_not_relay\":false}}",23) : memcpy(message+strlen(message),",\"do_not_relay\":true}}",22);
 
-  if (send_http_request(data,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,SEND_PAYMENT_TIMEOUT_SETTINGS) <= 0)
-  {  
-    return 0;
-  }
-  return parse_json_data(data,"tx_hash_list",tx_hash,BUFFER_SIZE) == 0 || parse_json_data(data,"tx_key_list",tx_key,BUFFER_SIZE) == 0 ? 0 : 1;
+  return send_http_request(data,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,message,SEND_PAYMENT_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"tx_hash_list",tx_hash,BUFFER_SIZE) == 0 || parse_json_data(data,"tx_key_list",tx_key,BUFFER_SIZE) == 0 ? 0 : 1;
 }
 
 

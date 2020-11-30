@@ -519,19 +519,19 @@ Description: Sends the payment if over the minimum amount and updates the databa
 Parameters:
   PUBLIC_ADDRESS - The public address to send the trasnaction to
   CURRENT_TOTAL - The current total
-  TOTAL - The total 
+  TOTAL - The total
+  TX_HASH - The transaction hash of the payment
+  TX_KEY - The transaction key of the payment
 Return: 0 if an error has occured, otherwise the transaction total
 -----------------------------------------------------------------------------------------------------------
 */
 
-long long int payment_timer_send_payment_and_update_databases(const char* PUBLIC_ADDRESS,const char* CURRENT_TOTAL,const char* TOTAL)
+long long int payment_timer_send_payment_and_update_databases(const char* PUBLIC_ADDRESS,const char* CURRENT_TOTAL,const char* TOTAL,const char* TX_HASH,const char* TX_KEY)
 {
   // Variables
   char data[SMALL_BUFFER_SIZE];
   char data2[SMALL_BUFFER_SIZE];
   char data3[SMALL_BUFFER_SIZE];
-  char payment_tx_hash[SMALL_BUFFER_SIZE];
-  char payment_tx_key[SMALL_BUFFER_SIZE];
   long long int number;
   long long int updated_total; 
 
@@ -539,17 +539,6 @@ long long int payment_timer_send_payment_and_update_databases(const char* PUBLIC
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
-  memset(payment_tx_hash,0,sizeof(payment_tx_hash));
-  memset(payment_tx_key,0,sizeof(payment_tx_key));
-
-  if (test_settings == 0 && strncmp(PUBLIC_ADDRESS,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-  { 
-    if (send_payment(PUBLIC_ADDRESS, CURRENT_TOTAL, payment_tx_hash, payment_tx_key) == 0)
-    {
-      color_print("Could not send out a payment, possibly due to not having enough balance or enough unspents (unlocked balance)","yellow");
-      return 0;
-    }
-  }
 
   // create the message
   memcpy(data,"{\"public_address\":\"",19);
@@ -598,9 +587,9 @@ long long int payment_timer_send_payment_and_update_databases(const char* PUBLIC
   memcpy(data2+strlen(data2),"\",\"date_and_time\":\"",19);
   memcpy(data2+strlen(data2),data3,strnlen(data3,sizeof(data2)));
   memcpy(data2+strlen(data2),"\",\"tx_hash\":\"",13);
-  memcpy(data2+strlen(data2),payment_tx_hash,strnlen(payment_tx_hash,sizeof(data2)));
+  memcpy(data2+strlen(data2),TX_HASH,TRANSACTION_HASH_LENGTH);
   memcpy(data2+strlen(data2),"\",\"tx_key\":\"",12);
-  memcpy(data2+strlen(data2),payment_tx_key,strnlen(payment_tx_key,sizeof(data2)));
+  memcpy(data2+strlen(data2),TX_KEY,TRANSACTION_HASH_LENGTH);
   memcpy(data2+strlen(data2),"\"}",2);
 
   if (insert_document_into_collection_json(shared_delegates_database_name,"public_addresses_payments",data2) == 0)
@@ -704,9 +693,11 @@ Description: Sends all of the delegates payments once a day at a random time, or
 void* payment_timer_thread(void* parameters)
 {
   // Variables
-  char data[SMALL_BUFFER_SIZE];
+  char data[BUFFER_SIZE];
   char data2[SMALL_BUFFER_SIZE];
   char data3[SMALL_BUFFER_SIZE];
+  char tx_hash[TRANSACTION_HASH_LENGTH+1];
+  char tx_key[TRANSACTION_HASH_LENGTH+1];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count;
@@ -717,21 +708,23 @@ void* payment_timer_thread(void* parameters)
   double total;
   struct database_multiple_documents_fields database_multiple_documents_fields;
   int document_count;
+  char transaction_list_data[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE][5000];
+  char transaction_list_data_tx_hash[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE][TRANSACTION_HASH_LENGTH+1];
+  char transaction_list_data_tx_key[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE][TRANSACTION_HASH_LENGTH+1];
+  int transaction_list_data_count;
+  int maximum_unspents_per_transaction = MAXIMUM_UNSPENTS_PER_TRANSACTION;
 
   // unused parameters
   (void)parameters;
 
   // define macros
   #define DATABASE_COLLECTION "public_addresses"
-  #define PAYMENT_TIMER_THREAD_ERROR(message,settings) \
-  memcpy(error_message.function[error_message.total],"payment_timer_thread",20); \
-  memcpy(error_message.data[error_message.total],message,sizeof(message)-1); \
-  error_message.total++; \
-  memset(data,0,sizeof(data)); \
-  print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
+  #define PAYMENT_TIMER_THREAD_ERROR(message) \
+  color_print(message,"red"); \
   RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS); \
   sleep(60); \
   goto start;
+
 
   for (;;)
   {
@@ -740,6 +733,7 @@ void* payment_timer_thread(void* parameters)
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time.tm_min == (BLOCK_TIME-1))
     {
+      minimum_amount = 1;
       color_print("Sending the hourly payments","yellow");
 
       memset(data,0,sizeof(data));
@@ -762,43 +756,159 @@ void* payment_timer_thread(void* parameters)
 
       if (read_multiple_documents_all_fields_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"") == 0)
       {
-        PAYMENT_TIMER_THREAD_ERROR("Could not read the public addresses database.\nCould not send any payments to the delegates",0);
+        PAYMENT_TIMER_THREAD_ERROR("Could not read the public addresses database.\nCould not send any payments to the delegates\nThe database is kept the same and no action is needed");
       }
 
-      // loop through each delegate
+      /* loop through each delegate and build each tx list
+         start with the maximum unspents per transaction, and lessen by 1 if there is a failure to send any tx or it returns more than 1 tx hash
+      */
+
+      for (;;)
+      {
+        start2:
+        // reset the transaction_list_data
+        for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++)
+        {
+          memset(transaction_list_data[count],0,sizeof(transaction_list_data[count]));
+          memcpy(transaction_list_data[count],"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"transfer_split\",\"params\":{\"destinations\":[",78);
+        }
+
+        for (count = 0, counter = 1, transaction_list_data_count = 0; count < (int)database_multiple_documents_fields.document_count; count++)
+        {
+          // check if the current_total is over the minimum amount
+          sscanf(database_multiple_documents_fields.value[count][1], "%lld", &number);
+          if (number >= (minimum_amount * XCASH_WALLET_DECIMAL_PLACES_AMOUNT))
+          {
+            memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),"{\"amount\":",10);
+            memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),database_multiple_documents_fields.value[count][1],strnlen(database_multiple_documents_fields.value[count][1],sizeof(transaction_list_data[transaction_list_data_count])));
+            memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),",\"address\":\"",12);
+            memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),database_multiple_documents_fields.value[count][0],strnlen(database_multiple_documents_fields.value[count][0],sizeof(transaction_list_data[transaction_list_data_count])));
+            memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),"\"}",2);
+            memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),",",1);
+            counter++;
+
+            // check if we have the maximum unspents
+            if (counter > maximum_unspents_per_transaction)
+            {
+              memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count])-1,"],\"priority\":0,\"ring_size\":21,\"get_tx_keys\":true}}",50);
+              transaction_list_data_count++;
+              counter = 1;
+            }
+          }
+        }
+
+        // get how many transaction list there are
+        for (count = 0, transaction_list_data_count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++)
+        {
+          if (strstr(transaction_list_data[count],XCASH_WALLET_PREFIX) != NULL)
+          {
+            transaction_list_data_count++;
+          }
+        }      
+        
+        // check if we need to add the end string to the last transaction list
+        if (strstr(transaction_list_data[transaction_list_data_count-1],"get_tx_keys") == NULL)
+        {
+          memcpy(transaction_list_data[transaction_list_data_count-1]+strlen(transaction_list_data[transaction_list_data_count-1])-1,"],\"priority\":0,\"ring_size\":21,\"get_tx_keys\":true}}",50);
+        }
+
+        // check each transaction list to make sure it is able to be sent
+        for (count = 0; count < transaction_list_data_count; count++)
+        {
+          memset(tx_hash,0,sizeof(tx_hash));
+          memset(tx_key,0,sizeof(tx_key));
+
+          if (send_payment(transaction_list_data[count],tx_hash,tx_key,0) == 0 || strlen(tx_hash) != TRANSACTION_HASH_LENGTH || strlen(tx_key) != TRANSACTION_HASH_LENGTH)
+          {
+            maximum_unspents_per_transaction--;
+            if (maximum_unspents_per_transaction == 0)
+            {
+              PAYMENT_TIMER_THREAD_ERROR("Sending transaction error.\nCould not send any payments to the delegates\nThe database is kept the same and no action is needed");
+            }
+            goto start2;
+          }
+        }
+        break;
+      }
+
+      // all of the transaction list should work, send the payments and copy what tx hash and tx key is for what transaction list
+      for (count = 0; count < transaction_list_data_count; count++)
+      {
+        memset(transaction_list_data_tx_hash[count],0,sizeof(transaction_list_data_tx_hash[count]));
+        memset(transaction_list_data_tx_key[count],0,sizeof(transaction_list_data_tx_key[count]));
+        
+        if (send_payment(transaction_list_data[count],transaction_list_data_tx_hash[count],transaction_list_data_tx_key[count],1) == 0 || strlen(transaction_list_data_tx_hash[count]) != TRANSACTION_HASH_LENGTH || strlen(transaction_list_data_tx_key[count]) != TRANSACTION_HASH_LENGTH)
+        {
+          color_print("Failed to send a transaction list\nManually send each amount to each public address in this transaction list listed below (or try to resend this transaction list manually), as the database has been adjusted!","red");
+          color_print(transaction_list_data[count],"red");
+        }
+      }
+
+      // all payments have been sent, update the databases
       for (count = 0; count < (int)database_multiple_documents_fields.document_count; count++)
       {
         // check if the current_total is over the minimum amount
         sscanf(database_multiple_documents_fields.value[count][1], "%lld", &number);
         if (number >= (minimum_amount * XCASH_WALLET_DECIMAL_PLACES_AMOUNT))
         {
-          if ((number = payment_timer_send_payment_and_update_databases(database_multiple_documents_fields.value[count][0],database_multiple_documents_fields.value[count][1],database_multiple_documents_fields.value[count][2])) == 0)
+          // update the database for the public address
+          for (counter = 0; counter < transaction_list_data_count; counter++)
           {
-            PAYMENT_TIMER_THREAD_ERROR("Could not send the payment or update the database for the shared delegates",0);
-          }
-          else
-          {
-            amount_of_payments++;
-            total_amount += number;
-          }
+            if (strstr(transaction_list_data[counter],database_multiple_documents_fields.value[count][0]) != NULL)
+            {
+              if (payment_timer_send_payment_and_update_databases(database_multiple_documents_fields.value[count][0],database_multiple_documents_fields.value[count][1],database_multiple_documents_fields.value[count][2],transaction_list_data_tx_hash[counter],transaction_list_data_tx_key[counter]) == 0)
+              {
+                color_print("Failed to update the database for a delegate\nManually update the following data (run the commands in the terminal), as the delegate has already been paid.\nFirst open the mongodb terminal by typing \"mongo\"\n Next use the shared delegates database by typing \"use XCASH_PROOF_OF_STAKE_DELEGATES\"\nUse the following command in the mongodb terminal to update values in the database:\ndb.collection.update({\"field_to_find_delegate\":\"value\"},{$set:{\"field_to_update_for_delegate\":\"value\"}}","red");
+                memset(data,0,sizeof(data));
+                memcpy(data,"#1 In the database collection public_addresses, substract ",58);
+                memcpy(data+strlen(data),database_multiple_documents_fields.value[count][1],strlen(database_multiple_documents_fields.value[count][1]));
+                memcpy(data+strlen(data)," from the current_total field, for delegate ",44);
+                memcpy(data+strlen(data),database_multiple_documents_fields.value[count][0],strlen(database_multiple_documents_fields.value[count][0]));
+                memcpy(data+strlen(data),"\n\n#2 In the database collection public_addresses, add ",54);
+                memcpy(data+strlen(data),database_multiple_documents_fields.value[count][1],strlen(database_multiple_documents_fields.value[count][1]));
+                memcpy(data+strlen(data)," to the total field, for delegate ",34);
+                memcpy(data+strlen(data),database_multiple_documents_fields.value[count][0],strlen(database_multiple_documents_fields.value[count][0]));
+                memcpy(data+strlen(data),"\n\n#3 Run the following command to add the document to the database collection\ndb.public_addresses_payments.insertOne({\"public_address\":\"",136);
+                memcpy(data+strlen(data),database_multiple_documents_fields.value[count][0],strlen(database_multiple_documents_fields.value[count][0]));
+                memcpy(data+strlen(data),"\",\"total\":\"",11);
+                memcpy(data+strlen(data),database_multiple_documents_fields.value[count][1],strlen(database_multiple_documents_fields.value[count][1]));
+                memcpy(data+strlen(data),"\",\"date_and_time\":\"",19);
+                snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%lld",(long long int)time(NULL));
+                memcpy(data+strlen(data),"\",\"tx_hash\":\"",13);
+                memcpy(data+strlen(data),transaction_list_data_tx_hash[counter],TRANSACTION_LENGTH);
+                memcpy(data+strlen(data),"\",\"tx_key\":\"",12);
+                memcpy(data+strlen(data),transaction_list_data_tx_key[counter],TRANSACTION_LENGTH);
+                memcpy(data+strlen(data),"\"})",2);
+                color_print(data,"yellow");                
+              }
+              else
+              {
+                amount_of_payments++;
+                total_amount += number;
+                break;
+              }
+            }
+          }          
         }
         if (payment_timer_update_inactivity_count(database_multiple_documents_fields.value[count][0],database_multiple_documents_fields.value[count][1],database_multiple_documents_fields.value[count][3]) == 0)
         {
-          PAYMENT_TIMER_THREAD_ERROR("Could not update the inactivity count for the shared delegates",0);
+          PAYMENT_TIMER_THREAD_ERROR("Could not update the inactivity count for the shared delegates");
         }
       }
 
       // format the total amount
-      total = (double)total_amount / XCASH_WALLET_DECIMAL_PLACES_AMOUNT;     
+      total = (double)total_amount / XCASH_WALLET_DECIMAL_PLACES_AMOUNT;   
 
       RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS);
       memset(data,0,sizeof(data));  
       print_start_message(current_date_and_time,current_UTC_date_and_time,"Delegates Payments",data); 
       memset(data,0,sizeof(data));    
-      memcpy(data,"Amount of payments: ",20);
-      snprintf(data+strlen(data),sizeof(data)-1,"%lld",amount_of_payments);
+      memcpy(data,"Amount of delegates paid: ",26);
+      snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%lld",amount_of_payments);
       memcpy(data+strlen(data),"\nTotal amount: ",15);
       snprintf(data+strlen(data),sizeof(data)-1,"%lf",total);
+      memcpy(data+strlen(data),"\nAmount of payments: ",21);
+      snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%d",transaction_list_data_count);
       memcpy(data+strlen(data),"\n",sizeof(char));
       color_print(data,"yellow");
       sleep(60);

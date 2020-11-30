@@ -8,6 +8,6 @@ Function prototypes
 */
 
 int get_public_address(void);
-int send_payment(const char* PUBLIC_ADDRESS, const char* TOTAL, char *tx_hash, char *tx_key);
+int send_payment(const char* DATA, char *tx_hash, char *tx_key, const int SETTINGS);
 int check_reserve_proofs(char *result, const char* public_address, const char* reserve_proof);
 #endif
