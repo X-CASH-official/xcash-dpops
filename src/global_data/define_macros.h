@@ -27,6 +27,7 @@ Using define statements instead of constants for increased efficiency
 #define MAXIMUM_TRANSACATIONS_PER_BLOCK 500 // The maximum amount of transaction per block
 #define XCASH_SIGN_DATA_PREFIX "SigV1" // The prefix of a XCASH_DPOPS_signature for the signed data
 #define XCASH_SIGN_DATA_LENGTH 93 // The length of a XCASH_DPOPS_signature for the signed data
+#define MAXIMUM_UNSPENTS_PER_TRANSACTION 15 // The maximum amount of unspents per transaction
 
 // Network block string 
 #define BLOCK_PRODUCER_NETWORK_BLOCK_NONCE "00000000" // The network block nonce used when the block producer creates the block
@@ -81,7 +82,8 @@ Using define statements instead of constants for increased efficiency
 #define SUBMIT_NETWORK_BLOCK_TIME_SECONDS 15 // The time to submit the network block
 #define START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_2 20 // the start time of part 2 of the invalid reserve proofs
 #define START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_3 35 // the start time of part 3 of the invalid reserve proofs
-#define INVALID_RESERVE_PROOFS_SETTINGS 5 // The amount of times to check if a received reserve proof is invalid
+#define BLOCK_VERIFIERS_SETTINGS 3 // The time in seconds to wait to send data to the block verifiers
+#define INVALID_RESERVE_PROOFS_SETTINGS 3 // The time in seconds to wait between checking for invalid reserve proofs
 #define MAXIMUM_NUMBER_SIZE 25 // The maximum amount of bytes a number could take up in X-CASH
 #define MINIMUM_BYTE_RANGE 1 // The minimum byte range to use when calculating the next block producer
 #define MAXIMUM_BYTE_RANGE 250 // The maximum byte range to use when calculating the next block producer

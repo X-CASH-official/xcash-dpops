@@ -762,11 +762,7 @@ int send_invalid_reserve_proof_to_block_verifiers(const struct reserve_proof* re
   }
 
   // send the message to all block verifiers
-  if (block_verifiers_send_data_socket((const char*)data) == 0)
-  {
-    return 0;
-  }
-  return 1;
+  return block_verifiers_send_data_socket((const char*)data);
 }
 
 
@@ -852,7 +848,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
       }
 
       // wait for any block verifiers sending messages, or any block verifiers waiting to process a reserve proof
-      sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),START_TIME_SECONDS_INVALID_RESERVE_PROOFS_PART_2);
+      sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),15);
 
       /* disable this part for now
 
@@ -905,7 +901,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
     {
       send_invalid_reserve_proof_to_block_verifiers(&reserve_proof);
     }
-    sleep(BLOCK_VERIFIERS_SETTINGS);
+    nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);
   }
 }
 

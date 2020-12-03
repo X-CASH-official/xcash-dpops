@@ -94,6 +94,8 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reser
   char public_address[XCASH_WALLET_LENGTH+1];
   char reserve_proof[BUFFER_SIZE_RESERVE_PROOF+1];  
   char data3[MAXIMUM_NUMBER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count3;
   int count;
   int settings = 1;
@@ -107,6 +109,13 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reser
   error_message.total++; \
   } \
   return;
+
+  // check if the time is valid
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+  if (current_UTC_date_and_time.tm_min % BLOCK_TIME != 3)
+  {
+    return;
+  }
 
   memset(block_verifiers_public_address,0,sizeof(block_verifiers_public_address));
   memset(public_address,0,sizeof(public_address));
@@ -131,7 +140,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reser
   if (settings == 1)
   {
     // check if the reserve proof is valid. check a few times to make sure it does not error since were already checking reserve proofs
-    for (count = 0; count < INVALID_RESERVE_PROOFS_SETTINGS; count++)
+    for (count = 0; count < 5; count++)
     {
       if (check_reserve_proofs(data3,block_verifiers_public_address,reserve_proof) == 0)
       {
@@ -145,7 +154,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_invalid_reser
         invalid_reserve_proofs.count++;
         break;
       }
-      sleep(2);
+      nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);
     }  
   }
   return;
