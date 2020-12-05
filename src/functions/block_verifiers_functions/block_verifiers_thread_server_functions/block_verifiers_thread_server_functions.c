@@ -812,8 +812,7 @@ void* check_reserve_proofs_timer_thread(void* parameters)
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
-
-  fprintf(stderr,"\n");
+  
   color_print("Started the check reserve proofs timer thread","green");
   color_print("Part 1 - Randomly select reserve proofs and check if they are valid","yellow");
 

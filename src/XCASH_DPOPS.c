@@ -58,6 +58,7 @@ struct synced_block_verifiers synced_block_verifiers; // The list of block verif
 struct main_nodes_list main_nodes_list; // The list of main nodes public address and IP address
 struct network_data_nodes_list network_data_nodes_list; // The network data nodes
 struct current_round_part_vote_data current_round_part_vote_data; // The vote data for the current part of the round
+struct current_block_verifiers_majority_vote current_block_verifiers_majority_vote; // The vote majority data for the current part of the round
 struct VRF_data VRF_data; // The list of all of the VRF data to send to the block producer.
 struct blockchain_data blockchain_data; // The data for a new block to be added to the network.
 struct error_message error_message; // holds all of the error messages and the functions for an error.

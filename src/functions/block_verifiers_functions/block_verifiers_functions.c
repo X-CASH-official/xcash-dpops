@@ -691,7 +691,6 @@ int block_verifiers_create_VRF_data(void)
     
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    fprintf(stderr,"%s: %s\n",current_block_verifiers_list.block_verifiers_name[count],VRF_data.block_verifiers_random_data[count]);
     if (strlen((const char*)VRF_data.block_verifiers_vrf_secret_key[count]) == crypto_vrf_SECRETKEYBYTES && strlen((const char*)VRF_data.block_verifiers_vrf_public_key[count]) == crypto_vrf_PUBLICKEYBYTES && strlen(VRF_data.block_verifiers_random_data[count]) == RANDOM_STRING_LENGTH)
     {
       memcpy(VRF_data.vrf_alpha_string+strlen((const char*)VRF_data.vrf_alpha_string),VRF_data.block_verifiers_random_data[count],RANDOM_STRING_LENGTH);
@@ -990,6 +989,250 @@ int block_verifiers_create_block_signature(char* message)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: block_verifiers_create_vote_majority_results
+Description: The block verifiers will create the vote majority results
+Parameters:
+  result - The result
+  SETTINGS - The data settings
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void block_verifiers_create_vote_majority_results(char *result, const int SETTINGS)
+{
+  // variables
+  int count;
+  int count2;
+
+  memset(result,0,strlen(result));
+
+  // reset the current_block_verifiers_majority_vote
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
+    {
+      memset(current_block_verifiers_majority_vote.data[count][count2],0,sizeof(current_block_verifiers_majority_vote.data[count][count2]));
+    }
+  }
+
+  // create the message
+  memcpy(result,"{\r\n \"message_settings\": \"NODES_TO_NODES_VOTE_MAJORITY_RESULTS\",\r\n ",66);
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    memcpy(result+strlen(result),"\"vote_data_",11);
+    snprintf(result+strlen(result),MAXIMUM_NUMBER_SIZE,"%d",count+1);
+    memcpy(result+strlen(result),"\": \"",4);
+
+    // create the data
+    if (SETTINGS == 0)
+    {
+      if (strlen(VRF_data.block_verifiers_vrf_secret_key_data[count]) == VRF_SECRET_KEY_LENGTH && strlen(VRF_data.block_verifiers_vrf_public_key_data[count]) == VRF_PUBLIC_KEY_LENGTH && strlen(VRF_data.block_verifiers_random_data[count]) == RANDOM_STRING_LENGTH)
+      {
+        memcpy(result+strlen(result),VRF_data.block_verifiers_vrf_secret_key_data[count],VRF_SECRET_KEY_LENGTH);
+        memcpy(result+strlen(result),VRF_data.block_verifiers_vrf_public_key_data[count],VRF_PUBLIC_KEY_LENGTH);
+        memcpy(result+strlen(result),VRF_data.block_verifiers_random_data[count],RANDOM_STRING_LENGTH);
+      }
+      else
+      {
+        // the block verifier did not send any data
+        memcpy(result+strlen(result),BLOCK_VERIFIER_MAJORITY_VRF_DATA_TEMPLATE,sizeof(BLOCK_VERIFIER_MAJORITY_VRF_DATA_TEMPLATE)-1);
+      }      
+    }
+    else
+    {
+      if (strlen(VRF_data.block_blob_signature[count]) == VRF_PROOF_LENGTH+VRF_BETA_LENGTH)
+      {
+        memcpy(result+strlen(result),VRF_data.block_blob_signature[count],VRF_PROOF_LENGTH+VRF_BETA_LENGTH);
+      }
+      else
+      {
+        // the block verifier did not send any data
+        memcpy(result+strlen(result),BLOCK_VERIFIER_MAJORITY_BLOCK_VERIFIERS_SIGNATURE_TEMPLATE,sizeof(BLOCK_VERIFIER_MAJORITY_BLOCK_VERIFIERS_SIGNATURE_TEMPLATE)-1);
+      }      
+    }
+    memcpy(result+strlen(result),"\",\r\n ",5);
+  }
+  memcpy(result+strlen(result)-1,"}",1);
+
+  // add your own data to the current block verifiers majority vote
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+    {
+      break;
+    }
+  }
+
+  for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
+  {
+    memcpy(current_block_verifiers_majority_vote.data[count][count2]+strlen(current_block_verifiers_majority_vote.data[count][count2]),VRF_data.block_verifiers_vrf_secret_key_data[count2],VRF_SECRET_KEY_LENGTH);
+    memcpy(current_block_verifiers_majority_vote.data[count][count2]+strlen(current_block_verifiers_majority_vote.data[count][count2]),VRF_data.block_verifiers_vrf_public_key_data[count2],VRF_PUBLIC_KEY_LENGTH);
+    memcpy(current_block_verifiers_majority_vote.data[count][count2]+strlen(current_block_verifiers_majority_vote.data[count][count2]),VRF_data.block_verifiers_random_data[count2],RANDOM_STRING_LENGTH);
+  }
+
+  return;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: block_verifiers_calculate_vote_majority_results
+Description: The block verifiers will calculate the vote majority results
+Parameters:
+  SETTINGS - The data settings
+Return: The valid individual majority count, 1 if a networking error, or 0 if there is not a valid individual majority count
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int block_verifiers_calculate_vote_majority_results(const int SETTINGS)
+{
+  // variables
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
+  unsigned char data3[SMALL_BUFFER_SIZE];
+  int count;
+  int count2;
+  int count3;
+  int data_count_1;
+  int data_count_2;
+  int database_count;
+  int majority_settings;
+  int majority_count;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+
+  /*
+  compare each data that was received for a specific block verifier, for each block verifier
+  if a specific majority data can be reached for an specific block verifier, than all block verifiers will go with that response, else they will all go with empty string response
+  This will check for an individual majority, and check if any block verifiers did not receive an individual majority from a specific block verifier from a networking issue
+  This will also check if a block verifier sent different data to different block verifiers
+  */
+
+  // get the majority data hash for each block verifier
+  for (database_count = 0, majority_count = 0; database_count < BLOCK_VERIFIERS_AMOUNT; database_count++, majority_settings = 0)
+  {
+    for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
+    {
+      for (count = 0, count3 = 0; count3 < BLOCK_VERIFIERS_AMOUNT; count3++)
+      {
+        if (strncmp(current_block_verifiers_majority_vote.data[count2][database_count],current_block_verifiers_majority_vote.data[count3][database_count],BUFFER_SIZE) == 0)
+        {
+          count++;
+        }
+      }
+      if (count >= BLOCK_VERIFIERS_VALID_AMOUNT)
+      {
+        // the majority data has been found for the specific block verifier
+        majority_settings = 1;
+        majority_count++;
+
+        if (SETTINGS == 0)
+        {
+          // reset the VRF data
+          memset(VRF_data.block_verifiers_vrf_secret_key_data[database_count],0,strlen(VRF_data.block_verifiers_vrf_secret_key_data[database_count]));
+          memset(VRF_data.block_verifiers_vrf_secret_key[database_count],0,strlen((char*)VRF_data.block_verifiers_vrf_secret_key[database_count]));
+          memset(VRF_data.block_verifiers_vrf_public_key_data[database_count],0,strlen(VRF_data.block_verifiers_vrf_public_key_data[database_count]));
+          memset(VRF_data.block_verifiers_vrf_public_key[database_count],0,strlen((char*)VRF_data.block_verifiers_vrf_public_key[database_count]));
+          memset(VRF_data.block_verifiers_random_data[database_count],0,strlen(VRF_data.block_verifiers_random_data[database_count]));
+
+          if (strncmp(current_block_verifiers_majority_vote.data[count2][database_count],BLOCK_VERIFIER_MAJORITY_VRF_DATA_TEMPLATE,BUFFER_SIZE) == 0 || strlen(current_block_verifiers_majority_vote.data[count2][database_count]) != (sizeof(BLOCK_VERIFIER_MAJORITY_VRF_DATA_TEMPLATE)-1))
+          {
+            // The majority is the empty response, so put the default empty responses for each VRF data  
+            memcpy(VRF_data.block_verifiers_vrf_secret_key_data[database_count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA)-1);
+            memcpy(VRF_data.block_verifiers_vrf_secret_key[database_count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY)-1);
+            memcpy(VRF_data.block_verifiers_vrf_public_key_data[database_count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA)-1);
+            memcpy(VRF_data.block_verifiers_vrf_public_key[database_count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY)-1);
+            memcpy(VRF_data.block_verifiers_random_data[database_count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
+          }
+          else
+          {
+            // copy the majority for each VRF data                      
+            memcpy(VRF_data.block_verifiers_vrf_secret_key_data[database_count],current_block_verifiers_majority_vote.data[count2][database_count],VRF_SECRET_KEY_LENGTH);
+            memcpy(VRF_data.block_verifiers_vrf_public_key_data[database_count],&current_block_verifiers_majority_vote.data[count2][database_count][VRF_SECRET_KEY_LENGTH],VRF_PUBLIC_KEY_LENGTH);
+            memcpy(VRF_data.block_verifiers_random_data[database_count],&current_block_verifiers_majority_vote.data[count2][database_count][VRF_SECRET_KEY_LENGTH+VRF_PUBLIC_KEY_LENGTH],RANDOM_STRING_LENGTH);
+
+            // convert the hexadecimal string to a string
+            memset(data,0,sizeof(data));
+            memset(data3,0,sizeof(data3));
+            memcpy(data,VRF_data.block_verifiers_vrf_secret_key_data[database_count],VRF_SECRET_KEY_LENGTH);
+            for (data_count_1 = 0, data_count_2 = 0; data_count_1 < VRF_SECRET_KEY_LENGTH; data_count_2++, data_count_1 += 2)
+            {
+              memset(data2,0,sizeof(data2));
+              memcpy(data2,&data[data_count_1],2);
+              data3[data_count_2] = (unsigned char)strtol(data2, NULL, 16);
+            }
+            memcpy(VRF_data.block_verifiers_vrf_secret_key[database_count],data3,crypto_vrf_SECRETKEYBYTES);
+
+            // convert the hexadecimal string to a string
+            memset(data,0,sizeof(data));
+            memset(data3,0,sizeof(data3));
+            memcpy(data,VRF_data.block_verifiers_vrf_public_key_data[database_count],VRF_PUBLIC_KEY_LENGTH);
+            for (data_count_1 = 0, data_count_2 = 0; data_count_1 < VRF_PUBLIC_KEY_LENGTH; data_count_2++, data_count_1 += 2)
+            {
+              memset(data2,0,sizeof(data2));
+              memcpy(data2,&data[data_count_1],2);
+              data3[data_count_2] = (unsigned char)strtol(data2, NULL, 16);
+            }
+            memcpy(VRF_data.block_verifiers_vrf_public_key[database_count],data3,crypto_vrf_PUBLICKEYBYTES);
+          }          
+        }
+        else
+        {
+          // reset the block verifiers signature
+          memset(VRF_data.block_blob_signature[database_count],0,strlen(VRF_data.block_blob_signature[database_count]));
+
+          if (strncmp(current_block_verifiers_majority_vote.data[count2][database_count],BLOCK_VERIFIER_MAJORITY_BLOCK_VERIFIERS_SIGNATURE_TEMPLATE,BUFFER_SIZE) == 0 || strlen(current_block_verifiers_majority_vote.data[count2][database_count]) != (sizeof(BLOCK_VERIFIER_MAJORITY_BLOCK_VERIFIERS_SIGNATURE_TEMPLATE)-1))
+          {
+            // The majority is the empty response, so put the default empty responses for each VRF data  
+            memcpy(VRF_data.block_blob_signature[database_count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1);
+          }
+          else
+          {
+            // copy the majority for each VRF data                      
+            memcpy(VRF_data.block_blob_signature[database_count],current_block_verifiers_majority_vote.data[count2][database_count],VRF_PROOF_LENGTH+VRF_BETA_LENGTH);
+          }
+        }
+        break;
+      }
+    }
+
+    // check if the majority was not found for that specific block verifier
+    if (majority_settings == 0)
+    {
+      if (SETTINGS == 0)
+      {
+        // reset the VRF data
+        memset(VRF_data.block_verifiers_vrf_secret_key_data[database_count],0,strlen(VRF_data.block_verifiers_vrf_secret_key_data[database_count]));
+        memset(VRF_data.block_verifiers_vrf_secret_key[database_count],0,strlen((char*)VRF_data.block_verifiers_vrf_secret_key[database_count]));
+        memset(VRF_data.block_verifiers_vrf_public_key_data[database_count],0,strlen(VRF_data.block_verifiers_vrf_public_key_data[database_count]));
+        memset(VRF_data.block_verifiers_vrf_public_key[database_count],0,strlen((char*)VRF_data.block_verifiers_vrf_public_key[database_count]));
+        memset(VRF_data.block_verifiers_random_data[database_count],0,strlen(VRF_data.block_verifiers_random_data[database_count]));
+        memcpy(VRF_data.block_verifiers_vrf_secret_key_data[database_count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA)-1);
+        memcpy(VRF_data.block_verifiers_vrf_secret_key[database_count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY)-1);
+        memcpy(VRF_data.block_verifiers_vrf_public_key_data[database_count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA)-1);
+        memcpy(VRF_data.block_verifiers_vrf_public_key[database_count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY)-1);
+        memcpy(VRF_data.block_verifiers_random_data[database_count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
+      }
+      else
+      {
+        // reset the block verifiers signature
+        memset(VRF_data.block_blob_signature[database_count],0,strlen(VRF_data.block_blob_signature[database_count]));
+        memcpy(VRF_data.block_blob_signature[database_count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1);
+      }
+      fprintf(stderr,"\033[1;31m%s does not have a majority data. This block verifier is not working correctly\033[0m\n\n",current_block_verifiers_list.block_verifiers_name[database_count]);
+    }
+  }
+
+  // check if there was enough specific block verifier majorities
+  return majority_count >= BLOCK_VERIFIERS_VALID_AMOUNT ? majority_count : majority_count == 1 ? 1 : 0;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: block_verifiers_create_vote_results
 Description: The block verifiers will create the vote results
 Parameters:
@@ -1018,11 +1261,15 @@ int block_verifiers_create_vote_results(char* message)
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
 
+  color_print("Part 21 - Verify the block verifiers from the previous block signatures are valid","yellow");
+
   // verify the block
   if (verify_network_block_data(1,1,"0",BLOCK_VERIFIERS_AMOUNT) == 0)
   {
     BLOCK_VERIFIERS_CREATE_VOTE_RESULTS_ERROR("The MAIN_NODES_TO_NODES_PART_4_OF_ROUND message is invalid");
   }
+
+  color_print("Part 22 - Create the overall majority data for the reserve bytes (block template with VRF data)","yellow");
 
   // convert the blockchain_data to a network_block_string
   memset(data,0,sizeof(data));	
@@ -1113,10 +1360,16 @@ int block_verifiers_create_block_and_update_database(void)
   memset(data2,0,sizeof(data2));
 
   // add the data hash to the network block string
+  color_print("Part 26 - Add the data hash of the reserve bytes to the block","yellow");
+
   if (add_data_hash_to_network_block_string(VRF_data.block_blob,data) == 0)
   {
-    BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR("Could not add the network block string data hash");
+    BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR("Could not add the data hash of the reserve bytes to the block");
   }
+
+  color_print("Added the data hash of the reserve bytes to the block\n","green");
+
+  color_print("Part 27 - Add the reserve bytes to the database","yellow");
     
   // update the reserve bytes database
   memset(data2,0,sizeof(data2));
@@ -1133,8 +1386,12 @@ int block_verifiers_create_block_and_update_database(void)
   snprintf(data3+14,MAXIMUM_NUMBER_SIZE,"%zu",count);
   if (insert_document_into_collection_json(database_name,data3,data2) == 0)
   {
-    BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR("Could not add the new block to the database");
+    BLOCK_VERIFIERS_CREATE_BLOCK_AND_UPDATE_DATABASES_ERROR("Could not add the reserve bytes to the database");
   }
+
+  color_print("Added the reserve bytes to the database\n","green");
+
+  color_print("Part 28 - Check for invalid reserve proofs and wait for the block producer to submit the block to the network","yellow");
   
   // start the reserve proofs timer
   if (strncmp(current_round_part_backup_node,"0",1) == 0)
@@ -1185,7 +1442,7 @@ void print_block_producer(void)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,BUFFER_SIZE) == 0)
       {
-        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n\n",current_block_verifiers_list.block_verifiers_name[count]);
         break;
       }
     }
@@ -1196,7 +1453,7 @@ void print_block_producer(void)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,BUFFER_SIZE) == 0)
       {
-        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n\n",current_block_verifiers_list.block_verifiers_name[count]);
         break;
       }
     }
@@ -1207,7 +1464,7 @@ void print_block_producer(void)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,BUFFER_SIZE) == 0)
       {
-        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n\n",current_block_verifiers_list.block_verifiers_name[count]);
         break;
       }
     }
@@ -1218,7 +1475,7 @@ void print_block_producer(void)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,BUFFER_SIZE) == 0)
       {
-        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n\n",current_block_verifiers_list.block_verifiers_name[count]);
         break;
       }
     }
@@ -1229,7 +1486,7 @@ void print_block_producer(void)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,BUFFER_SIZE) == 0)
       {
-        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n\n",current_block_verifiers_list.block_verifiers_name[count]);
         break;
       }
     }
@@ -1240,7 +1497,7 @@ void print_block_producer(void)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,BUFFER_SIZE) == 0)
       {
-        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n",current_block_verifiers_list.block_verifiers_name[count]);
+        fprintf(stderr,"\033[1;36m%s is the block producer\033[0m\n\n",current_block_verifiers_list.block_verifiers_name[count]);
         break;
       }
     }
@@ -1318,7 +1575,7 @@ int block_verifiers_create_block(void)
     color_print("Both the block producer and backup block producer failed, waiting for the next round to begin","red"); \
     return 0; \
   } \
-  sync_block_verifiers_minutes_and_seconds(2,40); \
+  sync_block_verifiers_minutes_and_seconds(2,55); \
   goto start; 
 
   memset(data,0,sizeof(data));
@@ -1362,55 +1619,115 @@ int block_verifiers_create_block(void)
 
     print_block_producer();
     
-    color_print("Part 1 - Create and send VRF data to all block verifiers","yellow");
+    color_print("Part 1 - Create VRF data","yellow");
 
     // create a random VRF public key and secret key
     if (block_verifiers_create_VRF_secret_key_and_VRF_public_key(data) == 0)
     {
-      RESTART_ROUND("Could not create a VRF secret key and a VRF public key");
+      RESTART_ROUND("Could not create VRF data");
     }
 
     // sign_data
     if (sign_data(data) == 0)
     { 
-      RESTART_ROUND("Could not sign_data");
+      RESTART_ROUND("Could not create VRF data");
     }
+
+    color_print("The VRF data has been created\n","green");
+
+    color_print("Part 2 - Send VRF data to all block verifiers","yellow");
 
     // send the message to all block verifiers
     if (block_verifiers_send_data_socket((const char*)data) == 0)
     {
-      RESTART_ROUND("Could not send data to the block verifiers");
+      RESTART_ROUND("Could not send VRF data to all block verifiers");
     }
 
-    // wait for the block verifiers to process the votes
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(1,50) : sync_block_verifiers_minutes_and_seconds(2,50);
+    color_print("The VRF data has been sent to all block verifiers\n","green");
+
+    color_print("Part 3 - Wait for all block verifiers to receive the VRF data\n","yellow");
+
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(1,50) : sync_block_verifiers_minutes_and_seconds(3,5);
+
+
+
+
+
+    // create each individual majority VRF data
+    color_print("Part 4 - Create each individual majority VRF data","yellow");
+    memset(data,0,sizeof(data));
+    block_verifiers_create_vote_majority_results(data,0);
+
+    // sign_data
+    if (sign_data(data) == 0)
+    { 
+      RESTART_ROUND("Could not create each individual majority VRF data");
+    }
+
+    color_print("Each individual majority VRF data has been created\n","green");
+
+    color_print("Part 5 - Send each individual majority VRF data to all block verifiers","yellow");
+
+    // send the message to all block verifiers
+    if (block_verifiers_send_data_socket((const char*)data) == 0)
+    {
+      RESTART_ROUND("Could not send each individual majority VRF data to all block verifiers");
+    }
+
+    color_print("Each individual majority VRF data has been sent to all block verifiers\n","green");
+
+    color_print("Part 6 - Wait for all block verifiers to receive each individual majority VRF data\n","yellow");
+
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,0) : sync_block_verifiers_minutes_and_seconds(3,15);
+
+
+
+
+
+    // check each specific block verifier to see if they have a majority
+    color_print("Part 7 - Check each specific block verifier to see if they have a majority for the VRF data","yellow");
+
+    count = (size_t)block_verifiers_calculate_vote_majority_results(0);
+
+    color_print("Checked each specific block verifier to see if they have a majority for the VRF data","green");
+
+    color_print("\nPart 8 - Check if there was enough specific block verifier majorities for the VRF data","yellow");
+
+    if (count >= BLOCK_VERIFIERS_VALID_AMOUNT)
+    {
+      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have a specific majority for the VRF data\033[0m\n\n",count,BLOCK_VERIFIERS_VALID_AMOUNT); 
+    }
+    else if (count == 1)
+    {
+      // restart the delegate, as it could only verify its own message and not anyone elses message
+      color_print("Restarting, could not process any other block verifiers data","red");
+      exit(0);
+    }
+    else
+    {
+      fprintf(stderr,"\033[1;31m%zu / %d block verifiers have a specific majority for the VRF data\033[0m\n\n",count,BLOCK_VERIFIERS_VALID_AMOUNT);
+      RESTART_ROUND("There was an invalid amount of specific block verifier majorities for the VRF data");     
+    }
+
+
+
+
+
+    color_print("Part 9 - Check if there was an overall majority for the VRF data","yellow");
 
     // process the data
     for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      if (strlen(VRF_data.block_verifiers_vrf_secret_key_data[count]) == VRF_SECRET_KEY_LENGTH && strlen(VRF_data.block_verifiers_vrf_public_key_data[count]) == VRF_PUBLIC_KEY_LENGTH && strlen(VRF_data.block_verifiers_random_data[count]) == RANDOM_STRING_LENGTH)
+      if (strncmp(VRF_data.block_verifiers_vrf_secret_key_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA,BUFFER_SIZE) != 0 && strncmp(VRF_data.block_verifiers_vrf_public_key_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA,BUFFER_SIZE) != 0 && strncmp(VRF_data.block_verifiers_random_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,BUFFER_SIZE) != 0)
       {
         count2++;
       }
-      else
-      {
-        memset(VRF_data.block_verifiers_vrf_secret_key_data[count],0,strlen(VRF_data.block_verifiers_vrf_secret_key_data[count]));
-        memset(VRF_data.block_verifiers_vrf_secret_key[count],0,strlen((char*)VRF_data.block_verifiers_vrf_secret_key[count]));
-        memset(VRF_data.block_verifiers_vrf_public_key_data[count],0,strlen(VRF_data.block_verifiers_vrf_public_key_data[count]));
-        memset(VRF_data.block_verifiers_vrf_public_key[count],0,strlen((char*)VRF_data.block_verifiers_vrf_public_key[count]));
-        memset(VRF_data.block_verifiers_random_data[count],0,strlen(VRF_data.block_verifiers_random_data[count]));
-        memcpy(VRF_data.block_verifiers_vrf_secret_key_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA)-1);
-        memcpy(VRF_data.block_verifiers_vrf_secret_key[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY)-1);
-        memcpy(VRF_data.block_verifiers_vrf_public_key_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA)-1);
-        memcpy(VRF_data.block_verifiers_vrf_public_key[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY)-1);
-        memcpy(VRF_data.block_verifiers_random_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
-      }
     }
 
-    // check if at least 67 of the block verifiers created the data
+    // check for an overall majority
     if (count2 >= BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      fprintf(stderr,"\033[1;32m%zu / %d block verifiers created valid VRF data\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);      
+      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have an overall majority for the VRF data\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);      
     }
     else if (count2 == 1)
     {
@@ -1420,29 +1737,39 @@ int block_verifiers_create_block(void)
     }
     else
     {
-      fprintf(stderr,"\033[1;31m%zu / %d block verifiers created valid VRF data\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
-      RESTART_ROUND("An invalid amount of block verifiers created valid VRF data");     
+      fprintf(stderr,"\033[1;31m%zu / %d block verifiers have an overall majority for the VRF data\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
+      RESTART_ROUND("An invalid amount of block verifiers have an overall majority for the VRF data");     
     }
 
   
 
+
+
     // at this point all block verifiers should have the all of the other block verifiers secret key, public key and random data
-    fprintf(stderr,"\033[1;33mPart 2 - Select VRF data and block producer creates the block and sends it to all block verifiers\033[0m\n\n");
+    color_print("Part 10 - Select VRF data to use for the round","yellow");
 
     // create all of the VRF data
     if (block_verifiers_create_VRF_data() == 0)
     {
-      RESTART_ROUND("Could not create the VRF data");
+      RESTART_ROUND("Could not select the VRF data to use for the round");
     }
+
+    color_print("VRF data has been selected for the round\n","green");
+
+
+
+
 
     memset(VRF_data.block_blob,0,strlen(VRF_data.block_blob));
 
     // create the block template and send it to all block verifiers if the block verifier is the block producer
     if ((strncmp(current_round_part_backup_node,"0",1) == 0 && strncmp(main_nodes_list.block_producer_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"1",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"2",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"3",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"4",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0) || (strncmp(current_round_part_backup_node,"5",1) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0))
     {
+      color_print("Part 11 - Create the block template and send it to all block verifiers","yellow");
+
       if (get_block_template(VRF_data.block_blob) == 0)
       {
-        RESTART_ROUND("Could not get a block template");
+        RESTART_ROUND("Could not create the block template");
       }  
 
       // create the message
@@ -1452,72 +1779,137 @@ int block_verifiers_create_block(void)
       memcpy(data+strlen(data),"\",\r\n}",5);
 
       // sign_data
-      if (sign_data(data) == 0)
+      if (sign_data(data) == 0 || block_verifiers_send_data_socket((const char*)data) == 0)
       { 
-        RESTART_ROUND("Could not sign_data");
-      }
-
-      // send the message to all block verifiers
-      if (block_verifiers_send_data_socket((const char*)data) == 0)
-      {
-        RESTART_ROUND("Could not send data to the block verifiers");
+        RESTART_ROUND("Could not create the block template");
       }
     }
+    else
+    {
+      color_print("Part 11 - Wait for all block verifiers to receive the block template from the block producer","yellow");
+    }    
     
-    // wait for the block verifiers to process the votes
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,5) : sync_block_verifiers_minutes_and_seconds(3,5);
+    // wait for the block verifiers to receive the block template from the block producer
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,10) : sync_block_verifiers_minutes_and_seconds(3,25);    
+    
+    // check if the network block string was created from the correct block verifier
+    if (strncmp(VRF_data.block_blob,"",1) == 0)
+    {
+      RESTART_ROUND("Could not receive the block template from the block producer");
+    }
+
+    color_print("Received the block template from the block producer\n","green");
+
+
 
 
 
     // at this point all block verifiers should have the same VRF data and the network block
-    fprintf(stderr,"\033[1;33mPart 3 - Create reserve bytes data for the block using the selected VRF data and sign the block\033[0m\n\n");
-
-    // check if the network block string was created from the correct block verifier
-    if (strncmp(VRF_data.block_blob,"",1) == 0)
-    {
-      RESTART_ROUND("Could not receive the network block string from the block producer");
-    }
+    color_print("Part 12 - Add the VRF data to the block template and sign the block template","yellow");
 
     // create the block verifiers block signature
     if (block_verifiers_create_block_signature(data) == 0 || sign_data(data) == 0)
     {
-      RESTART_ROUND("Could not sign_data");
+      RESTART_ROUND("Could not add the VRF data to the block template and sign the block template");
     }
+
+    color_print("Added the VRF data to the block template and signed the block template\n","green");
+
+    color_print("Part 13 - Send the block template signature to all block verifier","yellow");
 
     // send the message to all block verifiers
     if (block_verifiers_send_data_socket((const char*)data) == 0)
     {
-      RESTART_ROUND("Could not send data to the block verifiers");
+      RESTART_ROUND("Could not send the block template signature to all block verifier");
     }
 
-    // wait for the block verifiers to process the votes
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,15) : sync_block_verifiers_minutes_and_seconds(3,15);
+    color_print("Sent the block template signature to all block verifiers\n","green");
+
+    color_print("Part 14 - Wait for all block verifiers to receive the block template signatures\n","yellow");
+    
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,20) : sync_block_verifiers_minutes_and_seconds(3,35);
+
+
+
+
+
+    // create each individual majority block template signature
+    color_print("Part 15 - Create each individual majority block template signature","yellow");
+    memset(data,0,sizeof(data));
+    block_verifiers_create_vote_majority_results(data,1);
+
+    // sign_data
+    if (sign_data(data) == 0)
+    { 
+      RESTART_ROUND("Could not create each individual majority block template signature");
+    }
+
+    color_print("Each individual majority block template signature has been created\n","green");
+
+    color_print("Part 16 - Send each individual majority block template signature to all block verifiers","yellow");
+
+    // send the message to all block verifiers
+    if (block_verifiers_send_data_socket((const char*)data) == 0)
+    {
+      RESTART_ROUND("Could not send each individual majority block template signature to all block verifiers");
+    }
+
+    color_print("Each individual majority block template signature has been sent to all block verifiers\n","green");
+
+    color_print("Part 17 - Wait for all block verifiers to receive each individual majority block template signature\n","yellow");
+
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,30) : sync_block_verifiers_minutes_and_seconds(3,45);
+    
+    
+
+
+
+    // check each specific block verifier to see if they have a majority
+    color_print("Part 18 - Check each specific block verifier to see if they have a majority for the block template signature","yellow");
+
+    count = (size_t)block_verifiers_calculate_vote_majority_results(1);
+
+    color_print("Checked each specific block verifier to see if they have a majority for the block template signature","green");
+
+    color_print("\nPart 19 - Check if there was enough specific block verifier majorities for the block template signature","yellow");
+
+    if (count >= BLOCK_VERIFIERS_VALID_AMOUNT)
+    {
+      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have a specific majority for the block template signature\033[0m\n\n",count,BLOCK_VERIFIERS_VALID_AMOUNT); 
+    }
+    else if (count == 1)
+    {
+      // restart the delegate, as it could only verify its own message and not anyone elses message
+      color_print("Restarting, could not process any other block verifiers data","red");
+      exit(0);
+    }
+    else
+    {
+      fprintf(stderr,"\033[1;31m%zu / %d block verifiers have a specific majority for the block template signature\033[0m\n\n",count,BLOCK_VERIFIERS_VALID_AMOUNT);
+      RESTART_ROUND("There was an invalid amount of specific block verifier majorities for the block template signature");     
+    }
+
+
 
 
 
     // at this point all block verifiers should have the same VRF data, network block string and all block verifiers signed data
 
-    color_print("Part 4 - Verify that a valid amount of block verifiers have signed the block and have the same created data and block","yellow");
+    color_print("Part 20 - Check if there was an overall majority for the block template signature","yellow");
 
     // process the data and add the block verifiers signatures to the block
     for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      if (strlen(VRF_data.block_blob_signature[count]) == VRF_PROOF_LENGTH+VRF_BETA_LENGTH)
+      if (strncmp(VRF_data.block_blob_signature[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,BUFFER_SIZE) != 0)
       {
-        memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],VRF_data.block_blob_signature[count],VRF_PROOF_LENGTH+VRF_BETA_LENGTH);
         count2++;
-      }
-      else
-      {
-        memcpy(VRF_data.block_blob_signature[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1);
-        memcpy(blockchain_data.blockchain_reserve_bytes.block_validation_node_signature[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1);
       }
     }
 
-    // check if the network block string has at least 67 of the block verifiers network block signature
+    // check for an overall majority
     if (count2 >= BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have signed the block\033[0m\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);     
+      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have an overall majority for the block template signature\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);      
     }
     else if (count2 == 1)
     {
@@ -1527,38 +1919,50 @@ int block_verifiers_create_block(void)
     }
     else
     {
-      fprintf(stderr,"\033[1;31m%zu / %d block verifiers have signed the block\033[0m\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
-      RESTART_ROUND("An invalid amount of block verifiers have signed the block");
+      fprintf(stderr,"\033[1;31m%zu / %d block verifiers have an overall majority for the block template signature\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
+      RESTART_ROUND("An invalid amount of block verifiers have an overall majority for the block template signature");     
     }
+
+
+
+
 
     // create the vote results
-    if (block_verifiers_create_vote_results(data) == 0)
+    if (block_verifiers_create_vote_results(data) == 0 || sign_data(data) == 0)
     {
-      RESTART_ROUND("Could not create the vote results");
+      RESTART_ROUND("Could not create the overall majority data for the reserve bytes");
     }
 
-    // sign_data
-    if (sign_data(data) == 0)
-    { 
-      RESTART_ROUND("Could not sign_data");
-    }    
+    color_print("Created the overall majority data for the reserve bytes\n","green");
 
     // wait for the block verifiers to process the votes
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,25) : sync_block_verifiers_minutes_and_seconds(3,25);
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,35) : sync_block_verifiers_minutes_and_seconds(3,50);
+
+    color_print("Part 23 - Send the overall majority data for the reserve bytes to all block verifiers","yellow");
 
     // send the message to all block verifiers
     if (block_verifiers_send_data_socket((const char*)data) == 0)
     {
-      RESTART_ROUND("Could not send data to the block verifiers");
+      RESTART_ROUND("Could not send the overall majority data for the reserve bytes to all block verifiers");
     }
 
+    color_print("Sent the overall majority data for the reserve bytes to all block verifiers\n","green");
+
+    color_print("Part 24 - Wait for all block verifiers to receive the overall majority data for the reserve bytes\n","yellow");
+
     // wait for the block verifiers to process the votes
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,35) : sync_block_verifiers_minutes_and_seconds(3,35);
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,45) : sync_block_verifiers_minutes_and_seconds((BLOCK_TIME -1),0);
+
+    
+    
+    
+    
+    color_print("Part 25 - Check if there was an overall majority for the reserve bytes","yellow");
 
     // process the vote results
     if (current_round_part_vote_data.vote_results_valid >= BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      fprintf(stderr,"\033[1;32m%d / %d block verifiers have the same created data and block\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);    
+      fprintf(stderr,"\033[1;32m%d / %d block verifiers have an overall majority for the reserve bytes\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);    
     }
     else if (current_round_part_vote_data.vote_results_valid == 1)
     {
@@ -1568,22 +1972,16 @@ int block_verifiers_create_block(void)
     }
     else
     {
-      fprintf(stderr,"\033[1;31m%d / %d block verifiers have the same created data and block\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
-      RESTART_ROUND("An invalid amount of block verifiers have the same created data and block");
+      fprintf(stderr,"\033[1;31m%d / %d block verifiers have an overall majority for the reserve bytes\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
+      RESTART_ROUND("An invalid amount of block verifiers have an overall majority for the reserve bytes");
     }
 
 
 
-    // at this point all block verifiers have the same network block string with all of the VRF data
 
-    color_print("Part 5 - Wait for block producer to submit block and update databases","yellow");
 
     // update the database and submit the block to the network
-    if (block_verifiers_create_block_and_update_database() == 0)
-    {
-      return 0;
-    }    
-    return 1;
+    return block_verifiers_create_block_and_update_database();
     
     #undef RESTART_ROUND
 }

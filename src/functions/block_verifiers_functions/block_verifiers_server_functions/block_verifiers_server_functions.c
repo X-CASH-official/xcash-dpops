@@ -322,6 +322,68 @@ void server_receive_data_socket_main_node_to_node_message_part_4(const char* MES
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_node_to_node_majority
+Description: Runs the code when the server receives the NODES_TO_NODES_VOTE_MAJORITY_RESULTS message
+Parameters:
+  MESSAGE - The message
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void server_receive_data_socket_node_to_node_majority(const char* MESSAGE)
+{
+  // Variables
+  char data[100]; 
+  char public_address[XCASH_WALLET_LENGTH+1];
+  int count;
+  int count2;
+
+  // define macros
+  #define SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_MAJORITY_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_node_majority",48); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  } \
+  return;
+
+  memset(data,0,sizeof(data));
+
+  // parse the public address
+  if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_MAJORITY_ERROR("Could not parse the data");
+  }
+
+  // find the block verifier count
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],public_address,XCASH_WALLET_LENGTH) == 0)
+    {
+      break;
+    }
+  }
+
+  // parse the message
+  for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
+  {
+    memset(data,0,sizeof(data));
+    memcpy(data,"vote_data_",10);
+    snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%d",count2+1);
+    if (parse_json_data(MESSAGE,data,current_block_verifiers_majority_vote.data[count][count2],sizeof(current_block_verifiers_majority_vote.data[count][count2])) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_MAJORITY_ERROR("Could not parse the data");
+    }
+  }
+  return;
+  
+  #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_NODE_MAJORITY_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_node_to_node
 Description: Runs the code when the server receives the NODES_TO_NODES_VOTE_RESULTS message
 Parameters:

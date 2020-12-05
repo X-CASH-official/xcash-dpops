@@ -71,6 +71,11 @@ struct current_round_part_vote_data {
     int vote_results_invalid; // The current part of the round vote count for a invalid vote.
 };
 
+struct current_block_verifiers_majority_vote {
+    char data[BLOCK_VERIFIERS_AMOUNT][BLOCK_VERIFIERS_AMOUNT][500]; // The data for each received data from each block verifier
+};
+
+
 struct network_data_nodes_sync_database_list {
     char network_data_node_public_address[NETWORK_DATA_NODES_AMOUNT][XCASH_WALLET_LENGTH+1];
     char network_data_nodes_IP_address[NETWORK_DATA_NODES_AMOUNT][BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH+1];

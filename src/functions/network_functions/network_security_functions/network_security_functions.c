@@ -704,6 +704,13 @@ int validate_data(const char* MESSAGE)
       VALIDATE_DATA_ERROR("Invalid message");
     }
   }
+  else if (strstr(MESSAGE,"NODES_TO_NODES_VOTE_MAJORITY_RESULTS") != NULL)
+  {
+    if (parse_json_data(MESSAGE,"message_settings",data,sizeof(data)) == 0 || strncmp(data,"NODES_TO_NODES_VOTE_MAJORITY_RESULTS",sizeof(data)) != 0 || parse_json_data(MESSAGE,"vote_data_1",data,sizeof(data)) == 0 || (strlen(data) != VRF_SECRET_KEY_LENGTH+VRF_PUBLIC_KEY_LENGTH+RANDOM_STRING_LENGTH && strlen(data) != VRF_PROOF_LENGTH+VRF_BETA_LENGTH) || parse_json_data(MESSAGE,"public_address",data,sizeof(data)) == 0 || strlen(data) != XCASH_WALLET_LENGTH || strncmp(data,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"previous_block_hash",data,sizeof(data)) == 0 || strlen(data) != BLOCK_HASH_LENGTH || parse_json_data(MESSAGE,"current_round_part",data,sizeof(data)) == 0 || strlen(data) != 1 || parse_json_data(MESSAGE,"current_round_part_backup_node",data,sizeof(data)) == 0 || strlen(data) != 1 || parse_json_data(MESSAGE,"data",data,sizeof(data)) == 0 || strlen(data) != RANDOM_STRING_LENGTH || parse_json_data(MESSAGE,"XCASH_DPOPS_signature",data,sizeof(data)) == 0 || strlen(data) != VRF_BETA_LENGTH+VRF_PROOF_LENGTH)
+    {
+      VALIDATE_DATA_ERROR("Invalid message");
+    }
+  }
   else if (strstr(MESSAGE,"NODES_TO_NODES_VOTE_RESULTS") != NULL)
   {
     if (parse_json_data(MESSAGE,"message_settings",data,sizeof(data)) == 0 || strncmp(data,"NODES_TO_NODES_VOTE_RESULTS",sizeof(data)) != 0 || parse_json_data(MESSAGE,"vote_settings",data,sizeof(data)) == 0 || (strncmp(data,"valid",5) != 0 && strncmp(data,"invalid",7) != 0) || parse_json_data(MESSAGE,"vote_data",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH || parse_json_data(MESSAGE,"public_address",data,sizeof(data)) == 0 || strlen(data) != XCASH_WALLET_LENGTH || strncmp(data,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || parse_json_data(MESSAGE,"previous_block_hash",data,sizeof(data)) == 0 || strlen(data) != BLOCK_HASH_LENGTH || parse_json_data(MESSAGE,"current_round_part",data,sizeof(data)) == 0 || strlen(data) != 1 || parse_json_data(MESSAGE,"current_round_part_backup_node",data,sizeof(data)) == 0 || strlen(data) != 1 || parse_json_data(MESSAGE,"data",data,sizeof(data)) == 0 || strlen(data) != RANDOM_STRING_LENGTH || parse_json_data(MESSAGE,"XCASH_DPOPS_signature",data,sizeof(data)) == 0 || strlen(data) != VRF_BETA_LENGTH+VRF_PROOF_LENGTH)

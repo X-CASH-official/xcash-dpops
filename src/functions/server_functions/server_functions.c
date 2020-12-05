@@ -801,6 +801,14 @@ void socket_thread(const int CLIENT_SOCKET)
      server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature((const char*)buffer);
      server_limit_public_addresses(3,(const char*)buffer);
    }
+ }
+ else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_MAJORITY_RESULTS\"") != NULL)
+ {
+   if (server_limit_public_addresses(1,(const char*)buffer) == 1)
+   {
+     server_receive_data_socket_node_to_node_majority((const char*)buffer);
+     server_limit_public_addresses(3,(const char*)buffer);
+   }
  }  
  else if (strstr(buffer,"\"message_settings\": \"NODES_TO_NODES_VOTE_RESULTS\"") != NULL)
  {
