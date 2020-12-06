@@ -1697,16 +1697,28 @@ int block_verifiers_create_block(void)
     {
       fprintf(stderr,"\033[1;32m%zu / %d block verifiers have a specific majority for the VRF data\033[0m\n\n",count,BLOCK_VERIFIERS_VALID_AMOUNT); 
     }
-    else if (count == 1)
-    {
-      // restart the delegate, as it could only verify its own message and not anyone elses message
-      color_print("Restarting, could not process any other block verifiers data","red");
-      exit(0);
-    }
     else
     {
+      if (count == 0 || count == 1)
+      {
+        // check if your delegate is a current block verifier
+        for (count3 = 0; count3 < BLOCK_VERIFIERS_AMOUNT; count3++)
+        {
+          if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count3],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+          {
+            break;
+          }
+        }
+
+        if (count3 != BLOCK_VERIFIERS_AMOUNT)
+        {
+          // your delegate is a current block verifier, restart the delegate as it could only verify its own message and not anyone elses message
+          color_print("Restarting, could not process any other block verifiers data","red");
+          exit(0);
+        }
+      }
       fprintf(stderr,"\033[1;31m%zu / %d block verifiers have a specific majority for the VRF data\033[0m\n\n",count,BLOCK_VERIFIERS_VALID_AMOUNT);
-      RESTART_ROUND("There was an invalid amount of specific block verifier majorities for the VRF data");     
+      RESTART_ROUND("There was an invalid amount of specific block verifier majorities for the VRF data"); 
     }
 
 
@@ -1727,18 +1739,30 @@ int block_verifiers_create_block(void)
     // check for an overall majority
     if (count2 >= BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have an overall majority for the VRF data\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);      
-    }
-    else if (count2 == 1)
-    {
-      // restart the delegate, as it could only verify its own message and not anyone elses message
-      color_print("Restarting, could not process any other block verifiers data","red");
-      exit(0);
+      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have an overall majority for the VRF data\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);   
     }
     else
     {
+      if (count2 == 0 || count2 == 1)
+      {
+        // check if your delegate is a current block verifier
+        for (count3 = 0; count3 < BLOCK_VERIFIERS_AMOUNT; count3++)
+        {
+          if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count3],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+          {
+            break;
+          }
+        }
+
+        if (count3 != BLOCK_VERIFIERS_AMOUNT)
+        {
+          // your delegate is a current block verifier, restart the delegate as it could only verify its own message and not anyone elses message
+          color_print("Restarting, could not process any other block verifiers data","red");
+          exit(0);
+        }
+      }
       fprintf(stderr,"\033[1;31m%zu / %d block verifiers have an overall majority for the VRF data\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
-      RESTART_ROUND("An invalid amount of block verifiers have an overall majority for the VRF data");     
+      RESTART_ROUND("An invalid amount of block verifiers have an overall majority for the VRF data");
     }
 
   
@@ -1877,16 +1901,28 @@ int block_verifiers_create_block(void)
     {
       fprintf(stderr,"\033[1;32m%zu / %d block verifiers have a specific majority for the block template signature\033[0m\n\n",count,BLOCK_VERIFIERS_VALID_AMOUNT); 
     }
-    else if (count == 1)
-    {
-      // restart the delegate, as it could only verify its own message and not anyone elses message
-      color_print("Restarting, could not process any other block verifiers data","red");
-      exit(0);
-    }
     else
     {
+      if (count == 0 || count == 1)
+      {
+        // check if your delegate is a current block verifier
+        for (count3 = 0; count3 < BLOCK_VERIFIERS_AMOUNT; count3++)
+        {
+          if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count3],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+          {
+            break;
+          }
+        }
+
+        if (count3 != BLOCK_VERIFIERS_AMOUNT)
+        {
+          // your delegate is a current block verifier, restart the delegate as it could only verify its own message and not anyone elses message
+          color_print("Restarting, could not process any other block verifiers data","red");
+          exit(0);
+        }
+      }
       fprintf(stderr,"\033[1;31m%zu / %d block verifiers have a specific majority for the block template signature\033[0m\n\n",count,BLOCK_VERIFIERS_VALID_AMOUNT);
-      RESTART_ROUND("There was an invalid amount of specific block verifier majorities for the block template signature");     
+      RESTART_ROUND("There was an invalid amount of specific block verifier majorities for the block template signature");   
     }
 
 
@@ -1909,18 +1945,30 @@ int block_verifiers_create_block(void)
     // check for an overall majority
     if (count2 >= BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have an overall majority for the block template signature\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);      
-    }
-    else if (count2 == 1)
-    {
-      // restart the delegate, as it could only verify its own message and not anyone elses message
-      color_print("Restarting, could not process any other block verifiers data","red");
-      exit(0);
+      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have an overall majority for the block template signature\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);  
     }
     else
     {
+      if (count2 == 0 || count2 == 1)
+      {
+        // check if your delegate is a current block verifier
+        for (count3 = 0; count3 < BLOCK_VERIFIERS_AMOUNT; count3++)
+        {
+          if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count3],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+          {
+            break;
+          }
+        }
+
+        if (count3 != BLOCK_VERIFIERS_AMOUNT)
+        {
+          // your delegate is a current block verifier, restart the delegate as it could only verify its own message and not anyone elses message
+          color_print("Restarting, could not process any other block verifiers data","red");
+          exit(0);
+        }
+      }
       fprintf(stderr,"\033[1;31m%zu / %d block verifiers have an overall majority for the block template signature\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
-      RESTART_ROUND("An invalid amount of block verifiers have an overall majority for the block template signature");     
+      RESTART_ROUND("An invalid amount of block verifiers have an overall majority for the block template signature");  
     }
 
 
@@ -1959,21 +2007,33 @@ int block_verifiers_create_block(void)
     
     color_print("Part 25 - Check if there was an overall majority for the reserve bytes","yellow");
 
-    // process the vote results
+    // check for an overall majority
     if (current_round_part_vote_data.vote_results_valid >= BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      fprintf(stderr,"\033[1;32m%d / %d block verifiers have an overall majority for the reserve bytes\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);    
-    }
-    else if (current_round_part_vote_data.vote_results_valid == 1)
-    {
-      // restart the delegate, as it could only verify its own message and not anyone elses message
-      color_print("Restarting, could not process any other block verifiers data","red");
-      exit(0);
+      fprintf(stderr,"\033[1;32m%d / %d block verifiers have an overall majority for the reserve bytes\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
     }
     else
     {
+      if (current_round_part_vote_data.vote_results_valid == 0 || current_round_part_vote_data.vote_results_valid == 1)
+      {
+        // check if your delegate is a current block verifier
+        for (count3 = 0; count3 < BLOCK_VERIFIERS_AMOUNT; count3++)
+        {
+          if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count3],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+          {
+            break;
+          }
+        }
+
+        if (count3 != BLOCK_VERIFIERS_AMOUNT)
+        {
+          // your delegate is a current block verifier, restart the delegate as it could only verify its own message and not anyone elses message
+          color_print("Restarting, could not process any other block verifiers data","red");
+          exit(0);
+        }
+      }
       fprintf(stderr,"\033[1;31m%d / %d block verifiers have an overall majority for the reserve bytes\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
-      RESTART_ROUND("An invalid amount of block verifiers have an overall majority for the reserve bytes");
+      RESTART_ROUND("An invalid amount of block verifiers have an overall majority for the reserve bytes");  
     }
 
 
