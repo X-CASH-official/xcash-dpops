@@ -356,7 +356,7 @@ void sync_block_verifiers_database(void)
   }
 
   // wait so all block verifiers start at the same time, this way one is not reseting the variables as another one is sending them data
-  sync_block_verifiers_minutes_and_seconds(0,30);
+  sync_block_verifiers_minutes_and_seconds(0,40);
 
   // get if the block verifier has the previous blocks reserve bytes, because if not this block verifier should not be synced from
   memcpy(data2,"{\"block_height\":\"",17);
@@ -419,7 +419,7 @@ void sync_block_verifiers_database(void)
   }
 
   // wait for all of the block verifiers to process the data
-  sync_block_verifiers_minutes_and_seconds(1,0);
+  sync_block_verifiers_minutes_and_seconds(1,15);
 
   // get the majority database data hash, and every block verifier that is in the majority
   for (database_count = 0; database_count < DATABASE_TOTAL; database_count++)

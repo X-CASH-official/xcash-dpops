@@ -217,7 +217,7 @@ int start_new_round(void)
     sync_block_verifiers_database();
 
     // wait for all block verifiers to sync
-    sync_block_verifiers_minutes_and_seconds(1,30);
+    sync_block_verifiers_minutes_and_seconds(1,40);
 
     // update the previous, current and next block verifiers after syncing the database
     if (update_block_verifiers_list() == 0)
@@ -236,7 +236,7 @@ int start_new_round(void)
     }
 
     // wait for all block verifiers to sync, as this will ensure when we calculate the main node roles we have the same buffer
-    sync_block_verifiers_minutes_and_seconds(1,35);
+    sync_block_verifiers_minutes_and_seconds(1,45);
 
     if (calculate_main_nodes_roles() == 0)
     {
@@ -1575,7 +1575,7 @@ int block_verifiers_create_block(void)
     color_print("Both the block producer and backup block producer failed, waiting for the next round to begin","red"); \
     return 0; \
   } \
-  sync_block_verifiers_minutes_and_seconds(2,55); \
+  sync_block_verifiers_minutes_and_seconds(3,5); \
   goto start; 
 
   memset(data,0,sizeof(data));
@@ -1585,7 +1585,7 @@ int block_verifiers_create_block(void)
   main_network_data_node_create_block = 0;
   
   // wait for all block verifiers to sync
-  sync_block_verifiers_minutes_and_seconds(1,40);
+  sync_block_verifiers_minutes_and_seconds(1,50);
 
   // if this is the xcash official shared delegate save a copy of the database and skip the round
   if (production_settings == 1 && strncmp(xcash_wallet_public_address,OFFICIAL_SHARED_DELEGATE_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0)
@@ -1647,7 +1647,7 @@ int block_verifiers_create_block(void)
 
     color_print("Part 3 - Wait for all block verifiers to receive the VRF data\n","yellow");
 
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(1,50) : sync_block_verifiers_minutes_and_seconds(3,5);
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,0) : sync_block_verifiers_minutes_and_seconds(3,15);
 
 
 
@@ -1678,7 +1678,7 @@ int block_verifiers_create_block(void)
 
     color_print("Part 6 - Wait for all block verifiers to receive each individual majority VRF data\n","yellow");
 
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,0) : sync_block_verifiers_minutes_and_seconds(3,15);
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,10) : sync_block_verifiers_minutes_and_seconds(3,25);
 
 
 
@@ -1790,7 +1790,7 @@ int block_verifiers_create_block(void)
     }    
     
     // wait for the block verifiers to receive the block template from the block producer
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,10) : sync_block_verifiers_minutes_and_seconds(3,25);    
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,20) : sync_block_verifiers_minutes_and_seconds(3,35);    
     
     // check if the network block string was created from the correct block verifier
     if (strncmp(VRF_data.block_blob,"",1) == 0)
@@ -1827,7 +1827,7 @@ int block_verifiers_create_block(void)
 
     color_print("Part 14 - Wait for all block verifiers to receive the block template signatures\n","yellow");
     
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,20) : sync_block_verifiers_minutes_and_seconds(3,35);
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,30) : sync_block_verifiers_minutes_and_seconds(3,45);
 
 
 
@@ -1858,7 +1858,7 @@ int block_verifiers_create_block(void)
 
     color_print("Part 17 - Wait for all block verifiers to receive each individual majority block template signature\n","yellow");
 
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,30) : sync_block_verifiers_minutes_and_seconds(3,45);
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,40) : sync_block_verifiers_minutes_and_seconds(3,55);
     
     
 
@@ -1936,7 +1936,7 @@ int block_verifiers_create_block(void)
     color_print("Created the overall majority data for the reserve bytes\n","green");
 
     // wait for the block verifiers to process the votes
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,35) : sync_block_verifiers_minutes_and_seconds(3,50);
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,45) : sync_block_verifiers_minutes_and_seconds((BLOCK_TIME -1),0);
 
     color_print("Part 23 - Send the overall majority data for the reserve bytes to all block verifiers","yellow");
 
@@ -1951,7 +1951,7 @@ int block_verifiers_create_block(void)
     color_print("Part 24 - Wait for all block verifiers to receive the overall majority data for the reserve bytes\n","yellow");
 
     // wait for the block verifiers to process the votes
-    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,45) : sync_block_verifiers_minutes_and_seconds((BLOCK_TIME -1),0);
+    strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,55) : sync_block_verifiers_minutes_and_seconds((BLOCK_TIME -1),10);
 
     
     
