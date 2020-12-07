@@ -22,7 +22,7 @@ DPOPS_QUERY=('curl -s -H "Content-Type: application/json" -X GET http://127.0.0.
 CURL=('curl -w "\n" -s -H "Content-Type: application/json" -X')
 
 SEED_NODE1_URL="http://us1.xcash.foundation:18281/json_rpc"
-SEED_NODE2_URL="http://us2.xcash.foundation:18281/json_rpc"
+SEED_NODE2_URL="http://oceania1.xcash.foundation:18281/json_rpc"
 SEED_NODE3_URL="http://europe1.xcash.foundation:18281/json_rpc"
 SEED_NODE4_URL="http://europe2.xcash.foundation:18281/json_rpc"
 SEED_NODE5_URL="http://europe3.xcash.foundation:18281/json_rpc"
@@ -51,6 +51,8 @@ options=(
   "Get X-Cash DPoPS log"
   "Get X-Cash Daemon log"
   "Get X-Cash RPC Wallet log"
+  "Check X-Cash DPoPS log for malfunctioning block verifiers"
+  "Check X-Cash DPoPS log for shared delegate errors"
 	"Check if repositories are up to date"
   "Quit"
 )
@@ -284,6 +286,19 @@ function get_xcash_dpops_log(){
 	journalctl --unit=xcash-dpops --output cat | less -R +G
 }
 
+function check_xcash_dpops_log_for_malfunctioning_block_verifiers(){
+        # check for the past week (288*110*7)
+        echo "Checking for the past week for any malfunctioning block verifiers"
+	journalctl --unit=xcash-dpops -n 221760 --output cat | less -R +G | grep "does not have a majority data. This block verifier is not working correctly"
+}
+
+function check_xcash_dpops_log_for_shared_delegate_errors(){
+        # check for the past week (288*110*7)
+        echo "Checking for the past week for any shared delegate errors"
+	journalctl --unit=xcash-dpops -n 221760 --output cat | less -R +G | grep -A 3 "Failed to send a transaction list"
+        journalctl --unit=xcash-dpops -n 221760 --output cat | less -R +G | grep -A 11 "Failed to update the database for a delegate"
+}
+
 function get_xcash_daemon_log(){
 	# Read the log starting from end of file
 	less -R +G $XCASH_DAEMON_LOG_FILE
@@ -370,6 +385,8 @@ select opt in "${options[@]}"; do
     "Get X-Cash DPoPS log") get_xcash_dpops_log ;;
    	"Get X-Cash Daemon log") get_xcash_daemon_log ;;
    	"Get X-Cash RPC Wallet log") get_xcash_wallet_log ;;
+        "Check X-Cash DPoPS log for malfunctioning block verifiers") check_xcash_dpops_log_for_malfunctioning_block_verifiers ;;
+        "Check X-Cash DPoPS log for shared delegate errors") check_xcash_dpops_log_for_shared_delegate_errors ;;
 		"Check if repositories are up to date") check_repositories_status ;;
 		"Quit") break ;;
 
