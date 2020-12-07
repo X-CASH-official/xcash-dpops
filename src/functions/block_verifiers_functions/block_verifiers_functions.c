@@ -1689,13 +1689,13 @@ int block_verifiers_create_block(void)
 
     count = (size_t)block_verifiers_calculate_vote_majority_results(0);
 
-    color_print("Checked each specific block verifier to see if they have a majority for the VRF data","green");
+    color_print("Checked each specific block verifier to see if they have a majority for the VRF data\n","green");
 
-    color_print("\nPart 8 - Check if there was enough specific block verifier majorities for the VRF data","yellow");
+    color_print("Part 8 - Check if there was enough specific block verifier majorities for the VRF data","yellow");
 
     if (count >= BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have a specific majority for the VRF data\033[0m\n\n",count,BLOCK_VERIFIERS_VALID_AMOUNT); 
+      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have a specific majority for the VRF data\n\033[0m\n",count,BLOCK_VERIFIERS_VALID_AMOUNT); 
     }
     else
     {
@@ -1717,7 +1717,7 @@ int block_verifiers_create_block(void)
           exit(0);
         }
       }
-      fprintf(stderr,"\033[1;31m%zu / %d block verifiers have a specific majority for the VRF data\033[0m\n\n",count,BLOCK_VERIFIERS_VALID_AMOUNT);
+      fprintf(stderr,"\033[1;31m%zu / %d block verifiers have a specific majority for the VRF data\n\033[0m\n",count,BLOCK_VERIFIERS_VALID_AMOUNT);
       RESTART_ROUND("There was an invalid amount of specific block verifier majorities for the VRF data"); 
     }
 
@@ -1739,7 +1739,7 @@ int block_verifiers_create_block(void)
     // check for an overall majority
     if (count2 >= BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have an overall majority for the VRF data\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);   
+      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have an overall majority for the VRF data\n\033[0m\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);   
     }
     else
     {
@@ -1761,7 +1761,7 @@ int block_verifiers_create_block(void)
           exit(0);
         }
       }
-      fprintf(stderr,"\033[1;31m%zu / %d block verifiers have an overall majority for the VRF data\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
+      fprintf(stderr,"\033[1;31m%zu / %d block verifiers have an overall majority for the VRF data\n\033[0m\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
       RESTART_ROUND("An invalid amount of block verifiers have an overall majority for the VRF data");
     }
 
@@ -1893,13 +1893,13 @@ int block_verifiers_create_block(void)
 
     count = (size_t)block_verifiers_calculate_vote_majority_results(1);
 
-    color_print("Checked each specific block verifier to see if they have a majority for the block template signature","green");
+    color_print("Checked each specific block verifier to see if they have a majority for the block template signature\n","green");
 
-    color_print("\nPart 19 - Check if there was enough specific block verifier majorities for the block template signature","yellow");
+    color_print("Part 19 - Check if there was enough specific block verifier majorities for the block template signature","yellow");
 
     if (count >= BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have a specific majority for the block template signature\033[0m\n\n",count,BLOCK_VERIFIERS_VALID_AMOUNT); 
+      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have a specific majority for the block template signature\n\033[0m\n",count,BLOCK_VERIFIERS_VALID_AMOUNT); 
     }
     else
     {
@@ -1921,7 +1921,7 @@ int block_verifiers_create_block(void)
           exit(0);
         }
       }
-      fprintf(stderr,"\033[1;31m%zu / %d block verifiers have a specific majority for the block template signature\033[0m\n\n",count,BLOCK_VERIFIERS_VALID_AMOUNT);
+      fprintf(stderr,"\033[1;31m%zu / %d block verifiers have a specific majority for the block template signature\n\033[0m\n",count,BLOCK_VERIFIERS_VALID_AMOUNT);
       RESTART_ROUND("There was an invalid amount of specific block verifier majorities for the block template signature");   
     }
 
@@ -1945,7 +1945,7 @@ int block_verifiers_create_block(void)
     // check for an overall majority
     if (count2 >= BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have an overall majority for the block template signature\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);  
+      fprintf(stderr,"\033[1;32m%zu / %d block verifiers have an overall majority for the block template signature\n\033[0m\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);  
     }
     else
     {
@@ -1967,7 +1967,7 @@ int block_verifiers_create_block(void)
           exit(0);
         }
       }
-      fprintf(stderr,"\033[1;31m%zu / %d block verifiers have an overall majority for the block template signature\033[0m\n\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
+      fprintf(stderr,"\033[1;31m%zu / %d block verifiers have an overall majority for the block template signature\n\033[0m\n",count2,BLOCK_VERIFIERS_VALID_AMOUNT);
       RESTART_ROUND("An invalid amount of block verifiers have an overall majority for the block template signature");  
     }
 
@@ -2010,7 +2010,7 @@ int block_verifiers_create_block(void)
     // check for an overall majority
     if (current_round_part_vote_data.vote_results_valid >= BLOCK_VERIFIERS_VALID_AMOUNT)
     {
-      fprintf(stderr,"\033[1;32m%d / %d block verifiers have an overall majority for the reserve bytes\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
+      fprintf(stderr,"\033[1;32m%d / %d block verifiers have an overall majority for the reserve bytes\n\033[0m\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
     }
     else
     {
@@ -2032,7 +2032,7 @@ int block_verifiers_create_block(void)
           exit(0);
         }
       }
-      fprintf(stderr,"\033[1;31m%d / %d block verifiers have an overall majority for the reserve bytes\033[0m\n\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
+      fprintf(stderr,"\033[1;31m%d / %d block verifiers have an overall majority for the reserve bytes\n\033[0m\n",current_round_part_vote_data.vote_results_valid,BLOCK_VERIFIERS_VALID_AMOUNT);
       RESTART_ROUND("An invalid amount of block verifiers have an overall majority for the reserve bytes");  
     }
 
