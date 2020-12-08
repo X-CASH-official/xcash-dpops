@@ -1292,7 +1292,7 @@ int main(int parameters_count, char* parameters[])
     registration_settings = 0;
   }
  
-  if (settings != 2)
+  if (settings != 2 && strncmp(current_block_verifiers_list.block_verifiers_public_address[0],xcash_wallet_public_address,BUFFER_SIZE) != 0)
   {
     database_sync_check();
     RESET_ERROR_MESSAGES;
