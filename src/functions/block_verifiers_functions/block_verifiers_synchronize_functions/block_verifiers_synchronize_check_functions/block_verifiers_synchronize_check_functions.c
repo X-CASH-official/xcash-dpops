@@ -390,8 +390,7 @@ int sync_check_majority_reserve_proofs_database(void)
     {
       color_print("The database is not in the majority, syncing from a random network data node","red");
     }
-    get_random_network_data_node(count);
-    sync_reserve_proofs_database(count+3,"");    
+    sync_reserve_proofs_database(2,"");    
   }
   return 1;
   
@@ -656,8 +655,7 @@ int sync_check_majority_reserve_bytes_database(const int RESERVE_BYTES_START_SET
     {
       color_print("The database is not in the majority, syncing from a random network data node","red");
     }
-    get_random_network_data_node(count);
-    sync_reserve_bytes_database((int)(count+3),RESERVE_BYTES_START_SETTINGS,""); 
+    sync_reserve_bytes_database(2,RESERVE_BYTES_START_SETTINGS,""); 
   }
   return 1;
   
@@ -872,8 +870,7 @@ int sync_check_majority_delegates_database(void)
     {
       color_print("The database is not in the majority, syncing from a random network data node","red");
     }
-    get_random_network_data_node(count);
-    sync_delegates_database(count+3,"");   
+    sync_delegates_database(2,"");   
   }
   return 1;
 
@@ -1088,8 +1085,7 @@ int sync_check_majority_statistics_database(void)
     {
       color_print("The database is not in the majority, syncing from a random network data node","red");
     }
-    get_random_network_data_node(count);
-    sync_statistics_database(count+3,"");     
+    sync_statistics_database(2,"");     
   }
   return 1;
 
