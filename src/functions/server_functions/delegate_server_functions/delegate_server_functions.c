@@ -476,6 +476,60 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: check_for_valid_delegate_name
+Description: Checks for a valid delegate name
+Parameters:
+  DELEGATE_NAME - The delegate name
+Return: 0 if the delegate name is not valid, 1 if the delegate name is valid
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int check_for_valid_delegate_name(const char* DELEGATE_NAME)
+{
+  // Constants
+  const size_t DELEGATE_NAME_LENGTH = strlen(DELEGATE_NAME);
+
+  // define macros
+  #define VALID_DATA "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-"
+
+  // Variables
+  char data[sizeof(VALID_DATA)];
+  size_t count;
+  size_t count2;
+
+  memset(data,0,sizeof(data));
+  memcpy(data,VALID_DATA,sizeof(VALID_DATA)-1);
+
+  // check if the delegate name is a valid length
+  if (DELEGATE_NAME_LENGTH > MAXIMUM_BUFFER_SIZE_DELEGATES_NAME || DELEGATE_NAME_LENGTH < MINIMUM_BUFFER_SIZE_DELEGATES_NAME)
+  {
+    return 0;
+  }
+
+  // check if the delegate name has any invalid characters
+  for (count = 0; count < DELEGATE_NAME_LENGTH; count++)
+  {
+    for (count2 = 0; count2 < (sizeof(VALID_DATA)-1); count2++)
+    {
+      if (strncmp(&DELEGATE_NAME[count],&data[count2],sizeof(char)) == 0)
+      {
+        break;
+      }
+    }
+    if (count2 == (sizeof(VALID_DATA)-1))
+    {
+      return 0;
+    }
+  }
+  return 1;
+
+  #undef VALID_DATA
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_nodes_to_block_verifiers_register_delegates
 Description: Runs the code when the server receives the NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE message
 Parameters:
@@ -588,7 +642,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   } 
   
   // check if the data is valid
-  if (strlen(delegate_name) > MAXIMUM_BUFFER_SIZE_DELEGATES_NAME || strlen(delegate_name) < MINIMUM_BUFFER_SIZE_DELEGATES_NAME || strlen(delegate_public_address) != XCASH_WALLET_LENGTH || strncmp(delegate_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strstr(delegates_IP_address,".") == NULL || strlen(delegates_IP_address) > BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH || strstr(delegates_IP_address,"http://") != NULL || strstr(delegates_IP_address,"https://") != NULL || strstr(delegates_IP_address,"www.") != NULL || strlen(delegate_public_key) != VRF_PUBLIC_KEY_LENGTH || crypto_vrf_is_valid_key((const unsigned char*)delegate_public_key_data) != 1)
+  if (check_for_valid_delegate_name(delegate_name) == 0 || strlen(delegate_public_address) != XCASH_WALLET_LENGTH || strncmp(delegate_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strstr(delegates_IP_address,".") == NULL || strlen(delegates_IP_address) > BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH || strstr(delegates_IP_address,"http://") != NULL || strstr(delegates_IP_address,"https://") != NULL || strstr(delegates_IP_address,"www.") != NULL || strlen(delegate_public_key) != VRF_PUBLIC_KEY_LENGTH || crypto_vrf_is_valid_key((const unsigned char*)delegate_public_key_data) != 1)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Invalid data}");
   }
