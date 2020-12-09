@@ -2297,7 +2297,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   }
 
   // wait for all of the data to be sent to the connected sockets
-  strstr(MESSAGE,"\"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\"") != NULL ? sleep(18) : sleep(5);
+  strstr(MESSAGE,"\"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\"") != NULL ? sleep(18) : sleep(3);
 
   // remove all of the sockets from the epoll file descriptor and close all of the sockets
   for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)
