@@ -140,22 +140,22 @@ function sed_services()
 function get_installation_settings()
 {
   echo -ne "${COLOR_PRINT_GREEN}X-Cash DPoPS Installation Settings\n${END_COLOR_PRINT}"
-  echo -ne "${COLOR_PRINT_YELLOW}1 = Install\n2 = Update\n3 = Uninstall\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}1 = Install\n2 = Update\n3 = Quick Update (only xcash-dpops)\n4 = Uninstall\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}X-Cash Node (Daemon Only) Installation Settings\n${END_COLOR_PRINT}"
-  echo -ne "${COLOR_PRINT_YELLOW}4 = Install\n5 = Update\n6 = Uninstall\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}5 = Install\n6 = Update\n7 = Uninstall\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}X-Cash Blockchain Management\n${END_COLOR_PRINT}"
-  echo -ne "${COLOR_PRINT_YELLOW}7 = Install / Update Blockchain\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}8 = Install / Update Blockchain\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}X-Cash DPoPS Delegate Configuration\n${END_COLOR_PRINT}"
-  echo -ne "${COLOR_PRINT_YELLOW}8 = Change Solo Delegate or Shared Delegate\n9 = Edit Shared Delegate Settings\n10 = Register / Update Delegate\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}9 = Change Solo Delegate or Shared Delegate\n10 = Edit Shared Delegate Settings\n11 = Register / Update Delegate\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}X-Cash DPoPS Delegate Management\n${END_COLOR_PRINT}"
-  echo -ne "${COLOR_PRINT_YELLOW}11 = Restart Programs\n12 = Stop Programs\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}12 = Restart Programs\n13 = Stop Programs\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}X-Cash DPoPS Testing\n${END_COLOR_PRINT}"
-  echo -ne "${COLOR_PRINT_YELLOW}13 = Mainnet Reset\n14 = Beta/Alpha Test Reset\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}14 = Mainnet Reset\n15 = Beta/Alpha Test Reset\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}Miscellaneous\n${END_COLOR_PRINT}"
-  echo -ne "${COLOR_PRINT_YELLOW}15 = Configure Installation\n16 = Firewall\n17 = Shared Delegates Firewall\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}16 = Configure Installation\n17 = Firewall\n18 = Shared Delegates Firewall\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}Enter the number of the chosen option (default 1): ${END_COLOR_PRINT}"
   read -r data
-  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] || [ "$data" == "11" ] || [ "$data" == "12" ] || [ "$data" == "13" ] || [ "$data" == "14" ] || [ "$data" == "15" ] || [ "$data" == "16" ] || [ "$data" == "17" ] && echo "$data" || echo "1")
+  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] || [ "$data" == "11" ] || [ "$data" == "12" ] || [ "$data" == "13" ] || [ "$data" == "14" ] || [ "$data" == "15" ] || [ "$data" == "16" ] || [ "$data" == "17" ] || [ "$data" == "18" ] && echo "$data" || echo "1")
   echo -ne "\r"
   # Check if xcash-dpops is already installed, if the user choose to install
   if [ "$INSTALLATION_TYPE_SETTINGS" -eq "1" ]; then
@@ -170,7 +170,7 @@ function get_installation_settings()
   fi
 
   # Check if xcash-dpops is not installed, and if the user choose an option where xcash-dpops needed to be installed
-  if [ "$INSTALLATION_TYPE_SETTINGS" -eq "2" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "3" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "8" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "9" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "10" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "13" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "14" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "15" ]; then
+  if [ "$INSTALLATION_TYPE_SETTINGS" -eq "2" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "3" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "4" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "9" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "10" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "14" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "15" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "16" ]; then
     data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "xcash-dpops" -print | wc -l)
     if [ "$data" -eq "0" ]; then
       echo -e "\n${COLOR_PRINT_RED}This is an invalid option since xcash-dpops is not installed${END_COLOR_PRINT}"
@@ -1724,6 +1724,30 @@ function update()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
 }
 
+function quick_update()
+{
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                  Updating xcash-dpops${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo
+  echo
+
+  XCASH_DPOPS_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "xcash-dpops" -exec dirname {} \;)/
+  XCASH_DPOPS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-dpops/
+
+  update_xcash_dpops
+
+  sudo systemctl restart xcash-dpops
+
+  cd ~
+
+  echo
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}          Update Has Completed Successfully  ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+}
+
 function uninstall()
 {
   echo -ne "${COLOR_PRINT_RED}Please Confirm You Want To Uninstall By Typing \"Uninstall\":${END_COLOR_PRINT}"
@@ -2347,35 +2371,37 @@ if [ "$INSTALLATION_TYPE_SETTINGS" -eq "1" ]; then
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "2" ]; then
   update
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "3" ]; then
-  uninstall
+  quick_update
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "4" ]; then
-  install_node
+  uninstall
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "5" ]; then
-  update_node
+  install_node
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "6" ]; then
-  uninstall_node
+  update_node
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "7" ]; then
-  install_or_update_blockchain
+  uninstall_node
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "8" ]; then
-  change_solo_or_shared_delegate
+  install_or_update_blockchain
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "9" ]; then
-  edit_shared_delegate_settings
+  change_solo_or_shared_delegate
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "10" ]; then
-  register_update_delegate
+  edit_shared_delegate_settings
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ]; then
-  stop_systemd_service_files
-  start_systemd_service_files
+  register_update_delegate
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ]; then
   stop_systemd_service_files
+  start_systemd_service_files
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "13" ]; then
-  test_update
+  stop_systemd_service_files
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "14" ]; then
-  test_update_reset_delegates
+  test_update
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "15" ]; then
-  configure
+  test_update_reset_delegates
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "16" ]; then
-  install_firewall_script
+  configure
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "17" ]; then
+  install_firewall_script
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "18" ]; then
   install_firewall_script_shared_delegates
 fi
 
