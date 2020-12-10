@@ -935,7 +935,7 @@ void remove_inactive_delegates(void)
 
   // organize the delegates
   
-  if ((total_delegates = organize_delegates(delegates) == 0))
+  if ((total_delegates = organize_delegates(delegates)) == 0)
   {
     POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
     return;
