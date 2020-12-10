@@ -988,6 +988,11 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
     memset(data2,0,sizeof(data2));
     memcpy(data2,"image/jpeg",10);
   }
+  else if (strstr(data2,".svg") != NULL)
+  {
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,"image/svg+xml",13);
+  }
   else if (strstr(data2,".ico") != NULL)
   {
     memset(data2,0,sizeof(data2));
