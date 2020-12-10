@@ -733,7 +733,6 @@ void* payment_timer_thread(void* parameters)
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time.tm_min == (BLOCK_TIME-1))
     {
-      minimum_amount = 1;
       color_print("Sending the hourly payments","yellow");
 
       memset(data,0,sizeof(data));
