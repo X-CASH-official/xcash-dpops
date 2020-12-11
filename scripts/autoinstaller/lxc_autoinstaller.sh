@@ -11,15 +11,17 @@ XCASH_LXC_AUTOINSTALLER_MENU_OPTION=1
 XCASH_HOST_DATA_BASE_DIR=${HOME}/xcash-shared-node/
 XCASH_AUTOINSTALLER_NAME="autoinstaller.sh"
 XCASH_AUTOINSTALLER_INSTALL_OPTION_NUMBER=1
-XCASH_AUTOINSTALLER_CONFIGURATOR_OPTION_NUMBER=15
-XCASH_AUTOINSTALLER_REGISTER_DELEGATE_OPTION_NUMBER=10
-XCASH_AUTOINSTALLER_FIREWALL_OPTION_NUMBER=16
-XCASH_AUTOINSTALLER_FIREWALL_SHARED_OPTION_NUMBER=17
+XCASH_AUTOINSTALLER_CONFIGURATOR_OPTION_NUMBER=16
+XCASH_AUTOINSTALLER_REGISTER_DELEGATE_OPTION_NUMBER=11
+XCASH_AUTOINSTALLER_FIREWALL_OPTION_NUMBER=17
+XCASH_AUTOINSTALLER_FIREWALL_SHARED_OPTION_NUMBER=18
 XCASH_MAINTENANCE_SCRIPT_NAME="xcash-maintenance"
 XCASH_DPOPS_SRV="xcash-dpops"
 XCASH_AUTOINSTALLER_SCRIPT_SCRATCH_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/autoinstaller/autoinstaller.sh"
 XCASH_MAINTENANCE_SCRIPT_SCRATCH_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/management/xcash-maintenance"
 XCASH_AUTOINSTALLER_HOST_FIREWALL_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/autoinstaller/autoinstaller.sh"
+LOG_GREP_BEFORE_LINES=20
+LOG_GREP_AFTER_LINES=83
 
 # If Opacity is "NO" will be used the direct download link. If Opacity is "YES" will be used the Opacity CLI download tool with the possibility to download a given file handle (asked to the user from stdin)
 DOWNLOAD_USE_OPACITY_DOWNLOADER="YES"
@@ -1322,7 +1324,7 @@ function run_DPOPS_log_check_grep()
       read -r grep_string
       echo -ne "\r"
       echo
-      lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "journalctl --unit=${XCASH_DPOPS_SRV} --output cat | grep -B 10 -A 15 -C 1 --color=always '${grep_string}' | less -R +G"
+      lxc exec ${XCASH_LXC_CONTAINER_NAME} -- bash -l -c "journalctl --unit=${XCASH_DPOPS_SRV} --output cat | grep -B ${LOG_GREP_BEFORE_LINES} -A ${LOG_GREP_AFTER_LINES} -C 1 --color=always '${grep_string}' | less -R +G"
       exit     
     fi
   else
