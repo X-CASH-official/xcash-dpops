@@ -623,45 +623,32 @@ Return: 0 if an error has occured, 1 if successfull
 
 int add_round_statistics(void)
 {
-  // Constants
-  const bson_t* current_document;
-
   // Variables
-  char data[BUFFER_SIZE];
-  char data2[BUFFER_SIZE];
-  char data3[BUFFER_SIZE];
-  char delegates_name[BUFFER_SIZE];
-  char block_verifier_total_rounds_delegates_name[BUFFER_SIZE];
-  char best_block_verifier_online_percentage_delegate_name[BUFFER_SIZE];
-  char most_block_producer_total_rounds_delegate_name[BUFFER_SIZE];
+  char data[SMALL_BUFFER_SIZE];
+  char block_verifier_total_rounds_delegates_name[SMALL_BUFFER_SIZE];
+  char best_block_verifier_online_percentage_delegate_name[SMALL_BUFFER_SIZE];
+  char most_block_producer_total_rounds_delegate_name[SMALL_BUFFER_SIZE];
   char message1[SMALL_BUFFER_SIZE];
   char message2[SMALL_BUFFER_SIZE];
   char message3[SMALL_BUFFER_SIZE];
   char message4[SMALL_BUFFER_SIZE];
   char message5[SMALL_BUFFER_SIZE];
   char message6[SMALL_BUFFER_SIZE];
-  size_t block_verifier_total_rounds_count = 0;
-  size_t block_verifier_total_rounds_count2 = 0;
-  int block_verifier_online_percentage_count = 0;
-  int block_verifier_online_percentage_count2 = 0;
-  size_t most_block_producer_total_rounds_count = 0;
-  size_t most_block_producer_total_rounds_count2 = 0;
-  mongoc_client_t* database_client_thread = NULL;
-  mongoc_collection_t* collection = NULL;
-  mongoc_cursor_t* document_settings = NULL;
-  bson_t* document = NULL;  
-  char* message;
-  char* message_copy1;
-  char* message_copy2;
+
+  struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  int total_delegates;
+  int count;
+  size_t block_verifier_total_rounds = 0;
+  int block_verifier_online_percentage = 0;
+  size_t most_block_producer_total_rounds = 0;
+  size_t block_verifier_total_rounds_current_delegate;
+  int block_verifier_online_percentage_current_delegate;
+  size_t most_block_producer_total_rounds_current_delegate;
 
   // define macros
   #define MESSAGE "{\"username\":\"XCASH\"}"
-
-  #define database_reset \
-  bson_destroy(document); \
-  mongoc_cursor_destroy(document_settings); \
-  mongoc_collection_destroy(collection); \
-  mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
 
   #define ADD_ROUND_STATISTICS_ERROR(settings) \
   memcpy(error_message.function[error_message.total],"add_round_statistics",20); \
@@ -676,88 +663,47 @@ int add_round_statistics(void)
   memset(message5,0,sizeof(message5));
   memset(message6,0,sizeof(message6));
 
-  // get a temporary connection
-  if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
+  // initialize the delegates struct
+  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"add_round_statistics",data,current_date_and_time,current_UTC_date_and_time);
+
+  // organize the delegates
+  if ((total_delegates = organize_delegates(delegates)) == 0)
   {
-    ADD_ROUND_STATISTICS_ERROR("Could not update the round statistics in the database");
+    POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+    ADD_ROUND_STATISTICS_ERROR("Could not organize the delegates");
   }
 
-  // set the collection
-  collection = mongoc_client_get_collection(database_client_thread, database_name,"delegates");
-
-  document = bson_new(); 
-  document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
-  while (mongoc_cursor_next(document_settings, &current_document))
+  for (count = 0; count < total_delegates; count++)
   {
-    // reset the variables
-    memset(data,0,sizeof(data));
-    memset(data2,0,sizeof(data2));
-    memset(data3,0,sizeof(data3));
-    memset(delegates_name,0,sizeof(delegates_name));
+    // get the delegates data
+    sscanf(delegates[count].block_verifier_total_rounds, "%zu", &block_verifier_total_rounds_current_delegate);
+    sscanf(delegates[count].block_verifier_online_percentage, "%d", &block_verifier_online_percentage_current_delegate);
+    sscanf(delegates[count].block_producer_total_rounds, "%zu", &most_block_producer_total_rounds_current_delegate);
 
-    message = bson_as_canonical_extended_json(current_document, NULL);
-    memcpy(data,message,strnlen(message,sizeof(data)));
-    bson_free(message);
-
-    // get the delegate_name
-    memcpy(data2,", \"delegate_name\" : \"",21);
-    message_copy1 = strstr(data,data2) + 21;
-    message_copy2 = strstr(message_copy1,"\"");
-    memcpy(delegates_name,message_copy1,message_copy2 - message_copy1);
-    memset(data2,0,sizeof(data2));
-
-    // get the block_verifier_total_rounds
-    memcpy(data2,", \"block_verifier_total_rounds\" : \"",35);
-    message_copy1 = strstr(data,data2) + 35;
-    message_copy2 = strstr(message_copy1,"\"");
-    memcpy(data3,message_copy1,message_copy2 - message_copy1);
-    sscanf(data3, "%zu", &block_verifier_total_rounds_count2);
-    memset(data2,0,sizeof(data2));
-    memset(data3,0,sizeof(data3));
-
-    if (block_verifier_total_rounds_count2 > block_verifier_total_rounds_count)
+    // get the delegates statistics, in order of the organized delegates
+    if (block_verifier_total_rounds_current_delegate > block_verifier_total_rounds)
     {
-      block_verifier_total_rounds_count = block_verifier_total_rounds_count2;
+      block_verifier_total_rounds = block_verifier_total_rounds_current_delegate;
       memset(block_verifier_total_rounds_delegates_name,0,sizeof(block_verifier_total_rounds_delegates_name));
-      memcpy(block_verifier_total_rounds_delegates_name,delegates_name,strnlen(delegates_name,sizeof(block_verifier_total_rounds_delegates_name)));
+      memcpy(block_verifier_total_rounds_delegates_name,delegates[count].delegate_name,strnlen(delegates[count].delegate_name,sizeof(block_verifier_total_rounds_delegates_name)));
     }
-    
-    // get the block_verifier_online_percentage
-    memcpy(data2,", \"block_verifier_online_percentage\" : \"",40);
-    message_copy1 = strstr(data,data2) + 40;
-    message_copy2 = strstr(message_copy1,"\"");
-    memcpy(data3,message_copy1,message_copy2 - message_copy1);
-    sscanf(data3, "%d", &block_verifier_online_percentage_count2);
-    memset(data2,0,sizeof(data2));
-    memset(data3,0,sizeof(data3));
 
-    if (block_verifier_online_percentage_count2 > block_verifier_online_percentage_count)
+    if (block_verifier_online_percentage_current_delegate > block_verifier_online_percentage)
     {
-      block_verifier_online_percentage_count = block_verifier_online_percentage_count2;
+      block_verifier_online_percentage = block_verifier_online_percentage_current_delegate;
       memset(best_block_verifier_online_percentage_delegate_name,0,sizeof(best_block_verifier_online_percentage_delegate_name));
-      memcpy(best_block_verifier_online_percentage_delegate_name,delegates_name,strnlen(delegates_name,sizeof(best_block_verifier_online_percentage_delegate_name)));
+      memcpy(best_block_verifier_online_percentage_delegate_name,delegates[count].delegate_name,strnlen(delegates[count].delegate_name,sizeof(best_block_verifier_online_percentage_delegate_name)));
     }
- 
-    // get the block_producer_total_rounds
-    memcpy(data2,", \"block_producer_total_rounds\" : \"",35);
-    message_copy1 = strstr(data,data2) + 35;
-    message_copy2 = strstr(message_copy1,"\"");
-    memcpy(data3,message_copy1,message_copy2 - message_copy1);
-    sscanf(data3, "%zu", &most_block_producer_total_rounds_count2);
-    memset(data,0,sizeof(data));
-    memset(data2,0,sizeof(data2));
-    memset(data3,0,sizeof(data3));
 
-    if (most_block_producer_total_rounds_count2 > most_block_producer_total_rounds_count)
+    if (most_block_producer_total_rounds_current_delegate > most_block_producer_total_rounds)
     {
-      most_block_producer_total_rounds_count = most_block_producer_total_rounds_count2;
+      most_block_producer_total_rounds = most_block_producer_total_rounds_current_delegate;
       memset(most_block_producer_total_rounds_delegate_name,0,sizeof(most_block_producer_total_rounds_delegate_name));
-      memcpy(most_block_producer_total_rounds_delegate_name,delegates_name,strnlen(delegates_name,sizeof(most_block_producer_total_rounds_delegate_name)));
+      memcpy(most_block_producer_total_rounds_delegate_name,delegates[count].delegate_name,strnlen(delegates[count].delegate_name,sizeof(most_block_producer_total_rounds_delegate_name)));
     }
   }
 
-  database_reset;
-  sleep(1);
+  POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
 
   // create the message
   memcpy(message1,"{\"most_total_rounds_delegate_name\":\"",36);
@@ -765,7 +711,7 @@ int add_round_statistics(void)
   memcpy(message1+strlen(message1),"\"}",2);
 
   memcpy(message2,"{\"most_total_rounds\":\"",22);
-  snprintf(message2+22,sizeof(message2)-23,"%zu",block_verifier_total_rounds_count);
+  snprintf(message2+22,sizeof(message2)-23,"%zu",block_verifier_total_rounds);
   memcpy(message2+strlen(message2),"\"}",2);
 
   memcpy(message3,"{\"best_block_verifier_online_percentage_delegate_name\":\"",56);
@@ -773,7 +719,7 @@ int add_round_statistics(void)
   memcpy(message3+strlen(message3),"\"}",2);
 
   memcpy(message4,"{\"best_block_verifier_online_percentage\":\"",42);
-  snprintf(message4+42,sizeof(message4)-43,"%d",block_verifier_online_percentage_count);
+  snprintf(message4+42,sizeof(message4)-43,"%d",block_verifier_online_percentage);
   memcpy(message4+strlen(message4),"\"}",2);
 
   memcpy(message5,"{\"most_block_producer_total_rounds_delegate_name\":\"",51);
@@ -781,7 +727,7 @@ int add_round_statistics(void)
   memcpy(message5+strlen(message5),"\"}",2);
 
   memcpy(message6,"{\"most_block_producer_total_rounds\":\"",37);
-  snprintf(message6+37,sizeof(message6)-38,"%zu",most_block_producer_total_rounds_count);
+  snprintf(message6+37,sizeof(message6)-38,"%zu",most_block_producer_total_rounds);
   memcpy(message6+strlen(message6),"\"}",2);
 
   // update the database
@@ -792,7 +738,6 @@ int add_round_statistics(void)
   return 1;
 
   #undef MESSAGE
-  #undef database_reset
   #undef ADD_ROUND_STATISTICS_ERROR
 }
 
