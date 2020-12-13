@@ -157,7 +157,7 @@ function get_installation_settings()
   echo -ne "${COLOR_PRINT_YELLOW}16 = Configure Installation\n17 = Firewall\n18 = Shared Delegates Firewall\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}Enter the number of the chosen option (default 1): ${END_COLOR_PRINT}"
   read -r data
-  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] || [ "$data" == "11" ] || [ "$data" == "12" ] || [ "$data" == "13" ] || [ "$data" == "14" ] || [ "$data" == "15" ] || [ "$data" == "16" ] || [ "$data" == "17" ] || [ "$data" == "18" ] && echo "$data" || echo "1")
+  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] || [ "$data" == "11" ] || [ "$data" == "12" ] || [ "$data" == "13" ] || [ "$data" == "14" ] || [ "$data" == "15" ] || [ "$data" == "16" ] || [ "$data" == "17" ] || [ "$data" == "18" ] || [ "$data" == "19" ] && echo "$data" || echo "1")
   echo -ne "\r"
   # Check if xcash-dpops is already installed, if the user choose to install
   if [ "$INSTALLATION_TYPE_SETTINGS" -eq "1" ]; then
@@ -172,7 +172,7 @@ function get_installation_settings()
   fi
 
   # Check if xcash-dpops is not installed, and if the user choose an option where xcash-dpops needed to be installed
-  if [ "$INSTALLATION_TYPE_SETTINGS" -eq "2" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "3" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "4" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "9" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "10" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "14" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "15" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "16" ]; then
+  if [ "$INSTALLATION_TYPE_SETTINGS" -eq "2" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "3" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "4" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "9" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "10" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "14" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "15" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "16" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "19" ]; then
     data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "xcash-dpops" -print | wc -l)
     if [ "$data" -eq "0" ]; then
       echo -e "\n${COLOR_PRINT_RED}This is an invalid option since xcash-dpops is not installed${END_COLOR_PRINT}"
@@ -2359,6 +2359,79 @@ function register_update_delegate()
 
 
 
+function backup()
+{
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                Backup xcash-dpops${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo
+  echo
+
+  # Check if solo node
+  check_if_solo_node
+
+  # Get the installation directory
+  get_installation_directory
+
+  # Re-set the owner of the install directory (can fix some "edge" issues for some users)
+  set_installation_dir_owner
+
+  # Restart the X-CASH Daemon and stop the X-CASH Wallet RPC
+  echo -ne "${COLOR_PRINT_YELLOW}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
+  sudo systemctl stop xcash-daemon &>/dev/null
+  sleep 10s
+  sudo systemctl stop xcash-rpc-wallet &>/dev/null
+  sleep 10s
+  echo -ne "\r${COLOR_PRINT_GREEN}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
+  echo
+  
+  # get the block verifiers secret key from the systemd service file
+  BLOCK_VERIFIER_SECRET_KEY=$(cat /lib/systemd/system/xcash-dpops.service)
+  BLOCK_VERIFIER_SECRET_KEY=$(echo $BLOCK_VERIFIER_SECRET_KEY | awk -F '--block-verifiers-secret-key' '{print $2}')
+  BLOCK_VERIFIER_SECRET_KEY=${BLOCK_VERIFIER_SECRET_KEY:1:$BLOCK_VERIFIERS_SECRET_KEY_LENGTH}
+  BLOCK_VERIFIER_PUBLIC_KEY="${BLOCK_VERIFIER_SECRET_KEY: -${BLOCK_VERIFIERS_PUBLIC_KEY_LENGTH}}"
+
+  # Get the current xcash wallet data
+  get_current_xcash_wallet_data
+
+  # Stop the systemd service files
+  stop_systemd_service_files
+
+  # Backup the decentralized database
+  if [ "${SHARED_DELEGATE^^}" == "YES" ]; then
+    cd ~
+    mongodump --db XCASH_PROOF_OF_STAKE_DELEGATES &>/dev/null
+    7z a decentralized_database_backup.7z dump &>/dev/null
+    sudo rm -r dump &>/dev/null  
+  fi
+
+  echo
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}          Backup Has Completed Successfully  ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+
+  # Display the decentralized database backup data
+  if [ "${SHARED_DELEGATE^^}" == "YES" ]; then
+    echo
+    echo
+    echo -e "${COLOR_PRINT_YELLOW}After running the autoinstaller on a different machine run this command to import your shared delegates database (place the decentralized_database_backup.7z in the $HOME directory)${END_COLOR_PRINT}" 
+    echo -e "${COLOR_PRINT_GREEN}cd ~ && 7z x decentralized_database_backup.7z && mongorestore --db XCASH_PROOF_OF_STAKE_DELEGATES && sudo rm -r dump${END_COLOR_PRINT}"
+  fi
+  
+  # Display X-CASH current wallet data
+  echo
+  echo
+  echo -e "${CURRENT_XCASH_WALLET_INFORMATION}"
+  echo
+  echo -e "${COLOR_PRINT_YELLOW}Please make sure to save the above information in a secure place and press enter when done${END_COLOR_PRINT}"
+  read -r data
+  echo -ne "\r"
+  echo
+}
+
+
+
 function create_swap_file()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Creating Swap File${END_COLOR_PRINT}"
@@ -2419,5 +2492,7 @@ elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "17" ]; then
   install_firewall_script
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "18" ]; then
   install_firewall_script_shared_delegates
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "19" ]; then
+  backup
 fi
 
