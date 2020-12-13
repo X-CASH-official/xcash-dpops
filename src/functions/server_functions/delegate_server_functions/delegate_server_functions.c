@@ -530,6 +530,91 @@ int check_for_valid_delegate_name(const char* DELEGATE_NAME)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: check_for_valid_ip_address
+Description: Checks for a valid IP address
+Parameters:
+  HOST - The IP address or the domain name
+Return: 0 if the IP address is not valid, 1 if the IP address is valid
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int check_for_valid_ip_address(const char* HOST)
+{
+  // define macros
+  #define IP_ADDRESS_RANGE_AMOUNT 11
+
+  // Constants
+  const int IP_ADDRESS_RANGE_START[IP_ADDRESS_RANGE_AMOUNT][4]={{10,12,242,0},{10,0,0,0},{169,254,0,0},{172,16,0,0},{127,0,0,0},{192,168,0,0},{224,0,0,0},{240,0,0,0},{0,0,0,0},{239,255,255,0},{255,255,255,255}};
+  const int IP_ADDRESS_RANGE_END[IP_ADDRESS_RANGE_AMOUNT][4] = {{10,12,242,255},{10,255,255,255},{169,254,255,255},{172,31,255,255},{127,255,255,255},{192,168,0,255},{239,255,255,255},{247,255,255,255},{0,255,255,255},{239,255,255,255},{255,255,255,255}};
+
+  // Variables
+  char ip_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
+  char ip_address_list[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
+  struct addrinfo serv_addr;
+  struct addrinfo* settings = NULL;
+  void* ptr;
+  int count;
+  unsigned int count2; 
+  unsigned int ip_address_start;
+  unsigned int ip_address_end;
+
+  memset(ip_address,0,sizeof(ip_address));
+
+  // check if the IP address is a domain name
+  if (string_count(HOST,".") == 3)
+  {
+    // the host is an IP address
+    memcpy(ip_address,HOST,strnlen(HOST,sizeof(ip_address)));
+  }
+  else
+  {
+    // the host is a domain name
+    memset(&serv_addr, 0, sizeof(serv_addr));
+    serv_addr.ai_flags = AI_NUMERICSERV;
+    serv_addr.ai_family = AF_INET;
+    serv_addr.ai_socktype = SOCK_STREAM;
+
+    if (getaddrinfo(HOST, NULL, &serv_addr, &settings) != 0)
+    {
+      return 0;
+    }
+  
+    inet_ntop(settings->ai_family,settings->ai_addr->sa_data,ip_address,sizeof(ip_address));    
+    ptr = &((struct sockaddr_in *)settings->ai_addr)->sin_addr;
+    inet_ntop(settings->ai_family,ptr,ip_address,sizeof(ip_address));
+  }
+  
+  // check if the host is valid
+  if (strstr(ip_address,".") == NULL || strlen(ip_address) > BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH || strstr(ip_address,"http://") != NULL || strstr(ip_address,"https://") != NULL || strstr(ip_address,"www.") != NULL)
+  {
+    return 0;
+  }
+
+  // check if the host is in an invalid IP address range
+  for (count = 0; count < IP_ADDRESS_RANGE_AMOUNT; count++)
+  {
+    ip_address_start = (IP_ADDRESS_RANGE_START[count][0] << 24 | IP_ADDRESS_RANGE_START[count][1] << 16 | IP_ADDRESS_RANGE_START[count][2] << 8 | IP_ADDRESS_RANGE_START[count][3]);
+    ip_address_end = (IP_ADDRESS_RANGE_END[count][0] << 24 | IP_ADDRESS_RANGE_END[count][1] << 16 | IP_ADDRESS_RANGE_END[count][2] << 8 | IP_ADDRESS_RANGE_END[count][3]);
+
+    for (count2 = ip_address_start; count2 <= ip_address_end; count2++)
+    {
+      memset(ip_address_list,0,sizeof(ip_address_list));
+      snprintf(ip_address_list,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,"%d.%d.%d.%d\n",(count2 & 0xFF000000)>>24,(count2 & 0x00FF0000)>>16,(count2 & 0x0000FF00)>>8,(count2 & 0x000000FF));
+      if (strncmp(ip_address_list,ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
+      {
+        return 0;
+      }
+    }
+  }
+  return 1;
+
+  #undef IP_ADDRESS_RANGE_AMOUNT
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_nodes_to_block_verifiers_register_delegates
 Description: Runs the code when the server receives the NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE message
 Parameters:
@@ -642,7 +727,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   } 
   
   // check if the data is valid
-  if (check_for_valid_delegate_name(delegate_name) == 0 || strlen(delegate_public_address) != XCASH_WALLET_LENGTH || strncmp(delegate_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strstr(delegates_IP_address,".") == NULL || strlen(delegates_IP_address) > BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH || strstr(delegates_IP_address,"http://") != NULL || strstr(delegates_IP_address,"https://") != NULL || strstr(delegates_IP_address,"www.") != NULL || strlen(delegate_public_key) != VRF_PUBLIC_KEY_LENGTH || crypto_vrf_is_valid_key((const unsigned char*)delegate_public_key_data) != 1)
+  if (check_for_valid_delegate_name(delegate_name) == 0 || strlen(delegate_public_address) != XCASH_WALLET_LENGTH || strncmp(delegate_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || check_for_valid_ip_address(delegates_IP_address) == 0 || strlen(delegate_public_key) != VRF_PUBLIC_KEY_LENGTH || crypto_vrf_is_valid_key((const unsigned char*)delegate_public_key_data) != 1)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Invalid data}");
   }
