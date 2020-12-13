@@ -32,6 +32,7 @@ XCASH_DPOPS_BLOCK_HEIGHT=740000
 
 # Latest versions
 MONGODB_LATEST_VERSION="mongodb-linux-x86_64-ubuntu1804-4.4.1"
+MONGODB_TOOLS_LATEST_VERSION="mongodb-database-tools-ubuntu1804-x86_64-100.2.1"
 MONGOC_DRIVER_LATEST_VERSION="mongo-c-driver-1.17.0"
 NODEJS_LATEST_VERSION="node-v14.10.1-linux-x64"
 
@@ -53,6 +54,7 @@ NODEJS_URL="https://nodejs.org/dist/${NODEJS_LATEST_VERSION:5:8}/${NODEJS_LATEST
 NODEJS_DIR=""
 NODEJS_CURRENT_VERSION=""
 MONGODB_URL="http://fastdl.mongodb.org/linux/${MONGODB_LATEST_VERSION}.tgz"
+MONGODB_TOOLS_URL="http://fastdl.mongodb.org/linux/${MONGODB_TOOLS_LATEST_VERSION}.tgz"
 MONGODB_DIR=""
 MONGODB_CURRENT_VERSION=""
 MONGOC_DRIVER_URL="https://github.com/mongodb/mongo-c-driver/releases/download/${MONGOC_DRIVER_LATEST_VERSION:15}/${MONGOC_DRIVER_LATEST_VERSION}.tar.gz"
@@ -883,6 +885,19 @@ function install_mongodb()
   echo
 }
 
+function install_mongodb_tools()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Installing MongoDB Tools${END_COLOR_PRINT}"
+  cd "${XCASH_DPOPS_INSTALLATION_DIR}"mongodb-linux-x86_64-*/bin/
+  wget -q ${MONGODB_TOOLS_URL}
+  tar -xf mongodb-database-tools-*.tgz &>/dev/null
+  sudo rm mongodb-database-tools-*.tgz &>/dev/null
+  cp -a mongodb-database-tools-*/bin/* ./
+  sudo rm -rf mongodb-database-tools-*
+  echo -ne "\r${COLOR_PRINT_GREEN}Installing MongoDB Tools${END_COLOR_PRINT}"
+  echo
+}
+
 function install_mongoc_driver()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Installing MongoC Driver${END_COLOR_PRINT}"
@@ -969,6 +984,7 @@ function install_xcash_dpops()
   echo -e "${COLOR_PRINT_GREEN}                Installing xcash-dpops${END_COLOR_PRINT}"
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
   install_mongodb
+  install_mongodb_tools
   install_mongoc_driver
   download_xcash_dpops
   build_xcash_dpops
