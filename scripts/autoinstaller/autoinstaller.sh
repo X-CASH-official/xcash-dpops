@@ -155,6 +155,8 @@ function get_installation_settings()
   echo -ne "${COLOR_PRINT_YELLOW}14 = Mainnet Reset\n15 = Beta/Alpha Test Reset\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}Miscellaneous\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_YELLOW}16 = Configure Installation\n17 = Firewall\n18 = Shared Delegates Firewall\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_GREEN}Backup\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}19 = Display wallet and xcash-dpops data, and backup shared delegates database\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}Enter the number of the chosen option (default 1): ${END_COLOR_PRINT}"
   read -r data
   INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] || [ "$data" == "11" ] || [ "$data" == "12" ] || [ "$data" == "13" ] || [ "$data" == "14" ] || [ "$data" == "15" ] || [ "$data" == "16" ] || [ "$data" == "17" ] || [ "$data" == "18" ] || [ "$data" == "19" ] && echo "$data" || echo "1")
@@ -2401,7 +2403,7 @@ function backup()
   if [ "${SHARED_DELEGATE^^}" == "YES" ]; then
     cd ~
     mongodump --db XCASH_PROOF_OF_STAKE_DELEGATES &>/dev/null
-    7z a decentralized_database_backup.7z dump &>/dev/null
+    7z a shared_delegates_database_backup.7z dump &>/dev/null
     sudo rm -r dump &>/dev/null  
   fi
 
@@ -2415,8 +2417,8 @@ function backup()
   if [ "${SHARED_DELEGATE^^}" == "YES" ]; then
     echo
     echo
-    echo -e "${COLOR_PRINT_YELLOW}After running the autoinstaller on a different machine run this command to import your shared delegates database (place the decentralized_database_backup.7z in the $HOME directory)${END_COLOR_PRINT}" 
-    echo -e "${COLOR_PRINT_GREEN}cd ~ && 7z x decentralized_database_backup.7z && mongorestore --db XCASH_PROOF_OF_STAKE_DELEGATES && sudo rm -r dump${END_COLOR_PRINT}"
+    echo -e "${COLOR_PRINT_YELLOW}After running the autoinstaller on a different machine run this command to import your shared delegates database (place the shared_delegates_database_backup.7z in the $HOME directory)${END_COLOR_PRINT}" 
+    echo -e "${COLOR_PRINT_GREEN}cd ~ && 7z x shared_delegates_database_backup.7z && mongorestore --db XCASH_PROOF_OF_STAKE_DELEGATES && sudo rm -r dump${END_COLOR_PRINT}"
   fi
   
   # Display X-CASH current wallet data
