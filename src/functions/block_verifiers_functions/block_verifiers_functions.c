@@ -265,6 +265,7 @@ int start_new_round(void)
     if (count2 == BLOCK_VERIFIERS_AMOUNT)
     {
       color_print("Your delegate is not a current block verifier, waiting until the next round","red");
+      sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
       return 2;
     }
     
