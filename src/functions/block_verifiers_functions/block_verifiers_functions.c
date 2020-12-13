@@ -252,6 +252,20 @@ int start_new_round(void)
       sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
       return 2;
     }
+
+    // check if your delegate is a current block verifier, and sit out the round if not since you have already synced the database
+    for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
+    {
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count2],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+      {
+        break;
+      }
+    }
+
+    if (count2 == BLOCK_VERIFIERS_AMOUNT)
+    {
+      color_print("Your delegate is not a current block verifier, waiting until the next round","red");
+    }
     
     if (block_verifiers_create_block() == 0)
     {
