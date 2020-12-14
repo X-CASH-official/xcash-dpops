@@ -105,6 +105,7 @@ Using define statements instead of constants for increased efficiency
 #define SEND_PAYMENT_TIMEOUT_SETTINGS 600 // The maximum amount of time to wait in seconds for the send_payment function
 #define DATABASE_SYNCING_TIMEOUT_SETTINGS 20 // The maximum amount of time to wait in seconds to sync any of the databases
 #define SOCKET_END_STRING "|END|" // End string when sending data between nodes, to signal the end of sending data
+#define TXT_RECORD_START_STRING "xcash-dpops:" // start string for a valid XCASH DPOPS TXT record
 #define HTTP_SOCKET_END_STRING "\r\n\r\n" // End string for a HTTP request, to signal the end of sending data
 #define DELEGATES_WEBSITE_PATH "delegates-explorer/" // The delegates website path
 #define SHARED_DELEGATES_WEBSITE_PATH "delegates-pool-website/" // The shared delegates website path
@@ -136,6 +137,7 @@ Using define statements instead of constants for increased efficiency
 #define VOTE_PARAMETER_AMOUNT 5 // The vote parameter amount
 #define REGISTER_PARAMETER_AMOUNT 6 // The register parameter amount
 #define UPDATE_PARAMETER_AMOUNT 5 // The update parameter amount
+#define RECOVER_PARAMETER_AMOUNT 4 // The recover parameter amount
 #define GET_RESERVE_BYTES_DATABASE_HASH_PARAMETER_AMOUNT 5 // The GET_RESERVE_BYTES_DATABASE_HASH parameter amount
 
 // VRF

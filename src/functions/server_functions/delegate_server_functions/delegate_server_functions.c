@@ -4,8 +4,11 @@
 #include <netdb.h> 
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <arpa/nameser.h>
+#include <resolv.h>
 #include <sys/epoll.h>
 #include <unistd.h>
+#include <sys/types.h>
 #include <signal.h>
 #include <pthread.h>
 #include <time.h>
@@ -14,6 +17,7 @@
 
 #include "define_macro_functions.h"
 #include "define_macros.h"
+#include "initialize_and_reset_structs_define_macros.h"
 #include "structures.h"
 #include "variables.h"
 #include "define_macros_test.h"
@@ -294,11 +298,10 @@ Description: Runs the code when the server receives the NODE_TO_BLOCK_VERIFIERS_
 Parameters:
   CLIENT_SOCKET - The socket to send data to
   MESSAGE - The message
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const int CLIENT_SOCKET, const char* MESSAGE)
+void server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
   char message[SMALL_BUFFER_SIZE+BUFFER_SIZE_RESERVE_PROOF];
@@ -322,7 +325,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     error_message.total++; \
   } \
   send_data(CLIENT_SOCKET,(unsigned char*)settings,0,0,""); \
-  return 0;
+  return;
 
   // initialize the reserve_proof struct
   memset(reserve_proof.block_verifier_public_address,0,sizeof(reserve_proof.block_verifier_public_address));
@@ -343,8 +346,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
   // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
   if (test_settings == 0 && current_UTC_date_and_time.tm_min != 2 && current_UTC_date_and_time.tm_min != 3)
   {
-    send_data(CLIENT_SOCKET,(unsigned char*)"Invalid vote time\nValid times are the second and third minute of each hour}",0,0,"");
-    return 0;
+    SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Invalid vote time\nValid times are the second and third minute of each hour}");
   }
 
   // check if the data is valid and parse the message
@@ -467,7 +469,7 @@ int server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const i
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Could not update the voted for delegates total votes}");
   }
   send_data(CLIENT_SOCKET,(unsigned char*)"The vote was successfully added to the database}",0,0,"");
-  return 1;
+  return;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR
 }
@@ -589,7 +591,7 @@ int check_for_valid_ip_address(const char* HOST)
   }
   
   // check if the host is valid
-  if (strstr(ip_address,".") == NULL || strlen(ip_address) > BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH || strstr(ip_address,"http://") != NULL || strstr(ip_address,"https://") != NULL || strstr(ip_address,"www.") != NULL)
+  if (strstr(ip_address,".") == NULL || strlen(ip_address) > BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH || strlen(HOST) > BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH || string_count(ip_address,".") < 1 || string_count(HOST,".") < 1 || strstr(ip_address,"http://") != NULL || strstr(ip_address,"https://") != NULL || strstr(ip_address,"www.") != NULL)
   {
     return 0;
   }
@@ -635,11 +637,10 @@ Description: Runs the code when the server receives the NODES_TO_BLOCK_VERIFIERS
 Parameters:
   CLIENT_SOCKET - The socket to send data to
   MESSAGE - The message
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const int CLIENT_SOCKET, const char* MESSAGE)
+void server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
   char data[SMALL_BUFFER_SIZE];
@@ -664,7 +665,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
     error_message.total++; \
   } \
   send_data(CLIENT_SOCKET,(unsigned char*)settings,0,0,""); \
-  return 0;
+  return;
 
   memset(data,0,sizeof(data));
   memset(delegate_name,0,sizeof(delegate_name));
@@ -679,8 +680,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
   if (test_settings == 0 && current_UTC_date_and_time.tm_min % BLOCK_TIME != 2 && current_UTC_date_and_time.tm_min % BLOCK_TIME != 3)
   {
-    send_data(CLIENT_SOCKET,(unsigned char*)"Invalid vote time\nValid times are after the first two minutes of each round}",0,0,"");
-    return 0;
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Invalid vote time\nValid times are after the first two minutes of each round}");
   }
 
   // check if the maximum amount of delegates has been registered
@@ -824,7 +824,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_register_delegates(const
   }
   
   send_data(CLIENT_SOCKET,(unsigned char*)"Registered the delegate}",0,0,"");
-  return 1;
+  return;
 
   #undef DATABASE_COLLECTION
   #undef SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR
@@ -883,11 +883,10 @@ Description: Runs the code when the server receives the NODES_TO_BLOCK_VERIFIERS
 Parameters:
   CLIENT_SOCKET - The socket to send data to
   MESSAGE - The message
-Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const int CLIENT_SOCKET, const char* MESSAGE)
+void server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const int CLIENT_SOCKET, const char* MESSAGE)
 {
   // Variables
   char data[4096];
@@ -912,7 +911,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
     error_message.total++; \
   } \
   send_data(CLIENT_SOCKET,(unsigned char*)settings,0,0,""); \
-  return 0;
+  return;
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -927,8 +926,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
   if (test_settings == 0 && current_UTC_date_and_time.tm_min % BLOCK_TIME != 2 && current_UTC_date_and_time.tm_min % BLOCK_TIME != 3)
   {
-    send_data(CLIENT_SOCKET,(unsigned char*)"Invalid vote time\nValid times are after the first two minutes of each round}",0,0,"");
-    return 0;
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid vote time\nValid times are after the first two minutes of each round}");
   }
 
   // verify the message
@@ -980,7 +978,7 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   }
 
   // check if the value is valid
-  if ((strncmp(item,"IP_address",BUFFER_SIZE) == 0 && (strlen(value) > BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH || string_count(value,".") < 1)) || (strncmp(item,"about",BUFFER_SIZE) == 0 && strlen(value) > 1024) || (strncmp(item,"website",BUFFER_SIZE) == 0 && strlen(value) > 255) || (strncmp(item,"team",BUFFER_SIZE) == 0 && strlen(value) > 255) || (strncmp(item,"shared_delegate_status",BUFFER_SIZE) == 0 && strncmp(value,"true",BUFFER_SIZE) != 0 && strncmp(value,"false",BUFFER_SIZE) != 0) || (strncmp(item,"delegate_fee",BUFFER_SIZE) == 0 && check_for_valid_delegate_fee(value) == 0) || (strncmp(item,"server_specs",BUFFER_SIZE) == 0 && strlen(value) > 1024))
+  if ((strncmp(item,"IP_address",BUFFER_SIZE) == 0 && check_for_valid_ip_address(value) == 0) || (strncmp(item,"about",BUFFER_SIZE) == 0 && strlen(value) > 1024) || (strncmp(item,"website",BUFFER_SIZE) == 0 && strlen(value) > 255) || (strncmp(item,"team",BUFFER_SIZE) == 0 && strlen(value) > 255) || (strncmp(item,"shared_delegate_status",BUFFER_SIZE) == 0 && strncmp(value,"true",BUFFER_SIZE) != 0 && strncmp(value,"false",BUFFER_SIZE) != 0) || (strncmp(item,"delegate_fee",BUFFER_SIZE) == 0 && check_for_valid_delegate_fee(value) == 0) || (strncmp(item,"server_specs",BUFFER_SIZE) == 0 && strlen(value) > 1024))
   {    
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid item value to update}");
   }
@@ -1003,8 +1001,259 @@ int server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const i
   }
 
   send_data(CLIENT_SOCKET,(unsigned char*)"Updated the delegates information}",0,0,"");
-  return 1;
+  return;
 
   #undef DATABASE_COLLECTION
   #undef SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_nodes_to_block_verifiers_recover_delegates
+Description: Runs the code when the server receives the NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE message
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  MESSAGE - The message
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void server_receive_data_socket_nodes_to_block_verifiers_recover_delegates(const int CLIENT_SOCKET, const char* MESSAGE)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
+  char host[SMALL_BUFFER_SIZE];
+  char delegate_public_address[XCASH_WALLET_LENGTH+1];
+  char delegate_recover_public_address[XCASH_WALLET_LENGTH+1];
+  char delegate_recover_public_key[VRF_PUBLIC_KEY_LENGTH+1];
+  struct database_document_fields database_data;
+  char* message;
+  unsigned char dns_data[BUFFER_SIZE];
+  struct __res_state dnsstate;
+  ns_msg dns_message;
+  ns_rr dns_record;
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  int count;
+  int count2;
+  int dns_result;
+  size_t data_size;
+
+  // define macros
+  #define DATABASE_COLLECTION "delegates"
+  #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_recover_delegates",69); \
+    memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+    error_message.total++; \
+  } \
+  send_data(CLIENT_SOCKET,(unsigned char*)settings,0,0,""); \
+  return;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+  memset(host,0,sizeof(host));
+  memset(delegate_public_address,0,sizeof(delegate_public_address));
+  memset(delegate_recover_public_address,0,sizeof(delegate_recover_public_address));
+  memset(delegate_recover_public_key,0,sizeof(delegate_recover_public_key));
+
+  // get the current time
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+
+  // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
+  if (test_settings == 0 && current_UTC_date_and_time.tm_min % BLOCK_TIME != 2 && current_UTC_date_and_time.tm_min % BLOCK_TIME != 3)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("Invalid vote time\nValid times are after the first two minutes of each round}");
+  }
+
+  // verify the message
+  if (verify_data(MESSAGE,0) == 0 || string_count(MESSAGE,"|") != RECOVER_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
+  {   
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("Could not verify the message}");
+  }
+
+  // parse the message
+  for (count = 0, count2 = 0; count < RECOVER_PARAMETER_AMOUNT; count++)
+  {
+    if (count == 1)
+    {
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) >= sizeof(host))
+      {
+        SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("Invalid message data}");
+      }
+      memcpy(host,&MESSAGE[count2],data_size);
+    }
+    if (count == 2)
+    {
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
+      {
+        SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("Invalid message data}");
+      }
+      memcpy(delegate_public_address,&MESSAGE[count2],data_size);
+    }
+    count2 = (int)(strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1);
+  }
+
+  // make sure the domain is already registered in the database
+  memcpy(data,"{\"IP_address\":\"",15);
+  memcpy(data+strlen(data),host,strnlen(host,sizeof(data)));
+  memcpy(data+strlen(data),"\"}",2);
+
+  if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data) != 1)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("The domain is not registered in the database}");
+  }
+
+  // initialize the DNS data
+  if (res_ninit(&dnsstate) == -1)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("The delegate could not be recovered}");
+  }
+
+  // set the retry time and max retry attempts
+  dnsstate.retrans = CONNECTION_TIMEOUT_SETTINGS;
+  dnsstate.retry = 2;
+
+  // read the TXT records from the domain
+  if ((dns_result = res_nquery(&dnsstate, host, ns_c_in, ns_t_txt, (unsigned char*)&dns_data, sizeof(dns_data))) == -1)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("Can not read the TXT records for the domain}");
+  }
+
+  ns_initparse(dns_data, dns_result, &dns_message);
+  dns_result = ns_msg_count(dns_message, ns_s_an);
+  
+  // loop through each TXT record and look for a valid XCASH DPOPS TXT record
+  for (count = 0; count < dns_result; count++)
+  {
+    ns_parserr(&dns_message, ns_s_an, count, &dns_record);
+    ns_sprintrr(&dns_message, &dns_record, NULL, NULL, data2, sizeof(data2));
+
+    // check if it is a XCASH DPOPS TXT record
+    if ((message = strstr(data2,TXT_RECORD_START_STRING)) != NULL)
+    {
+      message += (sizeof(TXT_RECORD_START_STRING)-1);
+      if (strstr(message,XCASH_WALLET_PREFIX) && strlen(message) >= XCASH_WALLET_LENGTH)
+      {
+        memset(delegate_recover_public_address,0,sizeof(delegate_recover_public_address));
+        memcpy(delegate_recover_public_address,message,XCASH_WALLET_LENGTH);
+      }
+      else if (strlen(message) >= VRF_PUBLIC_KEY_LENGTH)
+      {
+        memset(delegate_recover_public_key,0,sizeof(delegate_recover_public_key));
+        memcpy(delegate_recover_public_key,message,VRF_PUBLIC_KEY_LENGTH);
+      }
+    }
+  }
+
+  // check if the public address is valid
+  if (strlen(delegate_recover_public_address) == XCASH_WALLET_LENGTH && strncmp(delegate_recover_public_key,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("The public address is invalid}");
+  }
+
+  // check if the public key is valid
+  if (strlen(delegate_recover_public_key) == VRF_PUBLIC_KEY_LENGTH && crypto_vrf_is_valid_key((const unsigned char*)delegate_recover_public_key) != 1)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("The public key is invalid}");
+  }
+
+  // check to see if the delegate had at least one XCASH DPOPS TXT record
+  if (strlen(delegate_recover_public_address) != XCASH_WALLET_LENGTH && strlen(delegate_recover_public_key) != VRF_PUBLIC_KEY_LENGTH)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("The domain name does not have a valid XCASH DPOPS TXT record}");
+  }
+
+  // copy the document, change the values and insert the new document into the collection
+
+  // initialize the database_document_fields struct 
+  INITIALIZE_DATABASE_DOCUMENT_FIELDS_STRUCT(count,TOTAL_DELEGATES_DATABASE_FIELDS,"server_receive_data_socket_nodes_to_block_verifiers_recover_delegates",data2,current_date_and_time,current_UTC_date_and_time);
+    
+  // get the delegates data
+  if (read_document_all_fields_from_collection(database_name,DATABASE_COLLECTION,data,&database_data) == 0)
+  {
+    POINTER_RESET_DATABASE_DOCUMENT_FIELDS_STRUCT(count);
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("Could not get the delegates information");
+  }
+
+  // update the delegates data
+  for (count = 0; count < (int)database_data.count; count++)
+  {
+    if (strncmp(database_data.item[count],"public_address",BUFFER_SIZE) == 0 && strlen(delegate_recover_public_address) == XCASH_WALLET_LENGTH)
+    {
+      // make sure the new data is not the same as the old data
+      if (strncmp(database_data.value[count],delegate_recover_public_address,BUFFER_SIZE) == 0)
+      {
+        SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("The data has already been updated");
+      }
+      memset(database_data.value[count],0,strlen(database_data.value[count]));
+      memcpy(database_data.value[count],delegate_recover_public_address,XCASH_WALLET_LENGTH);
+    }
+    else if (strncmp(database_data.item[count],"public_key",BUFFER_SIZE) == 0 && strlen(delegate_recover_public_key) == VRF_PUBLIC_KEY_LENGTH)
+    {
+      // make sure the new data is not the same as the old data
+      if (strncmp(database_data.value[count],delegate_recover_public_key,BUFFER_SIZE) == 0)
+      {
+        SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("The data has already been updated");
+      }
+      memset(database_data.value[count],0,strlen(database_data.value[count]));
+      memcpy(database_data.value[count],delegate_recover_public_key,VRF_PUBLIC_KEY_LENGTH);
+    }
+  }
+  
+  memset(data2,0,sizeof(data2));
+
+  // create a json string out of the delegates database data
+  if (create_json_data_from_database_document_array(&database_data,data2,"") == 0)
+  {
+    POINTER_RESET_DATABASE_DOCUMENT_FIELDS_STRUCT(count);
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("Could not create json data");
+  }
+
+  // remove the old document
+  if (delete_document_from_collection(database_name,DATABASE_COLLECTION,data) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("Could not remove the existing delegates data");
+  }
+
+  // add the document to the database
+  if (insert_document_into_collection_json(database_name,DATABASE_COLLECTION,data2) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("Could not add the delegates data to the database");
+  }
+
+  // update the reserve proofs for the document
+  if (strlen(delegate_recover_public_address) == XCASH_WALLET_LENGTH)
+  {
+    memset(data,0,sizeof(data));
+    memcpy(data,"{\"public_address_voted_for\":\"",29);
+    memcpy(data+strlen(data),delegate_public_address,XCASH_WALLET_LENGTH);
+    memcpy(data+strlen(data),"\"}",2);
+
+    memset(data3,0,sizeof(data3));
+    memcpy(data3,"{\"public_address_voted_for\":\"",29);
+    memcpy(data3+strlen(data3),delegate_recover_public_address,XCASH_WALLET_LENGTH);
+    memcpy(data3+strlen(data3),"\"}",2);
+
+    for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
+    { 
+      memset(data2,0,sizeof(data2));
+      memcpy(data2,"reserve_proofs_",15);
+      snprintf(data2+15,MAXIMUM_NUMBER_SIZE,"%d",count);
+      update_multiple_documents_from_collection(database_name,data2,data,data3);
+    }
+
+    RESET_ERROR_MESSAGES;
+  }
+
+  send_data(CLIENT_SOCKET,(unsigned char*)"The delegate has been recovered successfully}",0,0,"");
+  return;
+
+  #undef DATABASE_COLLECTION
+  #undef SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR
 }

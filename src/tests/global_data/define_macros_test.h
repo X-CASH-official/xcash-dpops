@@ -1335,6 +1335,18 @@ memset(data_test,0,sizeof(data_test));
 
 
 /*
+  The purpose of this message is for a node to send all block verifiers a message to recover the delegate
+
+  message_settings - The type of the message
+  domain_name - The domain name
+  public_address - The public address of the node that is sending the data.
+  XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE "NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE|domain_name|" TEST_WALLET "|SigV10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|"
+
+
+
+/*
   The purpose of this message is for a node to send a reserve proof to the block verifiers to add to the reserve proofs database
  
   message_settings - The type of the message
