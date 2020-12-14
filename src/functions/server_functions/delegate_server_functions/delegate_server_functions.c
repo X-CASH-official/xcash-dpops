@@ -541,17 +541,21 @@ Return: 0 if the IP address is not valid, 1 if the IP address is valid
 int check_for_valid_ip_address(const char* HOST)
 {
   // define macros
-  #define IP_ADDRESS_RANGE_AMOUNT 11
+  #define IP_ADDRESS_RANGE_AMOUNT 15
+  #define IP_ADDRESS_SEGMENTS_TOTAL 4
 
   // Constants
-  const int IP_ADDRESS_RANGE_START[IP_ADDRESS_RANGE_AMOUNT][4]={{10,12,242,0},{10,0,0,0},{169,254,0,0},{172,16,0,0},{127,0,0,0},{192,168,0,0},{224,0,0,0},{240,0,0,0},{0,0,0,0},{239,255,255,0},{255,255,255,255}};
-  const int IP_ADDRESS_RANGE_END[IP_ADDRESS_RANGE_AMOUNT][4] = {{10,12,242,255},{10,255,255,255},{169,254,255,255},{172,31,255,255},{127,255,255,255},{192,168,0,255},{239,255,255,255},{247,255,255,255},{0,255,255,255},{239,255,255,255},{255,255,255,255}};
+  const int IP_ADDRESS_RANGE_START[IP_ADDRESS_RANGE_AMOUNT][IP_ADDRESS_SEGMENTS_TOTAL] = {{0,0,0,0},{10,0,0,0},{100,64,0,0},{127,0,0,0},{169,254,0,0},{172,16,0,0},{192,0,0,0},{192,0,2,0},{192,88,99,0},{192,168,0,0},{198,18,0,0},{198,51,100,0},{203,0,113,0},{224,0,0,0},{240,0,0,0}};
+  const int IP_ADDRESS_RANGE_END[IP_ADDRESS_RANGE_AMOUNT][IP_ADDRESS_SEGMENTS_TOTAL] = {{0,255,255,255},{10,255,255,255},{100,127,255,255},{127,255,255,255},{169,254,255,255},{172,31,255,255},{192,0,0,255},{192,0,2,255},{192,88,99,255},{192,168,255,255},{198,19,255,255},{198,51,100,255},{203,0,113,255},{239,255,255,255},{255,255,255,254}};
 
   // Variables
   char ip_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
-  char ip_address_list[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
+  unsigned int ip_address_data[IP_ADDRESS_SEGMENTS_TOTAL];
+  char* search_item;
+  char* search_item_data;
   struct addrinfo serv_addr;
   struct addrinfo* settings = NULL;
+  char* data;
   void* ptr;
   int count;
   unsigned int count2; 
@@ -590,6 +594,18 @@ int check_for_valid_ip_address(const char* HOST)
     return 0;
   }
 
+  // convert the ip address to an int array
+  for (count = 0, search_item = strtok_r(ip_address, ".",&search_item_data); search_item != NULL; count++, search_item = strtok_r(NULL, ".",&search_item_data))
+  {
+    ip_address_data[count] = strtol(search_item,&data,10);
+  }
+
+  // check the first invalid ip address since it does not have a range
+  if (ip_address_data[0] == 255 && ip_address_data[1] == 255 && ip_address_data[2] == 255 && ip_address_data[3] == 255)
+  {
+    return 0;
+  }
+  
   // check if the host is in an invalid IP address range
   for (count = 0; count < IP_ADDRESS_RANGE_AMOUNT; count++)
   {
@@ -598,9 +614,7 @@ int check_for_valid_ip_address(const char* HOST)
 
     for (count2 = ip_address_start; count2 <= ip_address_end; count2++)
     {
-      memset(ip_address_list,0,sizeof(ip_address_list));
-      snprintf(ip_address_list,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH,"%d.%d.%d.%d\n",(count2 & 0xFF000000)>>24,(count2 & 0x00FF0000)>>16,(count2 & 0x0000FF00)>>8,(count2 & 0x000000FF));
-      if (strncmp(ip_address_list,ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH) == 0)
+      if (ip_address_data[0] == ((count2 & 0xFF000000)>>24) && ip_address_data[1] == ((count2 & 0x00FF0000)>>16) && ip_address_data[2] == ((count2 & 0x0000FF00)>>8) && ip_address_data[3] == ((count2 & 0x000000FF)))
       {
         return 0;
       }
@@ -609,6 +623,7 @@ int check_for_valid_ip_address(const char* HOST)
   return 1;
 
   #undef IP_ADDRESS_RANGE_AMOUNT
+  #undef IP_ADDRESS_SEGMENTS_TOTAL
 }
 
 
