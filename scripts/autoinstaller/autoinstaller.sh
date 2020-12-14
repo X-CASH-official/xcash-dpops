@@ -2416,6 +2416,7 @@ function backup()
 
   # Display the decentralized database backup data
   if [ "${SHARED_DELEGATE^^}" == "YES" ]; then
+    ls ~
     echo
     echo
     echo -e "${COLOR_PRINT_YELLOW}After running the autoinstaller on a different machine run this command to import your shared delegates database (place the shared_delegates_database_backup.7z in the $HOME directory)${END_COLOR_PRINT}" 
