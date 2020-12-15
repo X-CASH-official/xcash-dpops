@@ -34,6 +34,42 @@ Functions
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: check_if_IP_address_or_hostname
+Description: Checks if the data is an IP address or a hostname
+Parameters:
+  HOST - The hostname or IP address
+Return: 1 if an IP address, 2 if a hostname
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int check_if_IP_address_or_hostname(const char* HOST)
+{
+  // Constants
+  const size_t HOST_LENGTH = strlen(HOST);
+
+  // Variables
+  size_t count;
+
+  // quickly check if its a hostname
+  if (string_count(HOST,".") != 3)
+  {
+    return 2;
+  }
+
+  for (count = 0; count < HOST_LENGTH; count++)
+  {
+    if (strncmp(&HOST[count],"0",1) != 0 && strncmp(&HOST[count],"1",1) != 0 && strncmp(&HOST[count],"2",1) != 0 && strncmp(&HOST[count],"3",1) != 0 && strncmp(&HOST[count],"4",1) != 0 && strncmp(&HOST[count],"5",1) != 0 && strncmp(&HOST[count],"6",1) != 0 && strncmp(&HOST[count],"7",1) != 0 && strncmp(&HOST[count],"8",1) != 0 && strncmp(&HOST[count],"9",1) != 0 && strncmp(&HOST[count],".",1) != 0)
+    {
+      return 2;
+    }
+  }
+  return 1;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: send_http_request
 Description: Sends a HTTP request
 Parameters:
