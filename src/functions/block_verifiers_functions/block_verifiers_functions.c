@@ -262,9 +262,9 @@ int start_new_round(void)
       }
     }
 
-    if (count2 == BLOCK_VERIFIERS_AMOUNT)
+    if (count2 == BLOCK_VERIFIERS_AMOUNT && strncmp(xcash_wallet_public_address,OFFICIAL_SHARED_DELEGATE_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) != 0)
     {
-      color_print("Your delegate is not a current block verifier, waiting until the next round","red");
+      color_print("Your delegate is not a current block verifier, waiting until the next round","yellow");
       sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
       return 2;
     }
@@ -1606,7 +1606,7 @@ int block_verifiers_create_block(void)
   // if this is the xcash official shared delegate save a copy of the database and skip the round
   if (production_settings == 1 && strncmp(xcash_wallet_public_address,OFFICIAL_SHARED_DELEGATE_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0)
   {
-    color_print("Saving a copy of the database","blue");
+    color_print("Saving a copy of the database, waiting until the next round","yellow");
     memset(data,0,sizeof(data));
     memcpy(data,database_path_write,strnlen(database_path_write,sizeof(data)));
     memcpy(data+strlen(data),current_block_height,strnlen(current_block_height,sizeof(data)));
