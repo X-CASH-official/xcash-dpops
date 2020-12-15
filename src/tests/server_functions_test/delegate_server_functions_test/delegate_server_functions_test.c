@@ -211,8 +211,305 @@ int delegate_server_functions_test(void)
     fprintf(stderr,"\033[1;31mFAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_update_delegates\033[0m\n");
   }
 
+  // test check_for_valid_delegate_name
+  if (check_for_valid_delegate_name("us1.xcash.foundation") == 1 && check_for_valid_delegate_name("(us1.xcash.foundation)") == 0)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for check_for_valid_delegate_name\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for check_for_valid_delegate_name\033[0m\n");
+  }
+
+  // test check_for_valid_ip_address
+  if (check_for_valid_ip_address("us1.xcash.foundation") == 1 && check_for_valid_ip_address("147.135.68.247") == 1 && check_for_valid_ip_address("127.0.0.1") == 0 && check_for_valid_ip_address("localhost") == 0)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for check_for_valid_ip_address\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for check_for_valid_ip_address\033[0m\n");
+  }
+
+  // test server_receive_data_socket_nodes_to_block_verifiers_recover_delegates for public address and public key
+  RESET_ERROR_MESSAGES;
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  memset(data,0,sizeof(data));
+
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_1);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_2);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_3);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_4);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_5);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_6);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_7);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_8);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_9);
+  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_10 "\",\"total_vote_count\":\"3000000000\",\"IP_address\":\"delegate-recover-test-1.xcash.foundation\",\"delegate_name\":\"delegate_name_10\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"shared_delegate_status\":\"false\",\"delegate_fee\":\"\",\"server_specs\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"" TEST_WALLET_PUBLIC_KEY_10 "\"}");
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_1);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_2);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_3);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_4);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_5);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_6);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_7);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_8);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_9);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_10);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_11);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_12);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_13);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_14);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_15);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_16);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_17);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_18);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_19);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_20);
+  insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA);
+  
+  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE|delegate-recover-test-1.xcash.foundation|",83);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  sleep(5);
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  if (read_document_field_from_collection(database_name,"delegates","{\"IP_address\":\"delegate-recover-test-1.xcash.foundation\"}","public_address",result_test) == 1 && strncmp(result_test,TEST_WALLET_15,sizeof(result_test)) == 0 && read_document_field_from_collection(database_name,"delegates","{\"IP_address\":\"delegate-recover-test-1.xcash.foundation\"}","public_key",data_test) == 1 && strncmp(data_test,TEST_WALLET_PUBLIC_KEY_15,sizeof(data_test)) == 0 && count_documents_in_collection(database_name,"reserve_proofs_1","{\"public_address_voted_for\":\"" TEST_WALLET_15 "\"}") == 3)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_recover_delegates for public address and public key\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_recover_delegates for public address and public key\033[0m\n");
+    exit(0);
+  }
+
+  // test server_receive_data_socket_nodes_to_block_verifiers_recover_delegates for public address
+  RESET_ERROR_MESSAGES;
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  memset(data,0,sizeof(data));
+
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_1);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_2);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_3);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_4);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_5);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_6);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_7);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_8);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_9);
+  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_10 "\",\"total_vote_count\":\"3000000000\",\"IP_address\":\"delegate-recover-test-2.xcash.foundation\",\"delegate_name\":\"delegate_name_10\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"shared_delegate_status\":\"false\",\"delegate_fee\":\"\",\"server_specs\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"" TEST_WALLET_PUBLIC_KEY_10 "\"}");
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_1);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_2);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_3);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_4);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_5);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_6);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_7);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_8);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_9);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_10);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_11);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_12);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_13);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_14);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_15);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_16);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_17);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_18);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_19);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_20);
+  insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA);
+  
+  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE|delegate-recover-test-2.xcash.foundation|",83);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  sleep(5);
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  if (read_document_field_from_collection(database_name,"delegates","{\"IP_address\":\"delegate-recover-test-2.xcash.foundation\"}","public_address",result_test) == 1 && strncmp(result_test,TEST_WALLET_15,sizeof(result_test)) == 0 && count_documents_in_collection(database_name,"reserve_proofs_1","{\"public_address_voted_for\":\"" TEST_WALLET_15 "\"}") == 3)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_recover_delegates for public address\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_recover_delegates for public address\033[0m\n");
+    exit(0);
+  }
+
+  // test server_receive_data_socket_nodes_to_block_verifiers_recover_delegates for public key
+  RESET_ERROR_MESSAGES;
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  memset(data,0,sizeof(data));
+
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_1);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_2);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_3);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_4);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_5);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_6);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_7);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_8);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_9);
+  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_10 "\",\"total_vote_count\":\"3000000000\",\"IP_address\":\"delegate-recover-test-3.xcash.foundation\",\"delegate_name\":\"delegate_name_10\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"shared_delegate_status\":\"false\",\"delegate_fee\":\"\",\"server_specs\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"" TEST_WALLET_PUBLIC_KEY_10 "\"}");
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_1);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_2);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_3);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_4);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_5);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_6);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_7);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_8);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_9);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_10);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_11);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_12);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_13);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_14);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_15);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_16);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_17);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_18);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_19);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_20);
+  insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA);
+  
+  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE|delegate-recover-test-3.xcash.foundation|",83);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  sleep(5);
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  if (read_document_field_from_collection(database_name,"delegates","{\"IP_address\":\"delegate-recover-test-3.xcash.foundation\"}","public_key",data_test) == 1 && strncmp(data_test,TEST_WALLET_PUBLIC_KEY_15,sizeof(data_test)) == 0 && count_documents_in_collection(database_name,"reserve_proofs_1","{\"public_address_voted_for\":\"" TEST_WALLET_10 "\"}") == 3)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_recover_delegates for public key\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_recover_delegates for public key\033[0m\n");
+    exit(0);
+  }
+
+  // test server_receive_data_socket_nodes_to_block_verifiers_recover_delegates for invalid data
+  RESET_ERROR_MESSAGES;
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  memset(data,0,sizeof(data));
+
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_1);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_2);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_3);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_4);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_5);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_6);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_7);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_8);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_9);
+  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_10 "\",\"total_vote_count\":\"3000000000\",\"IP_address\":\"delegate-recover-test-4.xcash.foundation\",\"delegate_name\":\"delegate_name_10\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"shared_delegate_status\":\"false\",\"delegate_fee\":\"\",\"server_specs\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"" TEST_WALLET_PUBLIC_KEY_10 "\"}");
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_1);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_2);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_3);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_4);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_5);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_6);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_7);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_8);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_9);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_10);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_11);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_12);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_13);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_14);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_15);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_16);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_17);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_18);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_19);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_20);
+  insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA);
+  
+  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE|delegate-recover-test-4.xcash.foundation|",83);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  sleep(5);
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  if (read_document_field_from_collection(database_name,"delegates","{\"IP_address\":\"delegate-recover-test-4.xcash.foundation\"}","public_address",result_test) == 1 && strncmp(result_test,TEST_WALLET_10,sizeof(result_test)) == 0 && read_document_field_from_collection(database_name,"delegates","{\"IP_address\":\"delegate-recover-test-4.xcash.foundation\"}","public_key",data_test) == 1 && strncmp(data_test,TEST_WALLET_PUBLIC_KEY_10,sizeof(data_test)) == 0 && count_documents_in_collection(database_name,"reserve_proofs_1","{\"public_address_voted_for\":\"" TEST_WALLET_10 "\"}") == 3)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_recover_delegates for invalid data\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_recover_delegates for invalid data\033[0m\n");
+    exit(0);
+  }
+
+  // test server_receive_data_socket_nodes_to_block_verifiers_recover_delegates for invalid data
+  RESET_ERROR_MESSAGES;
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  memset(data,0,sizeof(data));
+
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_1);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_2);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_3);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_4);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_5);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_6);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_7);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_8);
+  insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DELEGATES_DATA_9);
+  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_10 "\",\"total_vote_count\":\"3000000000\",\"IP_address\":\"delegate-recover-test-5.xcash.foundation\",\"delegate_name\":\"delegate_name_10\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"shared_delegate_status\":\"false\",\"delegate_fee\":\"\",\"server_specs\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"" TEST_WALLET_PUBLIC_KEY_10 "\"}");
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_1);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_2);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_3);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_4);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_5);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_6);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_7);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_8);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_9);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_10);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_11);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_12);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_13);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_14);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_15);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_16);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_17);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_18);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_19);
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_SHARED_DELEGATE_RESERVE_PROOFS_DATA_20);
+  insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA);
+  
+  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE|delegate-recover-test-5.xcash.foundation|",83);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  sleep(5);
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  if (read_document_field_from_collection(database_name,"delegates","{\"IP_address\":\"delegate-recover-test-5.xcash.foundation\"}","public_address",result_test) == 1 && strncmp(result_test,TEST_WALLET_10,sizeof(result_test)) == 0 && read_document_field_from_collection(database_name,"delegates","{\"IP_address\":\"delegate-recover-test-5.xcash.foundation\"}","public_key",data_test) == 1 && strncmp(data_test,TEST_WALLET_PUBLIC_KEY_10,sizeof(data_test)) == 0 && count_documents_in_collection(database_name,"reserve_proofs_1","{\"public_address_voted_for\":\"" TEST_WALLET_10 "\"}") == 3)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for server_receive_data_socket_nodes_to_block_verifiers_recover_delegates for no data\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_recover_delegates for no data\033[0m\n");
+    exit(0);
+  }
 
 
+  
   // check all errors for each test
   delete_database(database_name);
   RESET_ERROR_MESSAGES;

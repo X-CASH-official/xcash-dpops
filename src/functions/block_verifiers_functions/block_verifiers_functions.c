@@ -2201,7 +2201,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
 
       // set up the addrinfo
       memset(&serv_addr, 0, sizeof(serv_addr));
-      if (string_count(block_verifiers_send_data_socket[count].IP_address,".") == 3)
+      if (check_if_IP_address_or_hostname(block_verifiers_send_data_socket[count].IP_address) == 1)
       {
         /* the host is an IP address
         AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port

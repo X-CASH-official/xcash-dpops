@@ -5,6 +5,7 @@
 #include "define_macro_functions.h"
 #include "define_macros_test.h"
 
+#include "count_database_functions.h"
 #include "insert_database_functions.h"
 #include "update_database_functions.h"
 #include "delete_database_functions.h"
@@ -69,6 +70,21 @@ int update_database_functions_test(void)
   else
   {
     color_print("PASSED! Test for update_document_from_collection_thread","green");
+    count_test++;
+  }
+
+  // update multiple documents in the collection
+  delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,"{\"message_settings\": \"XCASH_DPOPS_TEST_DATA_1\",\"public_address\": \"" NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION "\"}");
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,"{\"message_settings\": \"XCASH_DPOPS_TEST_DATA_2\",\"public_address\": \"" NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION "\"}");
+  insert_document_into_collection_json(database_name,DATABASE_COLLECTION_TEST,"{\"message_settings\": \"XCASH_DPOPS_TEST_DATA_3\",\"public_address\": \"" NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION "\"}");
+  if (update_multiple_documents_from_collection(database_name,DATABASE_COLLECTION_TEST,"{\"public_address\": \"" NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION "\"}","{\"public_address\": \"" NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION "\"}") == 0 || count_documents_in_collection(database_name,DATABASE_COLLECTION_TEST,"{\"public_address\": \"" NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION "\"}") != 3)
+  {
+    color_print("FAILED! Test for update_multiple_documents_from_collection","red");
+  }
+  else
+  {
+    color_print("PASSED! Test for update_multiple_documents_from_collection","green");
     count_test++;
   }
 

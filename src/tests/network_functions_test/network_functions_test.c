@@ -95,6 +95,17 @@ int network_functions_test(void)
   memcpy(current_round_part_backup_node,"0",sizeof(char)); 
   pthread_rwlock_unlock(&rwlock);
 
+  // test check_if_IP_address_or_hostname
+  if (check_if_IP_address_or_hostname("147.135.68.247") == 1 && check_if_IP_address_or_hostname("delegate-recover-test-1.xcash.foundation") == 2)
+  {
+    color_print("PASSED! Test for check_if_IP_address_or_hostname","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for check_if_IP_address_or_hostname","red");
+  }  
+
   // test send_http_request
   if (send_http_request(data_test,XCASH_DPOPS_delegates_IP_address,"/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_PUBLIC_ADDRESS_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0)
   {  

@@ -567,7 +567,7 @@ int check_for_valid_ip_address(const char* HOST)
   memset(ip_address,0,sizeof(ip_address));
 
   // check if the IP address is a domain name
-  if (string_count(HOST,".") == 3)
+  if (check_if_IP_address_or_hostname(HOST) == 1)
   {
     // the host is an IP address
     memcpy(ip_address,HOST,strnlen(HOST,sizeof(ip_address)));
@@ -1029,6 +1029,7 @@ void server_receive_data_socket_nodes_to_block_verifiers_recover_delegates(const
   char delegate_public_address[XCASH_WALLET_LENGTH+1];
   char delegate_recover_public_address[XCASH_WALLET_LENGTH+1];
   char delegate_recover_public_key[VRF_PUBLIC_KEY_LENGTH+1];
+  unsigned char delegate_recover_public_key_data[crypto_vrf_PUBLICKEYBYTES+1];
   struct database_document_fields database_data;
   char* message;
   unsigned char dns_data[BUFFER_SIZE];
@@ -1045,6 +1046,7 @@ void server_receive_data_socket_nodes_to_block_verifiers_recover_delegates(const
   // define macros
   #define DATABASE_COLLECTION "delegates"
   #define SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR(settings) \
+  color_print(settings,"yellow"); \
   if (debug_settings == 1) \
   { \
     memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_block_verifiers_recover_delegates",69); \
@@ -1061,6 +1063,7 @@ void server_receive_data_socket_nodes_to_block_verifiers_recover_delegates(const
   memset(delegate_public_address,0,sizeof(delegate_public_address));
   memset(delegate_recover_public_address,0,sizeof(delegate_recover_public_address));
   memset(delegate_recover_public_key,0,sizeof(delegate_recover_public_key));
+  memset(delegate_recover_public_key_data,0,sizeof(delegate_recover_public_key_data));
 
   // get the current time
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
@@ -1072,7 +1075,7 @@ void server_receive_data_socket_nodes_to_block_verifiers_recover_delegates(const
   }
 
   // verify the message
-  if (verify_data(MESSAGE,0) == 0 || string_count(MESSAGE,"|") != RECOVER_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
+  if (string_count(MESSAGE,"|") != RECOVER_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
   {   
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("Could not verify the message}");
   }
@@ -1088,15 +1091,13 @@ void server_receive_data_socket_nodes_to_block_verifiers_recover_delegates(const
       }
       memcpy(host,&MESSAGE[count2],data_size);
     }
-    if (count == 2)
-    {
-      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
-      {
-        SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("Invalid message data}");
-      }
-      memcpy(delegate_public_address,&MESSAGE[count2],data_size);
-    }
     count2 = (int)(strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1);
+  }
+
+  // check if its an ip address
+  if (check_if_IP_address_or_hostname(host) == 1)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("Can not recover the delegate since it has been registered with an IP address and not a domain name}");
   }
 
   // make sure the domain is already registered in the database
@@ -1118,7 +1119,7 @@ void server_receive_data_socket_nodes_to_block_verifiers_recover_delegates(const
   // set the retry time and max retry attempts
   dnsstate.retrans = CONNECTION_TIMEOUT_SETTINGS;
   dnsstate.retry = 2;
-
+  
   // read the TXT records from the domain
   if ((dns_result = res_nquery(&dnsstate, host, ns_c_in, ns_t_txt, (unsigned char*)&dns_data, sizeof(dns_data))) == -1)
   {
@@ -1150,17 +1151,28 @@ void server_receive_data_socket_nodes_to_block_verifiers_recover_delegates(const
       }
     }
   }
+  
 
   // check if the public address is valid
-  if (strlen(delegate_recover_public_address) == XCASH_WALLET_LENGTH && strncmp(delegate_recover_public_key,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+  if (strlen(delegate_recover_public_address) == XCASH_WALLET_LENGTH && strncmp(delegate_recover_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("The public address is invalid}");
   }
 
   // check if the public key is valid
-  if (strlen(delegate_recover_public_key) == VRF_PUBLIC_KEY_LENGTH && crypto_vrf_is_valid_key((const unsigned char*)delegate_recover_public_key) != 1)
+  if (strlen(delegate_recover_public_key) == VRF_PUBLIC_KEY_LENGTH)
   {
-    SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("The public key is invalid}");
+    // convert the VRF public key string to a VRF public key
+    for (count2 = 0, count = 0; count2 < VRF_PUBLIC_KEY_LENGTH; count++, count2 += 2)
+    {
+      memset(data2,0,sizeof(data2));
+      memcpy(data2,&delegate_recover_public_key[count2],2);
+      delegate_recover_public_key_data[count] = (unsigned char)strtol(data2, NULL, 16);
+    }
+    if (crypto_vrf_is_valid_key((const unsigned char*)delegate_recover_public_key_data) != 1)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR("The public key is invalid}");
+    }
   }
 
   // check to see if the delegate had at least one XCASH DPOPS TXT record
@@ -1184,6 +1196,11 @@ void server_receive_data_socket_nodes_to_block_verifiers_recover_delegates(const
   // update the delegates data
   for (count = 0; count < (int)database_data.count; count++)
   {
+    if (strncmp(database_data.item[count],"public_address",BUFFER_SIZE) == 0)
+    {
+      // get the current delegates public address
+      memcpy(delegate_public_address,database_data.value[count],XCASH_WALLET_LENGTH);
+    }
     if (strncmp(database_data.item[count],"public_address",BUFFER_SIZE) == 0 && strlen(delegate_recover_public_address) == XCASH_WALLET_LENGTH)
     {
       // make sure the new data is not the same as the old data

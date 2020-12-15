@@ -954,6 +954,12 @@ void remove_inactive_delegates(void)
       }
     }
 
+    // check to make sure it is not an official delegate
+    if (strncmp(OFFICIAL_SHARED_DELEGATE_PUBLIC_ADDRESS_PRODUCTION,delegates[count].public_address,XCASH_WALLET_LENGTH) == 0)
+    {
+      continue;
+    }
+
     // check if each delegate has not mined a block, and their vote count is under the MINIMUM_AMOUNT_REGISTER_DELEGATE
     if (strncmp(delegates[count].block_producer_block_heights,"",1) == 0 && total_votes < MINIMUM_AMOUNT_REGISTER_DELEGATE)
     {

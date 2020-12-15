@@ -173,7 +173,7 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
 
   // set up the addrinfo
   memset(&serv_addr, 0, sizeof(serv_addr));
-  if (string_count(HOST,".") == 3)
+  if (check_if_IP_address_or_hostname(HOST) == 1)
   {
     /* the host is an IP address
     AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
@@ -349,7 +349,7 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
 
   // set up the addrinfo
   memset(&serv_addr, 0, sizeof(serv_addr));
-  if (string_count(HOST,".") == 3)
+  if (check_if_IP_address_or_hostname(HOST) == 1)
   {
     /* the host is an IP address
     AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
@@ -503,7 +503,7 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
 
   // set up the addrinfo
   memset(&serv_addr, 0, sizeof(serv_addr));
-  if (string_count(HOST,".") == 3)
+  if (check_if_IP_address_or_hostname(HOST) == 1)
   {
     /* the host is an IP address
     AI_NUMERICSERV = Specifies that getaddrinfo is provided a numerical port
