@@ -480,10 +480,10 @@ void server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databa
   }
   
   reserve_bytes_blocks_amount = (count2 - current_block_height_reserve_bytes);
-  if (reserve_bytes_blocks_amount > BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME * 30)
+  if (reserve_bytes_blocks_amount > BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME)
   {
     // maximum range of blocks returned is 1 months worth of blocks
-    reserve_bytes_blocks_amount = BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME * 30;
+    reserve_bytes_blocks_amount = BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME;
   }
   if (reserve_bytes_blocks_amount == 0)
   {
