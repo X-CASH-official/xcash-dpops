@@ -475,7 +475,7 @@ function installation_settings()
     INSTALLATION_TYPE="Installation"
     print_installation_settings
   fi
-  if [ "$INSTALLATION_TYPE_SETTINGS" -eq "15" ]; then 
+  if [ "$INSTALLATION_TYPE_SETTINGS" -eq "16" ]; then 
     echo
     echo -e "${COLOR_PRINT_RED}WARNING: Old wallet, old block verifier key and old settings (service files)${END_COLOR_PRINT}"
     echo -e "${COLOR_PRINT_RED}will be overwritten if already existent! Please make a backup if required!${END_COLOR_PRINT}"
