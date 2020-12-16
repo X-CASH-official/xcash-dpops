@@ -309,7 +309,10 @@ long long int get_delegates_total_voters(struct voters* voters)
       for (count = 0; count < count2; count++, voters_count++)
       {
         memcpy(voters[voters_count].public_address,database_multiple_documents_fields.value[count][0],XCASH_WALLET_LENGTH);
-        memcpy(voters[voters_count].total_vote_count,database_multiple_documents_fields.value[count][2],strnlen(database_multiple_documents_fields.value[count][2],100));
+
+        // if the voter whitelist is on and the public address is not in the voter whitelist, set the total vote count to 0, and this will also not add to the overall total vote count of all of the votes
+        strlen(voter_whitelist) > XCASH_WALLET_LENGTH && strstr(voter_whitelist,voters[voters_count].public_address) == NULL ? memcpy(voters[voters_count].total_vote_count,"0",1) : memcpy(voters[voters_count].total_vote_count,database_multiple_documents_fields.value[count][2],strnlen(database_multiple_documents_fields.value[count][2],100));
+        
         sscanf(voters[voters_count].total_vote_count, "%lld", &number);
         voters[voters_count].total_votes = number;
         total_votes += number;
@@ -399,6 +402,12 @@ int calculate_block_reward_for_each_delegate(long long int block_reward)
   // calculate the block reward for all of the voters
   for (count = 0; count < total_voters; count++)
   {
+    // if the total_votes is 0 skip the delegate
+    if (voters[count].total_votes == 0)
+    {
+      continue;
+    }
+
     // create the message
     memset(data2,0,sizeof(data2));
     memcpy(data2,"{\"public_address\":\"",19);

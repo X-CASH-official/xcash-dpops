@@ -122,6 +122,7 @@ int shared_delegates_website; // 1 if the running the shared delegates websites,
 int total_threads; // The total threads
 double fee; // the fee
 long long int minimum_amount; // the minimum amount to send a payment
+char* voter_whitelist; // Holds the whitelist of public addresses
 char voter_inactivity_count[10]; // the number of days to wait to remove an inactive delegates information from the database
 
 
@@ -206,6 +207,7 @@ void initialize_data(int parameters_count, char* parameters[])
 
   server_limit_IP_address_list = (char*)calloc(15728640,sizeof(char)); // 15 MB
   server_limit_public_address_list = (char*)calloc(15728640,sizeof(char)); // 15 MB
+  voter_whitelist = (char*)calloc((XCASH_WALLET_LENGTH*MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE)+(MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE+1),sizeof(char));
    
   // check if the memory needed was allocated on the heap successfully
   if (server_limit_IP_address_list == NULL || server_limit_public_address_list == NULL)
@@ -856,6 +858,10 @@ int set_parameters(int parameters_count, char* parameters[])
     {
       memset(voter_inactivity_count,0,sizeof(voter_inactivity_count));
       memcpy(voter_inactivity_count,parameters[count+1],strnlen(parameters[count+1],sizeof(voter_inactivity_count)));
+    }
+    if (strncmp(parameters[count],"--voter-whitelist",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
+    {
+      memcpy(voter_whitelist,parameters[count+1],strlen(parameters[count+1]));
     }
     if (strncmp(parameters[count],"--total-threads",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {

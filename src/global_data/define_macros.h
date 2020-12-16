@@ -19,8 +19,8 @@ Using define statements instead of constants for increased efficiency
 #define FIRST_BLOCK_MINING_REWARD 190734.863281 // The first blocks mining reward
 //#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 521850 // The start block height for X-CASH proof of stake
 //#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_DATA "521850" // The start block height for X-CASH proof of stake
-#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 760000 // The start block height for X-CASH proof of stake
-#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_DATA "760000" // The start block height for X-CASH proof of stake
+#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 740000 // The start block height for X-CASH proof of stake
+#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_DATA "740000" // The start block height for X-CASH proof of stake
 #define BLOCK_TIME 5 // The block time in minutes
 #define BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME 288 // The blocks per day with a 5 minute block time
 #define UNLOCK_BLOCK_AMOUNT 60 // The default unlock block amount for a block reward transaction
@@ -70,8 +70,8 @@ Using define statements instead of constants for increased efficiency
 // Note the BLOCK_VERIFIERS_TOTAL_AMOUNT and BLOCK_VERIFIERS_AMOUNT should be a number that is a multiple of 4 or of 5 or BLOCK_VERIFIERS_TOTAL_AMOUNT should be lower than 50, otherwise it will not have enough time in the round to verify all of the block verifiers signatures
 #define XCASH_DPOPS_CURRENT_VERSION "xcash-dpops - Version 1.0.0\n"
 #define BLOCK_VERIFIERS_TOTAL_AMOUNT 100 // The total amount of block verifiers
-#define BLOCK_VERIFIERS_AMOUNT 30 // The amount of block verifiers in a round
-#define BLOCK_VERIFIERS_VALID_AMOUNT 20 // The amount of block verifiers that need to vote true for the part of the round to be valid
+#define BLOCK_VERIFIERS_AMOUNT 50 // The amount of block verifiers in a round
+#define BLOCK_VERIFIERS_VALID_AMOUNT 27 // The amount of block verifiers that need to vote true for the part of the round to be valid
 #define MAXIMUM_AMOUNT_OF_DELEGATES 150 // The maximum amount of delegates that can be registered
 #define MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE 1000 // The maximum amount of voters that a delegate can have
 #define BLOCK_PRODUCERS_BACKUP_AMOUNT 5 // The amount of backup block producers for a network
@@ -738,10 +738,11 @@ sleep(BLOCK_VERIFIERS_SETTINGS);
 "--database-name - Name of the database. Default name is XCASH_PROOF_OF_STAKE.\n" \
 "--shared-delegates-database-name - Name of the shared delegates database. Default name is XCASH_PROOF_OF_STAKE_DELEGATES.\n" \
 "--delegates-website - Run the delegates website.\n" \
-"--shared-delegates-website --fee <fee> --minimum-amount [<minimum_amount>] --voter-inactivity-count [<number_of_days> (optional)] - Run the shared delegates website with a fee of <fee> and a minimum amount of <minimum_amount>\n" \
+"--shared-delegates-website --fee <fee> --minimum-amount [<minimum_amount>] --voter-inactivity-count [<number_of_days> (optional)] --voter-whitelist [<public_address_1|public_address_2|public_address_3| etc etc> (optional)] - Run the shared delegates website with a fee of <fee> and a minimum amount of <minimum_amount>\n" \
 "Fee is expressed as a percentage, up to 6 decimals.\n" \
 "Minimum amount of XCASH for a voter to receive a payment in regulat unit, expressed as an integer.\n" \
 "Voter inactivity count is optional. Number of consecutive days where a voter would have registered in the database, but is not actively participating towards the shared delegate. If this number of consecutive days is reached, the voter will be removed from the database and all funds that were left over would not sent out, since they were below the MINIMUM AMOUNT. If this parameter is not specified, the default amount is 30 consecutive days.\n" \
+"Voter whitelist is optional. It is a list of public address that will only be payed by the shared delegate. This is useful for users that just want a few people to join together and create a delegate and dont want any \"public\" votes.\n" \
 "--generate-key - Generate a public and private key for signing and verifying messages between block verifiers." \
 "--synchronize-database-from-network-data-node - Synchronize the database from a network data node.\n" \
 "--synchronize-database-from-specific-delegate <delegates_IP_address> - Synchronize the database from a specific node, and does not check the majority. It will also exit the program once done syncing.\nNote: This method of syncing is likely to be the most error prone, since it skips the majority checks, but will also likely be the fastest.\nShould only be used in specific circumstances.\n" \
