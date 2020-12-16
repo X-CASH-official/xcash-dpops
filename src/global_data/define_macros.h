@@ -122,6 +122,7 @@ Using define statements instead of constants for increased efficiency
 #define BUFFER_SIZE_RESERVE_PROOF 25000
 #define BUFFER_SIZE_NETWORK_BLOCK_DATA 500
 #define BUFFER_SIZE_NETWORK_BLOCK_TRANSACTIONS_DATA 100
+#define BUFFER_SIZE_BLOCK_HEIGHTS_DATA 150000
 #define MAXIMUM_BUFFER_SIZE 52428800 // 50 MB
 
 #define RANDOM_STRING_LENGTH 100 // The length of the random string
