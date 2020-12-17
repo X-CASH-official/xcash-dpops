@@ -74,6 +74,7 @@ Using define statements instead of constants for increased efficiency
 #define BLOCK_VERIFIERS_VALID_AMOUNT 20 // The amount of block verifiers that need to vote true for the part of the round to be valid
 #define MAXIMUM_AMOUNT_OF_DELEGATES 150 // The maximum amount of delegates that can be registered
 #define MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE 1000 // The maximum amount of voters that a delegate can have
+#define MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE_PRIVATE_GROUP 100 // The maximum amount of voters that a delegate can have for a private group
 #define BLOCK_PRODUCERS_BACKUP_AMOUNT 5 // The amount of backup block producers for a network
 #define INVALID_BLOCK_VERIFIERS_AMOUNT 10 // The maximum amount of times your node did not receive the block from the main network backup node, to indicate if your node is not syncing
 #define MINIMUM_AMOUNT_RESERVE_PROOF 2000000000000 // The minimum amount to create a reserve proof, 2M xcash
@@ -161,7 +162,7 @@ Using define statements instead of constants for increased efficiency
 #define TOTAL_DELEGATES_DATABASE_FIELDS 18 // The total delegates database fields
 #define TOTAL_STATISTICS_DATABASE_FIELDS 7 // The total statistics database fields
 #define TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS 4 // The total public addresses database fields
-#define TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS 5 // the total public addresses payments database fields
+#define TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS 7 // the total public addresses payments database fields
 #define TOTAL_BLOCKS_FOUND_DATABASE_FIELDS 4 // The total blocks found database fields
 
 // Shared delegates settings
@@ -739,17 +740,15 @@ sleep(BLOCK_VERIFIERS_SETTINGS);
 "--database-name - Name of the database. Default name is XCASH_PROOF_OF_STAKE.\n" \
 "--shared-delegates-database-name - Name of the shared delegates database. Default name is XCASH_PROOF_OF_STAKE_DELEGATES.\n" \
 "--delegates-website - Run the delegates website.\n" \
-"--shared-delegates-website --fee <fee> --minimum-amount [<minimum_amount>] --voter-inactivity-count [<number_of_days> (optional)] --voter-whitelist [<public_address_1|public_address_2|public_address_3| etc etc> (optional)] - Run the shared delegates website with a fee of <fee> and a minimum amount of <minimum_amount>\n" \
+"--shared-delegates-website --fee <fee> --minimum-amount [<minimum_amount>] --voter-inactivity-count [<number_of_days> (optional)] - Run the shared delegates website with a fee of <fee> and a minimum amount of <minimum_amount>\n" \
 "Fee is expressed as a percentage, up to 6 decimals.\n" \
 "Minimum amount of XCASH for a voter to receive a payment in regulat unit, expressed as an integer.\n" \
 "Voter inactivity count is optional. Number of consecutive days where a voter would have registered in the database, but is not actively participating towards the shared delegate. If this number of consecutive days is reached, the voter will be removed from the database and all funds that were left over would not sent out, since they were below the MINIMUM AMOUNT. If this parameter is not specified, the default amount is 30 consecutive days.\n" \
-"Voter whitelist is optional. It is a list of public address that will only be payed by the shared delegate. This is useful for users that just want a few people to join together and create a delegate and dont want any \"public\" votes.\n" \
+"--private-group <full path to configuration file> - Allows the shared delegate to use a private group. This allows for only specific voters to be paid by the shared delegate, and or the shared delegate to send payments to different public addresses than the voted for public address.\nProvide a configuration with the following format:\nname1|public_address_of_vote|public_address_that_payment_should_go_to\nname2|public_address_of_vote|public_address_that_payment_should_go_to\n\nYou can have up to 100 private group members for the delegate\n" \
 "--generate-key - Generate a public and private key for signing and verifying messages between block verifiers." \
 "--synchronize-database-from-network-data-node - Synchronize the database from a network data node.\n" \
 "--synchronize-database-from-specific-delegate <delegates_IP_address> - Synchronize the database from a specific node, and does not check the majority. It will also exit the program once done syncing.\nNote: This method of syncing is likely to be the most error prone, since it skips the majority checks, but will also likely be the fastest.\nShould only be used in specific circumstances.\n" \
 "--disable-synchronizing-databases-and-starting-timers - Disables synchronizing the databases and starting the timers. Used for testing. Parameter needs to be passed last.\n" \
 "--registration-mode <month> <day> <hour> <minute> - Runs the registration mode for network data nodes. Used to keep a majority for the database before the block producing starts <month> is the month of the year (0-11), <day> is the day of the month (1-31), <hour> is the hour in UTC (1-23), <minute> is the minute (31-59). Parameter needs to be passed last.\n" \
-"--start-time <month> <day> <hour> <minute> - Starts the current block height timer at a specific time. <month> is the month of the year (0-11), <day> is the day of the month (1-31), <hour> is the hour in UTC (1-23), <minute> is the minute (31-59). Parameter needs to be passed last.\n" \
-"--test-data-add - Add test data to the databases.\n" \
-"--test-data-remove - Remove test data from the databases.\n"
+"--start-time <month> <day> <hour> <minute> - Starts the current block height timer at a specific time. <month> is the month of the year (0-11), <day> is the day of the month (1-31), <hour> is the hour in UTC (1-23), <minute> is the minute (31-59). Parameter needs to be passed last.\n"
 #endif

@@ -39,7 +39,7 @@ int shared_delegate_website_functions_test(void)
   // define macros
   #define GET_BLOCKS_FOUND_TEST_DATA_RESULTS "[{\"block_height\":\"521850\",\"block_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"block_date_and_time\":\"10\",\"block_reward\":\"15\"},{\"block_height\":\"440850\",\"block_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"block_date_and_time\":\"10\",\"block_reward\":\"10\"}]"
   #define GET_PUBLIC_ADDRESS_INFORMATION_DATA_RESULTS "{\"public_address\":\"" TEST_WALLET "\",\"current_total\":\"5\",\"total\":\"10\",\"inactivity_count\":\"15\"}"
-  #define GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_DATA_RESULTS "[{\"public_address\":\"" TEST_WALLET "\",\"date_and_time\":\"5\",\"total\":\"10\",\"tx_hash\":\"TX_HASH\",\"tx_key\":\"TX_KEY\"},{\"public_address\":\"XCA1v18Qsf5PKLr8GFr14jHkjgf3mPm1MAVbswBs9QP7FwGTLCE4SwYi81BRp2vrcV12maMtCw9TE1NZRVyynQ3e2c3b7mxRw3\",\"date_and_time\":\"10\",\"total\":\"10\",\"tx_hash\":\"TX_HASH\",\"tx_key\":\"TX_KEY\"}]"
+  #define GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_DATA_RESULTS "[{\"public_address\":\"" TEST_WALLET "\",\"payment_name\":\"\",\"payment_address\":\"" TEST_WALLET "\",\"date_and_time\":\"5\",\"total\":\"10\",\"tx_hash\":\"TX_HASH\",\"tx_key\":\"TX_KEY\"},{\"public_address\":\"" TEST_WALLET "\",\"payment_name\":\"\",\"payment_address\":\"" TEST_WALLET "\",\"date_and_time\":\"10\",\"total\":\"10\",\"tx_hash\":\"TX_HASH\",\"tx_key\":\"TX_KEY\"}]"
   
   memset(database_name,0,sizeof(database_name));
   memcpy(database_name,DATABASE_NAME_TEST,sizeof(DATABASE_NAME_TEST)-1);
@@ -54,8 +54,8 @@ int shared_delegate_website_functions_test(void)
   insert_document_into_collection_json(database_name,"blocks_found","{\"block_height\":\"440850\",\"block_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"block_date_and_time\":\"10\",\"block_reward\":\"10\"}");
   insert_document_into_collection_json(database_name,"public_addresses","{\"public_address\":\"" TEST_WALLET "\",\"current_total\":\"5\",\"total\":\"10\",\"inactivity_count\":\"15\"}");
   insert_document_into_collection_json(database_name,"public_addresses","{\"public_address\":\"" TEST_WALLET_20 "\",\"current_total\":\"5\",\"total\":\"10\",\"inactivity_count\":\"15\"}");
-  insert_document_into_collection_json(database_name,"public_addresses_payments","{\"public_address\":\"" TEST_WALLET "\",\"date_and_time\":\"5\",\"total\":\"10\",\"tx_hash\":\"TX_HASH\",\"tx_key\":\"TX_KEY\"}");
-  insert_document_into_collection_json(database_name,"public_addresses_payments","{\"public_address\":\"" TEST_WALLET "\",\"date_and_time\":\"10\",\"total\":\"10\",\"tx_hash\":\"TX_HASH\",\"tx_key\":\"TX_KEY\"}");
+  insert_document_into_collection_json(database_name,"public_addresses_payments","{\"public_address\":\"" TEST_WALLET "\",\"payment_name\":\"\",\"payment_address\":\"" TEST_WALLET "\",\"date_and_time\":\"5\",\"total\":\"10\",\"tx_hash\":\"TX_HASH\",\"tx_key\":\"TX_KEY\"}");
+  insert_document_into_collection_json(database_name,"public_addresses_payments","{\"public_address\":\"" TEST_WALLET "\",\"payment_name\":\"\",\"payment_address\":\"" TEST_WALLET "\",\"date_and_time\":\"10\",\"total\":\"10\",\"tx_hash\":\"TX_HASH\",\"tx_key\":\"TX_KEY\"}");
   memset(result_test,0,sizeof(result_test));
   memcpy(result_test,"{\"public_address\":\"",19);
   memcpy(result_test+strlen(result_test),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
@@ -123,13 +123,12 @@ int shared_delegate_website_functions_test(void)
   memset(data_test,0,sizeof(data_test));
   if (send_and_receive_data_socket(data_test,sizeof(data_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_TEST_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_DATA_RESULTS,sizeof(data_test)) == 0)
   {
-    color_print("PASSED! Test for server_receive_data_socket_get_public_address_information","green");
+    color_print("PASSED! Test for server_receive_data_socket_get_public_address_payment_information","green");
     count_test++;
   }
   else
   {
-    color_print(data_test,"yellow");
-    color_print("FAILED! Test for server_receive_data_socket_get_public_address_information","red");
+    color_print("FAILED! Test for server_receive_data_socket_get_public_address_payment_information","red");
   }
   RESET_ERROR_MESSAGES;
 

@@ -40,13 +40,32 @@ int shared_delegate_website_thread_server_functions_test(void)
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
   struct voters voters[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE];
+  struct voters voters2[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count = 0;
   size_t block_height;
+
+  // define macros
+  #define PRIVATE_GROUP_CONFIG_FILE_DATA "test_wallet_1|XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\ntest_wallet_15|XCA1dpsUrcgZvnZYLjXUbcbxSSJqhNWyphoqURumeeKoE8BXQeKqep8QQSk2fd65at2yspnT3z7KVRTU3MFmVS8u7K89wrKVxu|XCA1ogpCudEVS1B72pFWfKQQ7gMXyePgjhc5PLaQuHmmgjPZAfeT2jLPdv7SW6qCBu42aXR3Tp1zWeJTeUXWXJG74t26j3awwn"
   
   // initialize the voters struct
   INITIALIZE_VOTERS_STRUCT(count,MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE,"shared_delegate_website_thread_server_functions_test",data,current_date_and_time,current_UTC_date_and_time);
+  
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++)
+  {
+    voters2[count].public_address = (char*)calloc(XCASH_WALLET_LENGTH+1,sizeof(char));
+    voters2[count].total_vote_count = (char*)calloc(100,sizeof(char));
+    voters2[count].total_votes = 0;
+    if (voters2[count].public_address == NULL || voters2[count].total_vote_count == NULL)
+    {
+      memcpy(error_message.function[error_message.total],"shared_delegate_website_thread_server_functions_test",sizeof("shared_delegate_website_thread_server_functions_test")-1);
+      memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+      error_message.total++;
+      print_error_message(current_date_and_time,current_UTC_date_and_time,data);
+      exit(0);
+    }
+  }
 
   // reset the variables
   memset(result_test,0,sizeof(result_test));
@@ -143,7 +162,7 @@ int shared_delegate_website_thread_server_functions_test(void)
     color_print("FAILED! Test for get_delegates_total_voters_count","red");
   }
 
-  // get_delegates_total_voters
+  // get_delegates_total_voters  
   if (get_delegates_total_voters(voters) == 52529141006200)
   {
     color_print("PASSED! Test for get_delegates_total_voters","green");
@@ -153,6 +172,26 @@ int shared_delegate_website_thread_server_functions_test(void)
   {
     color_print("FAILED! Test for get_delegates_total_voters","red");
   }
+
+  // get_delegates_total_voters with private group
+  write_file(PRIVATE_GROUP_CONFIG_FILE_DATA,"/root/config.txt");
+  sleep(5);
+  memset(private_group.private_group_file,0,sizeof(private_group.private_group_file));
+  memcpy(private_group.private_group_file,"/root/config.txt",16); 
+  private_group.private_group_settings = 1;
+  load_private_group_configuration();
+
+  if (get_delegates_total_voters(voters2) == 12000000000000)
+  {
+    color_print("PASSED! Test for get_delegates_total_voters with private group","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for get_delegates_total_voters with private group","red");
+  }
+
+  private_group.private_group_settings = 0;
   
   // test calculate_block_reward_for_each_delegate
   // add some of the voters already to the database and let some of them be added on the first block reward they receive
@@ -172,16 +211,16 @@ int shared_delegate_website_thread_server_functions_test(void)
   {
     color_print("FAILED! Test for calculate_block_reward_for_each_delegate","red");
   }
-  RESET_ERROR_MESSAGES;
 
   // payment_timer_send_payment_and_update_databases
   delete_database(database_name);
-  insert_document_into_collection_json(database_name,"public_addresses","{\"public_address\":\"" TEST_WALLET_1 "\",\"current_total\":\"5000000000000\",\"total\":\"10000000000000\",\"inactivity_count\":\"10\"}");
+  insert_document_into_collection_json(database_name,"public_addresses","{\"public_address\":\"" TEST_WALLET_15 "\",\"current_total\":\"5000000000000\",\"total\":\"10000000000000\",\"inactivity_count\":\"10\"}");
   insert_document_into_collection_json(database_name,"public_addresses","{\"public_address\":\"" TEST_WALLET_20 "\",\"current_total\":\"0\",\"total\":\"10000000000000\",\"inactivity_count\":\"0\"}");
   memset(data_test,0,sizeof(data_test));
   memset(result_test,0,sizeof(result_test));
   memset(data,0,sizeof(data)); 
-  if (payment_timer_send_payment_and_update_databases(TEST_WALLET_1,"5000000000000","10000000000000","0000000000000000000000000000000000000000000000000000000000000000","0000000000000000000000000000000000000000000000000000000000000000") == 5000000000000 && read_document_field_from_collection(database_name,"public_addresses","{\"public_address\":\"" TEST_WALLET_1 "\"}","current_total",data_test) == 1 && read_document_field_from_collection(database_name,"public_addresses","{\"public_address\":\"" TEST_WALLET_1 "\"}","total",result_test) == 1 && strncmp(data_test,"0",sizeof(data_test)) == 0 && strncmp(result_test,"15000000000000",sizeof(result_test)) == 0 && read_document_field_from_collection(database_name,"public_addresses_payments","{\"public_address\":\"" TEST_WALLET_1 "\"}","total",data) == 1 && strncmp(data,"5000000000000",sizeof(data)) == 0)
+  memset(data2,0,sizeof(data2)); 
+  if (payment_timer_send_payment_and_update_databases(TEST_WALLET_15,"5000000000000","10000000000000","0000000000000000000000000000000000000000000000000000000000000000","0000000000000000000000000000000000000000000000000000000000000000") == 5000000000000 && read_document_field_from_collection(database_name,"public_addresses","{\"public_address\":\"" TEST_WALLET_15 "\"}","current_total",data_test) == 1 && read_document_field_from_collection(database_name,"public_addresses","{\"public_address\":\"" TEST_WALLET_15 "\"}","total",result_test) == 1 && strncmp(data_test,"0",sizeof(data_test)) == 0 && strncmp(result_test,"15000000000000",sizeof(result_test)) == 0 && read_document_field_from_collection(database_name,"public_addresses_payments","{\"public_address\":\"" TEST_WALLET_15 "\"}","total",data) == 1 && strncmp(data,"5000000000000",sizeof(data)) == 0 && read_document_field_from_collection(database_name,"public_addresses_payments","{\"public_address\":\"" TEST_WALLET_15 "\"}","payment_address",data2) == 1 && strncmp(data2,TEST_WALLET_15,sizeof(data2)) == 0)
   {
     color_print("PASSED! Test for payment_timer_send_payment_and_update_databases","green");
     count_test++;
@@ -189,6 +228,26 @@ int shared_delegate_website_thread_server_functions_test(void)
   else
   {
     color_print("FAILED! Test for payment_timer_send_payment_and_update_databases","red");
+  }
+  RESET_ERROR_MESSAGES;
+
+  // payment_timer_send_payment_and_update_databases with private group
+  private_group.private_group_settings = 1;
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"public_addresses","{\"public_address\":\"" TEST_WALLET_15 "\",\"current_total\":\"5000000000000\",\"total\":\"10000000000000\",\"inactivity_count\":\"10\"}");
+  insert_document_into_collection_json(database_name,"public_addresses","{\"public_address\":\"" TEST_WALLET_20 "\",\"current_total\":\"0\",\"total\":\"10000000000000\",\"inactivity_count\":\"0\"}");
+  memset(data_test,0,sizeof(data_test));
+  memset(result_test,0,sizeof(result_test));
+  memset(data,0,sizeof(data)); 
+  memset(data2,0,sizeof(data2)); 
+  if (payment_timer_send_payment_and_update_databases(TEST_WALLET_15,"5000000000000","10000000000000","0000000000000000000000000000000000000000000000000000000000000000","0000000000000000000000000000000000000000000000000000000000000000") == 5000000000000 && read_document_field_from_collection(database_name,"public_addresses","{\"public_address\":\"" TEST_WALLET_15 "\"}","current_total",data_test) == 1 && read_document_field_from_collection(database_name,"public_addresses","{\"public_address\":\"" TEST_WALLET_15 "\"}","total",result_test) == 1 && strncmp(data_test,"0",sizeof(data_test)) == 0 && strncmp(result_test,"15000000000000",sizeof(result_test)) == 0 && read_document_field_from_collection(database_name,"public_addresses_payments","{\"public_address\":\"" TEST_WALLET_15 "\"}","total",data) == 1 && strncmp(data,"5000000000000",sizeof(data)) == 0 && read_document_field_from_collection(database_name,"public_addresses_payments","{\"public_address\":\"" TEST_WALLET_15 "\"}","payment_address",data2) == 1 && strncmp(data2,TEST_WALLET_10,sizeof(data2)) == 0)
+  {
+    color_print("PASSED! Test for payment_timer_send_payment_and_update_databases with private group","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for payment_timer_send_payment_and_update_databases with private group","red");
   }
   RESET_ERROR_MESSAGES;
 
@@ -290,8 +349,16 @@ int shared_delegate_website_thread_server_functions_test(void)
   RESET_ERROR_MESSAGES;
 
   POINTER_RESET_VOTERS_STRUCT(count,MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE);
+  
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++)
+  {
+    pointer_reset(voters2[count].public_address);
+    pointer_reset(voters2[count].total_vote_count);
+  }
 
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nshared_delegate website thread server functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,SHARED_DELEGATE_WEBSITE_THREAD_SERVER_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   return count_test;
+
+  #undef PRIVATE_GROUP_CONFIG_FILE_DATA
 }

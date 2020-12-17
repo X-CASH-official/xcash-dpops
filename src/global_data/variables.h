@@ -38,6 +38,7 @@ extern struct network_data_nodes_sync_database_list network_data_nodes_sync_data
 extern struct block_verifiers_sync_database_list block_verifiers_sync_database_list; // Holds the block verifiers data and database hash for syncing the block verifiers
 extern struct delegates_online_status delegates_online_status[MAXIMUM_AMOUNT_OF_DELEGATES]; // Holds the delegates online status
 extern struct block_height_start_time block_height_start_time; // Holds the block height start time data
+extern struct private_group private_group; // Holds the private group data
 extern char current_round_part[2]; // The current round part (1-4)
 extern char current_round_part_backup_node[2]; // The current main node in the current round part (0-5)
 extern pthread_rwlock_t rwlock;
@@ -93,7 +94,6 @@ extern int shared_delegates_website; // 1 if the running the shared delegates we
 extern int total_threads; // The total threads
 extern double fee; // the fee
 extern long long int minimum_amount; // the minimum amount to send a payment
-extern char* voter_whitelist; // Holds the whitelist of public addresses
 extern char voter_inactivity_count[10]; // the number of days to wait to remove an inactive delegates information from the database
 
 #endif

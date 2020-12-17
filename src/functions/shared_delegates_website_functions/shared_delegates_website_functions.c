@@ -432,7 +432,6 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
 
   // define macros
   #define DATABASE_COLLECTION "public_addresses_payments"
-  #define TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS 5
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(settings,MESSAGE) \
   if (debug_settings == 1) \

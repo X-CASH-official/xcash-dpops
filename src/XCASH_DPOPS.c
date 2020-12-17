@@ -67,6 +67,7 @@ struct network_data_nodes_sync_database_list network_data_nodes_sync_database_li
 struct block_verifiers_sync_database_list block_verifiers_sync_database_list; // Holds the block verifiers data and database hash for syncing the block verifiers
 struct delegates_online_status delegates_online_status[MAXIMUM_AMOUNT_OF_DELEGATES]; // Holds the delegates online status
 struct block_height_start_time block_height_start_time; // Holds the block height start time data
+struct private_group private_group; // Holds the private group data
 char current_round_part[2]; // The current round part (1-4)
 char current_round_part_backup_node[2]; // The current main node in the current round part (0-5)
 pthread_rwlock_t rwlock;
@@ -122,7 +123,6 @@ int shared_delegates_website; // 1 if the running the shared delegates websites,
 int total_threads; // The total threads
 double fee; // the fee
 long long int minimum_amount; // the minimum amount to send a payment
-char* voter_whitelist; // Holds the whitelist of public addresses
 char voter_inactivity_count[10]; // the number of days to wait to remove an inactive delegates information from the database
 
 
@@ -207,7 +207,6 @@ void initialize_data(int parameters_count, char* parameters[])
 
   server_limit_IP_address_list = (char*)calloc(15728640,sizeof(char)); // 15 MB
   server_limit_public_address_list = (char*)calloc(15728640,sizeof(char)); // 15 MB
-  voter_whitelist = (char*)calloc((XCASH_WALLET_LENGTH*MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE)+(MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE+1),sizeof(char));
    
   // check if the memory needed was allocated on the heap successfully
   if (server_limit_IP_address_list == NULL || server_limit_public_address_list == NULL)
@@ -419,6 +418,9 @@ void initialize_data(int parameters_count, char* parameters[])
       sscanf(parameters[count+1], "%d", &production_settings_database_data_settings);
     }
   }
+
+  // initialize the private group
+  private_group.private_group_settings = 0;
 
   // initialize the network data nodes
   INITIALIZE_NETWORK_DATA_NODES;
@@ -740,74 +742,6 @@ int set_parameters(int parameters_count, char* parameters[])
       database_reset;
       exit(0);
     }
-    if (strncmp(parameters[count],"--test-data-add",BUFFER_SIZE) == 0)
-    {
-      memset(data,0,sizeof(data));
-      
-      insert_document_into_collection_json(shared_delegates_database_name,"blocks_found","{\"block_height\":\"5\",\"block_hash\":\"BLOCK_HASH\",\"block_date_and_time\":\"10\",\"block_reward\":\"15\"}");
-      insert_document_into_collection_json(shared_delegates_database_name,"blocks_found","{\"block_height\":\"5\",\"block_hash\":\"BLOCK_HASH\",\"block_date_and_time\":\"10\",\"block_reward\":\"15\"}");
-
-      memset(data,0,strlen(data));
-      memcpy(data,"{\"public_address\":\"",19);
-      memcpy(data+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-      memcpy(data+117,"\",\"current_total\":\"5\",\"total\":\"10\",\"inactivity_count\":\"15\"}",59);
-      insert_document_into_collection_json(shared_delegates_database_name,"public_addresses",data);
-
-      memset(data,0,strlen(data));
-      memcpy(data,"{\"public_address\":\"",19);
-      memcpy(data+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-      memcpy(data+117,"\",\"date_and_time\":\"5\",\"total\":\"10\",\"tx_hash\":\"TX_HASH\",\"tx_key\":\"TX_KEY\"}",73);
-      insert_document_into_collection_json(shared_delegates_database_name,"public_addresses_payments",data);
-      insert_document_into_collection_json(shared_delegates_database_name,"public_addresses_payments",data);
-
-      memset(data,0,strlen(data));
-      memcpy(data,"{\"public_address_created_reserve_proof\":\"",41);
-      memcpy(data+41,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-      memcpy(data+139,"\",\"public_address_voted_for\":\"",30);
-      memcpy(data+169,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-      memcpy(data+267,"\",\"total\":\"10\",\"reserve_proof\":\"15\"}",36);
-      insert_document_into_collection_json(database_name,"reserve_proofs_5",data);
-      insert_document_into_collection_json(database_name,"reserve_proofs_10",data);
-      insert_document_into_collection_json(database_name,"reserve_proofs_10",data);
-      insert_document_into_collection_json(database_name,"reserve_proofs_15",data);
-
-      color_print("The database test data has been added successfully\n","green");
-      database_reset;
-      exit(0);
-    }
-    if (strncmp(parameters[count],"--test-data-remove",BUFFER_SIZE) == 0)
-    {
-      memset(data,0,strlen(data));
-      
-      delete_document_from_collection(shared_delegates_database_name,"blocks_found","{\"block_height\":\"5\"}");
-      delete_document_from_collection(shared_delegates_database_name,"blocks_found","{\"block_height\":\"5\"}");
-
-      memset(data,0,strlen(data));
-      memcpy(data,"{\"public_address\":\"",19);
-      memcpy(data+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-      memcpy(data+117,"\"}",2);
-      delete_document_from_collection(shared_delegates_database_name,"public_addresses",data);
-
-      memset(data,0,strlen(data));
-      memcpy(data,"{\"public_address\":\"",19);
-      memcpy(data+19,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-      memcpy(data+117,"\"}",2);
-      delete_document_from_collection(shared_delegates_database_name,"public_addresses_payments",data);
-      delete_document_from_collection(shared_delegates_database_name,"public_addresses_payments",data);
-
-      memset(data,0,strlen(data));
-      memcpy(data,"{\"public_address_voted_for\":\"",29);
-      memcpy(data+29,xcash_wallet_public_address,XCASH_WALLET_LENGTH);
-      memcpy(data+127,"\"}",2);
-      delete_document_from_collection(database_name,"reserve_proofs_5",data);
-      delete_document_from_collection(database_name,"reserve_proofs_10",data);
-      delete_document_from_collection(database_name,"reserve_proofs_10",data);
-      delete_document_from_collection(database_name,"reserve_proofs_15",data);
-
-      color_print("The database test data has been removed successfully\n","green");
-      database_reset;
-      exit(0);
-    }
     if (strncmp(parameters[count],"--disable-synchronizing-databases-and-starting-timers",BUFFER_SIZE) == 0)
     {
       return 2;
@@ -846,6 +780,12 @@ int set_parameters(int parameters_count, char* parameters[])
     {
       shared_delegates_website = 1;
     }
+    if (strncmp(parameters[count],"--private-group",BUFFER_SIZE) == 0)
+    {
+      memset(private_group.private_group_file,0,sizeof(private_group.private_group_file));
+      memcpy(private_group.private_group_file,parameters[count+1],strlen(parameters[count+1]));
+      private_group.private_group_settings = 1;     
+    }
     if (strncmp(parameters[count],"--fee",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
       sscanf(parameters[count+1], "%lf", &fee);
@@ -858,11 +798,7 @@ int set_parameters(int parameters_count, char* parameters[])
     {
       memset(voter_inactivity_count,0,sizeof(voter_inactivity_count));
       memcpy(voter_inactivity_count,parameters[count+1],strnlen(parameters[count+1],sizeof(voter_inactivity_count)));
-    }
-    if (strncmp(parameters[count],"--voter-whitelist",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
-    {
-      memcpy(voter_whitelist,parameters[count+1],strlen(parameters[count+1]));
-    }
+    }    
     if (strncmp(parameters[count],"--total-threads",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
       if (total_threads >= MINIMUM_THREADS_AMOUNT)

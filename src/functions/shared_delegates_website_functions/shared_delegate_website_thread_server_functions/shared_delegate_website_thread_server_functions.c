@@ -271,6 +271,7 @@ long long int get_delegates_total_voters(struct voters* voters)
   int count;
   int count2;
   int counter;
+  int private_group_count;
   int voters_count;
   long long int total_votes = 0;
   long long int number;
@@ -310,8 +311,18 @@ long long int get_delegates_total_voters(struct voters* voters)
       {
         memcpy(voters[voters_count].public_address,database_multiple_documents_fields.value[count][0],XCASH_WALLET_LENGTH);
 
-        // if the voter whitelist is on and the public address is not in the voter whitelist, set the total vote count to 0, and this will also not add to the overall total vote count of all of the votes
-        strlen(voter_whitelist) > XCASH_WALLET_LENGTH && strstr(voter_whitelist,voters[voters_count].public_address) == NULL ? memcpy(voters[voters_count].total_vote_count,"0",1) : memcpy(voters[voters_count].total_vote_count,database_multiple_documents_fields.value[count][2],strnlen(database_multiple_documents_fields.value[count][2],100));
+        // if the private group is on and the public address is not in the private group, set the total vote count to 0, and this will also not add to the overall total vote count of all of the votes
+        if (private_group.private_group_settings == 1)
+        {
+          for (private_group_count = 0; private_group_count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE_PRIVATE_GROUP; private_group_count++)
+          {
+            if (strncmp(voters[voters_count].public_address,private_group.private_group_voting_public_address[private_group_count],BUFFER_SIZE) == 0)
+            {
+              break;
+            }
+          }
+        }
+        private_group.private_group_settings == 1 && private_group_count == MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE_PRIVATE_GROUP ? memcpy(voters[voters_count].total_vote_count,"0",1) : memcpy(voters[voters_count].total_vote_count,database_multiple_documents_fields.value[count][2],strnlen(database_multiple_documents_fields.value[count][2],100));
         
         sscanf(voters[voters_count].total_vote_count, "%lld", &number);
         voters[voters_count].total_votes = number;
@@ -538,9 +549,10 @@ Return: 0 if an error has occured, otherwise the transaction total
 long long int payment_timer_send_payment_and_update_databases(const char* PUBLIC_ADDRESS,const char* CURRENT_TOTAL,const char* TOTAL,const char* TX_HASH,const char* TX_KEY)
 {
   // Variables
-  char data[SMALL_BUFFER_SIZE];
-  char data2[SMALL_BUFFER_SIZE];
-  char data3[SMALL_BUFFER_SIZE];
+  char data[10000];
+  char data2[10000];
+  char data3[10000];
+  int private_group_count;
   long long int number;
   long long int updated_total; 
 
@@ -587,10 +599,32 @@ long long int payment_timer_send_payment_and_update_databases(const char* PUBLIC
   memset(data3,0,sizeof(data3));
   snprintf(data3,sizeof(data3)-1,"%lld",(long long int)time(NULL));
 
+  // check if the private group is on, and if so send it to the payment address instead of the voter address
+  if (private_group.private_group_settings == 1)
+  {
+    for (private_group_count = 0; private_group_count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE_PRIVATE_GROUP; private_group_count++)
+    {
+      if (strncmp(PUBLIC_ADDRESS,private_group.private_group_voting_public_address[private_group_count],BUFFER_SIZE) == 0)
+      {
+        break;
+      }
+    }
+  }
+
   // add the payment to the public_addresses_payments in the collection
   memset(data2,0,sizeof(data2));
   memcpy(data2,"{\"public_address\":\"",19);
   memcpy(data2+19,PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
+  memcpy(data2+strlen(data2),"\",\"payment_name\":\"",18);
+  
+  if (private_group.private_group_settings == 1)
+  {
+    memcpy(data2+strlen(data2),private_group.private_group_name[private_group_count],strnlen(private_group.private_group_name[private_group_count],sizeof(data2)));
+  }
+  
+  memcpy(data2+strlen(data2),"\",\"payment_address\":\"",21);
+  private_group.private_group_settings == 1 ? memcpy(data2+strlen(data2),private_group.private_group_payment_public_address[private_group_count],XCASH_WALLET_LENGTH) : memcpy(data2+strlen(data2),PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
+  
   memcpy(data2+strlen(data2),"\",\"total\":\"",11);
   memcpy(data2+strlen(data2),CURRENT_TOTAL,strnlen(CURRENT_TOTAL,sizeof(data2)));
   memcpy(data2+strlen(data2),"\",\"date_and_time\":\"",19);
@@ -694,6 +728,59 @@ int payment_timer_update_inactivity_count(const char* PUBLIC_ADDRESS,const char*
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: load_private_group_configuration
+Description: Loads the private group configuration from the configuration file
+Return: 0 if an error has occured, otherwise 1
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int load_private_group_configuration(void)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  char data_read[SMALL_BUFFER_SIZE];
+  char data_read_2[SMALL_BUFFER_SIZE];
+  char* search_item;
+  char* search_item_data;
+  char* search_item_2;
+  char* search_item_data_2;
+  int count;
+  int count2;
+
+  // reset all of the private group members
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE_PRIVATE_GROUP; count++)
+  {
+    memset(private_group.private_group_name[count],0,sizeof(private_group.private_group_name[count]));
+    memset(private_group.private_group_voting_public_address[count],0,sizeof(private_group.private_group_voting_public_address[count]));
+    memset(private_group.private_group_payment_public_address[count],0,sizeof(private_group.private_group_payment_public_address[count]));
+  }
+
+  // read the entire file into a string
+  if (read_file((unsigned char*)data,private_group.private_group_file) == 0)
+  {
+    return 0;
+  }
+
+  // parse the private group data
+  for (count = 0, search_item = strtok_r(data, "\n",&search_item_data); search_item != NULL; count++, search_item = strtok_r(NULL, "\n",&search_item_data))
+  {
+    memset(data_read,0,sizeof(data_read));
+    memcpy(data_read,search_item,strnlen(search_item,sizeof(data_read)));
+
+    for (count2 = 0, search_item_2 = strtok_r(data_read, "|",&search_item_data_2); search_item_2 != NULL; count2++, search_item_2 = strtok_r(NULL, "|",&search_item_data_2))
+    {
+      memset(data_read_2,0,sizeof(data_read_2));
+      memcpy(data_read_2,search_item_2,strnlen(search_item_2,sizeof(data_read_2)));
+      count2 == 0 ? memcpy(private_group.private_group_name[count],data_read_2,strnlen(data_read_2,sizeof(private_group.private_group_name[count]))) : count2 == 1 ? memcpy(private_group.private_group_voting_public_address[count],data_read_2,strnlen(data_read_2,sizeof(private_group.private_group_voting_public_address[count]))) : memcpy(private_group.private_group_payment_public_address[count],data_read_2,strnlen(data_read_2,sizeof(private_group.private_group_payment_public_address[count])));
+    }
+  }
+  return 1;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: payment_timer_thread
 Description: Sends all of the delegates payments once a day at a random time, or a set time if using the --shared_delegate_payment_time_hour and --shared_delegate_payment_time_minute paramters
 -----------------------------------------------------------------------------------------------------------
@@ -711,6 +798,7 @@ void* payment_timer_thread(void* parameters)
   struct tm current_UTC_date_and_time;
   int count;
   int counter; 
+  int private_group_count;
   long long int number;
   long long int amount_of_payments;
   long long int total_amount;
@@ -759,6 +847,14 @@ void* payment_timer_thread(void* parameters)
         goto start;
       }
 
+      // load the private group configuration
+      if (private_group.private_group_settings == 1 && load_private_group_configuration() == 0)
+      {
+        color_print("The private group file could not be loaded","yellow");
+        sleep(60);
+        goto start;
+      }
+
       // initialize the database_multiple_documents_fields struct 
       INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_RESERVE_PROOFS_DATABASE_FIELDS,"payment_timer_thread",data,current_date_and_time,current_UTC_date_and_time);
 
@@ -790,7 +886,20 @@ void* payment_timer_thread(void* parameters)
             memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),"{\"amount\":",10);
             memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),database_multiple_documents_fields.value[count][1],strnlen(database_multiple_documents_fields.value[count][1],sizeof(transaction_list_data[transaction_list_data_count])));
             memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),",\"address\":\"",12);
-            memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),database_multiple_documents_fields.value[count][0],strnlen(database_multiple_documents_fields.value[count][0],sizeof(transaction_list_data[transaction_list_data_count])));
+            
+            // check if the private group is on, and if so send it to the payment address instead of the voter address
+            if (private_group.private_group_settings == 1)
+            {
+              for (private_group_count = 0; private_group_count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE_PRIVATE_GROUP; private_group_count++)
+              {
+                if (strncmp(database_multiple_documents_fields.value[count][0],private_group.private_group_voting_public_address[private_group_count],BUFFER_SIZE) == 0)
+                {
+                  break;
+                }
+              }
+            }
+
+            private_group.private_group_settings == 1 ? memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),private_group.private_group_payment_public_address[private_group_count],strnlen(private_group.private_group_payment_public_address[private_group_count],sizeof(transaction_list_data[transaction_list_data_count]))) : memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),database_multiple_documents_fields.value[count][0],strnlen(database_multiple_documents_fields.value[count][0],sizeof(transaction_list_data[transaction_list_data_count])));
             memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),"\"}",2);
             memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),",",1);
             counter++;
@@ -878,6 +987,28 @@ void* payment_timer_thread(void* parameters)
                 memcpy(data+strlen(data),database_multiple_documents_fields.value[count][0],strlen(database_multiple_documents_fields.value[count][0]));
                 memcpy(data+strlen(data),"\n\n#3 Run the following command to add the document to the database collection\ndb.public_addresses_payments.insertOne({\"public_address\":\"",136);
                 memcpy(data+strlen(data),database_multiple_documents_fields.value[count][0],strlen(database_multiple_documents_fields.value[count][0]));
+               
+                // check if the private group is on, and if so send it to the payment address instead of the voter address
+                if (private_group.private_group_settings == 1)
+                {
+                  for (private_group_count = 0; private_group_count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE_PRIVATE_GROUP; private_group_count++)
+                  {
+                    if (strncmp(database_multiple_documents_fields.value[count][0],private_group.private_group_voting_public_address[private_group_count],BUFFER_SIZE) == 0)
+                    {
+                      break;
+                    }
+                  }
+                }
+
+                memcpy(data+strlen(data),"\",\"payment_name\":\"",18);
+                if (private_group.private_group_settings == 1)
+                {
+                  memcpy(data+strlen(data),private_group.private_group_name[private_group_count],strnlen(private_group.private_group_name[private_group_count],sizeof(data)));
+                }
+
+                memcpy(data+strlen(data),"\",\"payment_address\":\"",21);
+                private_group.private_group_settings == 1 ? memcpy(data+strlen(data),private_group.private_group_payment_public_address[private_group_count],strnlen(private_group.private_group_payment_public_address[private_group_count],sizeof(data))) : memcpy(data+strlen(data),database_multiple_documents_fields.value[count][0],strlen(database_multiple_documents_fields.value[count][0]));
+
                 memcpy(data+strlen(data),"\",\"total\":\"",11);
                 memcpy(data+strlen(data),database_multiple_documents_fields.value[count][1],strlen(database_multiple_documents_fields.value[count][1]));
                 memcpy(data+strlen(data),"\",\"date_and_time\":\"",19);

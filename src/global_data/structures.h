@@ -303,6 +303,14 @@ struct block_height_start_time {
     int block_height_start_time_minute; // The minute to start the current_block_height_timer_thread
 };
 
+struct private_group {
+    char private_group_file[256]; // The full name and path to the file location
+    int private_group_settings; // 0 for off, 1 for on
+    char private_group_name[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE_PRIVATE_GROUP][MAXIMUM_BUFFER_SIZE_DELEGATES_NAME+1]; // The name for the entry in the private group
+    char private_group_voting_public_address[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE_PRIVATE_GROUP][XCASH_WALLET_LENGTH+1]; // The voting public address
+    char private_group_payment_public_address[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE_PRIVATE_GROUP][XCASH_WALLET_LENGTH+1]; // the payment public address
+};
+
  // Thread functions
  struct socket_thread_parameters {
     int client_socket;  // The client socket
