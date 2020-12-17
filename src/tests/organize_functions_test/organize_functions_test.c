@@ -87,7 +87,7 @@ int organize_functions_test(void)
   memcpy(delegates[0].about,"Official X-Network node",23);
   memcpy(delegates[0].website,NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION,sizeof(NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION)-1);
   memcpy(delegates[0].team,"X-Network Team",14);
-  memcpy(delegates[0].shared_delegate_status,"false",5);
+  memcpy(delegates[0].shared_delegate_status,"solo",4);
   memcpy(delegates[0].delegate_fee,"0",sizeof(char));
   memcpy(delegates[0].server_specs,"",0);
   memcpy(delegates[0].block_verifier_score,"0",sizeof(char));
@@ -106,7 +106,7 @@ int organize_functions_test(void)
   memcpy(delegates[1].about,"Official X-Network node",23);
   memcpy(delegates[1].website,NETWORK_DATA_NODE_2_IP_ADDRESS_PRODUCTION,sizeof(NETWORK_DATA_NODE_2_IP_ADDRESS_PRODUCTION)-1);
   memcpy(delegates[1].team,"X-Network Team",14);
-  memcpy(delegates[1].shared_delegate_status,"false",5);
+  memcpy(delegates[1].shared_delegate_status,"solo",4);
   memcpy(delegates[1].delegate_fee,"0",sizeof(char));
   memcpy(delegates[1].server_specs,"",0);
   memcpy(delegates[1].block_verifier_score,"0",sizeof(char));
@@ -125,7 +125,7 @@ int organize_functions_test(void)
   memcpy(delegates[2].about,"Official X-Network node",23);
   memcpy(delegates[2].website,NETWORK_DATA_NODE_3_IP_ADDRESS_PRODUCTION,sizeof(NETWORK_DATA_NODE_3_IP_ADDRESS_PRODUCTION)-1);
   memcpy(delegates[2].team,"X-Network Team",14);
-  memcpy(delegates[2].shared_delegate_status,"false",5);
+  memcpy(delegates[2].shared_delegate_status,"solo",4);
   memcpy(delegates[2].delegate_fee,"0",sizeof(char));
   memcpy(delegates[2].server_specs,"",0);
   memcpy(delegates[2].block_verifier_score,"0",sizeof(char));
@@ -144,7 +144,7 @@ int organize_functions_test(void)
   memcpy(delegates[3].about,"Official X-Network node",23);
   memcpy(delegates[3].website,NETWORK_DATA_NODE_4_IP_ADDRESS_PRODUCTION,sizeof(NETWORK_DATA_NODE_4_IP_ADDRESS_PRODUCTION)-1);
   memcpy(delegates[3].team,"X-Network Team",14);
-  memcpy(delegates[3].shared_delegate_status,"false",5);
+  memcpy(delegates[3].shared_delegate_status,"solo",4);
   memcpy(delegates[3].delegate_fee,"0",sizeof(char));
   memcpy(delegates[3].server_specs,"",0);
   memcpy(delegates[3].block_verifier_score,"0",sizeof(char));
@@ -163,7 +163,7 @@ int organize_functions_test(void)
   memcpy(delegates[4].about,"Official X-Network node",23);
   memcpy(delegates[4].website,NETWORK_DATA_NODE_5_IP_ADDRESS_PRODUCTION,sizeof(NETWORK_DATA_NODE_5_IP_ADDRESS_PRODUCTION)-1);
   memcpy(delegates[4].team,"X-Network Team",14);
-  memcpy(delegates[4].shared_delegate_status,"false",5);
+  memcpy(delegates[4].shared_delegate_status,"solo",4);
   memcpy(delegates[4].delegate_fee,"0",sizeof(char));
   memcpy(delegates[4].server_specs,"",0);
   memcpy(delegates[4].block_verifier_score,"0",sizeof(char));
@@ -182,7 +182,7 @@ int organize_functions_test(void)
   memcpy(delegates[5].about,"Official X-Network node",23);
   memcpy(delegates[5].website,"",0);
   memcpy(delegates[5].team,"X-Network Team",14);
-  memcpy(delegates[5].shared_delegate_status,"false",5);
+  memcpy(delegates[5].shared_delegate_status,"solo",4);
   memcpy(delegates[5].delegate_fee,"0",sizeof(char));
   memcpy(delegates[5].server_specs,"",0);
   memcpy(delegates[5].block_verifier_score,"0",sizeof(char));
@@ -201,7 +201,7 @@ int organize_functions_test(void)
   memcpy(delegates[6].about,"Official X-Network node",23);
   memcpy(delegates[6].website,"",0);
   memcpy(delegates[6].team,"X-Network Team",14);
-  memcpy(delegates[6].shared_delegate_status,"false",5);
+  memcpy(delegates[6].shared_delegate_status,"solo",4);
   memcpy(delegates[6].delegate_fee,"0",sizeof(char));
   memcpy(delegates[6].server_specs,"",0);
   memcpy(delegates[6].block_verifier_score,"0",sizeof(char));
@@ -220,7 +220,7 @@ int organize_functions_test(void)
   memcpy(delegates[7].about,"Official X-Network node",23);
   memcpy(delegates[7].website,"",0);
   memcpy(delegates[7].team,"X-Network Team",14);
-  memcpy(delegates[7].shared_delegate_status,"false",5);
+  memcpy(delegates[7].shared_delegate_status,"solo",4);
   memcpy(delegates[7].delegate_fee,"0",sizeof(char));
   memcpy(delegates[7].server_specs,"",0);
   memcpy(delegates[7].block_verifier_score,"0",sizeof(char));
@@ -239,7 +239,7 @@ int organize_functions_test(void)
   memcpy(delegates[8].about,"Official X-Network node",23);
   memcpy(delegates[8].website,"",0);
   memcpy(delegates[8].team,"X-Network Team",14);
-  memcpy(delegates[8].shared_delegate_status,"false",5);
+  memcpy(delegates[8].shared_delegate_status,"solo",4);
   memcpy(delegates[8].delegate_fee,"0",sizeof(char));
   memcpy(delegates[8].server_specs,"",0);
   memcpy(delegates[8].block_verifier_score,"0",sizeof(char));
@@ -258,7 +258,7 @@ int organize_functions_test(void)
   memcpy(delegates[9].about,"Official X-Network node",23);
   memcpy(delegates[9].website,"",0);
   memcpy(delegates[9].team,"X-Network Team",14);
-  memcpy(delegates[9].shared_delegate_status,"false",5);
+  memcpy(delegates[9].shared_delegate_status,"solo",4);
   memcpy(delegates[9].delegate_fee,"0",sizeof(char));
   memcpy(delegates[9].server_specs,"",0);
   memcpy(delegates[9].block_verifier_score,"0",sizeof(char));

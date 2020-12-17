@@ -803,7 +803,7 @@ void server_receive_data_socket_nodes_to_block_verifiers_register_delegates(cons
   memcpy(data+strlen(data),delegates_IP_address,strnlen(delegates_IP_address,sizeof(data)));
   memcpy(data+strlen(data),"\",\"delegate_name\":\"",19);
   memcpy(data+strlen(data),delegate_name,strnlen(delegate_name,sizeof(data)));
-  memcpy(data+strlen(data),"\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"shared_delegate_status\":\"false\",\"delegate_fee\":\"\",\"server_specs\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"",351);
+  memcpy(data+strlen(data),"\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"shared_delegate_status\":\"solo\",\"delegate_fee\":\"\",\"server_specs\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"",351);
   memcpy(data+strlen(data),delegate_public_key,VRF_PUBLIC_KEY_LENGTH);
   memcpy(data+strlen(data),"\"}",2);
 
@@ -978,7 +978,7 @@ void server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const 
   }
 
   // check if the value is valid
-  if ((strncmp(item,"IP_address",BUFFER_SIZE) == 0 && check_for_valid_ip_address(value) == 0) || (strncmp(item,"about",BUFFER_SIZE) == 0 && strlen(value) > 1024) || (strncmp(item,"website",BUFFER_SIZE) == 0 && strlen(value) > 255) || (strncmp(item,"team",BUFFER_SIZE) == 0 && strlen(value) > 255) || (strncmp(item,"shared_delegate_status",BUFFER_SIZE) == 0 && strncmp(value,"true",BUFFER_SIZE) != 0 && strncmp(value,"false",BUFFER_SIZE) != 0) || (strncmp(item,"delegate_fee",BUFFER_SIZE) == 0 && check_for_valid_delegate_fee(value) == 0) || (strncmp(item,"server_specs",BUFFER_SIZE) == 0 && strlen(value) > 1024))
+  if ((strncmp(item,"IP_address",BUFFER_SIZE) == 0 && check_for_valid_ip_address(value) == 0) || (strncmp(item,"about",BUFFER_SIZE) == 0 && strlen(value) > 1024) || (strncmp(item,"website",BUFFER_SIZE) == 0 && strlen(value) > 255) || (strncmp(item,"team",BUFFER_SIZE) == 0 && strlen(value) > 255) || (strncmp(item,"shared_delegate_status",BUFFER_SIZE) == 0 && strncmp(value,"solo",BUFFER_SIZE) != 0 && strncmp(value,"shared",BUFFER_SIZE) != 0 && strncmp(value,"group",BUFFER_SIZE) != 0) || (strncmp(item,"delegate_fee",BUFFER_SIZE) == 0 && check_for_valid_delegate_fee(value) == 0) || (strncmp(item,"server_specs",BUFFER_SIZE) == 0 && strlen(value) > 1024))
   {    
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE_ERROR("Invalid item value to update}");
   }
