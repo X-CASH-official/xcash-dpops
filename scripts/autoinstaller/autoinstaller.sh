@@ -2187,7 +2187,7 @@ function install_or_update_blockchain()
   echo -e "${COLOR_PRINT_GREEN}Starting the Download${END_COLOR_PRINT}"
   wget -q --show-progress ${XCASH_BLOCKCHAIN_BOOTSTRAP_URL}
   echo -e "${COLOR_PRINT_GREEN}Starting Extraction${END_COLOR_PRINT}"
-  sudo rm -r ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} || true  
+  sudo rm -r ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} &>/dev/null || true  
   7z x xcash-blockchain.7z -bso0 -bse0 -o${XCASH_BLOCKCHAIN_INSTALLATION_DIR::-8}
   sudo rm xcash-blockchain.7z
   echo -e "${COLOR_PRINT_GREEN}Installing / Updating The BlockChain Completed${END_COLOR_PRINT}"
@@ -2212,7 +2212,7 @@ function install_blockchain()
     echo -e "${COLOR_PRINT_GREEN}Starting the Download${END_COLOR_PRINT}"
     wget -q --show-progress ${XCASH_BLOCKCHAIN_BOOTSTRAP_URL}
     echo -e "${COLOR_PRINT_GREEN}Starting Extraction${END_COLOR_PRINT}"
-    sudo rm -r ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} || true  
+    sudo rm -r ${XCASH_BLOCKCHAIN_INSTALLATION_DIR} &>/dev/null || true  
     7z x xcash-blockchain.7z -bso0 -bse0 -o${XCASH_BLOCKCHAIN_INSTALLATION_DIR::-8}
     sudo rm xcash-blockchain.7z
     echo -e "${COLOR_PRINT_GREEN}Installing The BlockChain Completed${END_COLOR_PRINT}"
@@ -2493,4 +2493,5 @@ elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "18" ]; then
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "19" ]; then
   backup
 fi
+
 
