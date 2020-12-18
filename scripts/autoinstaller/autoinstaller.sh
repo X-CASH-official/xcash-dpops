@@ -99,8 +99,8 @@ RAM_CPU_RATIO_ALL_CPU_THREADS=4
 # Regex
 regex_XCASH_DPOPS_INSTALLATION_DIR="(^\/(.*?)\/$)|(^$)" # anything that starts with / and ends with / and does not contain a space
 regex_MNEMONIC_SEED="^\b([a-z]+\s+){24}\b([a-z]+)$" # 25 words exactly
-regex_DPOPS_FEE="\b(^[1-9]{1}[0-9]{0,1}.?[0-9]{0,6}$)\b$" # between 1 and 99 with up to 6 decimal places
-regex_DPOPS_MINIMUM_AMOUNT="\b(^[1-9]{1}[0-9]{4,6}$)\b$" # between 10000 and 10000000-1
+regex_DPOPS_FEE="\b(^[0-9]{1}[0-9]{0,1}.?[0-9]{0,6}$)\b$" # between 0 and 100 with up to 6 decimal places
+regex_DPOPS_MINIMUM_AMOUNT="\b(^[1-9]{1}[0-9]{4,6}$)\b$|^10000000$" # between 10000 and 10000000
 
 
 
