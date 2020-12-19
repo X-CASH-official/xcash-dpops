@@ -784,7 +784,14 @@ int set_parameters(int parameters_count, char* parameters[])
     {
       memset(private_group.private_group_file,0,sizeof(private_group.private_group_file));
       memcpy(private_group.private_group_file,parameters[count+1],strlen(parameters[count+1]));
-      private_group.private_group_settings = 1;     
+      private_group.private_group_settings = 1; 
+
+      // load the private group configuration
+      if (load_private_group_configuration() == 0)
+      {
+        color_print("The private group file could not be loaded","red");
+        exit(0);
+      } 
     }
     if (strncmp(parameters[count],"--fee",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {

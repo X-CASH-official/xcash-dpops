@@ -505,6 +505,12 @@ void* block_height_timer_thread(void* parameters)
     // check if you found the previous block in the network
     if (current_UTC_date_and_time.tm_min % BLOCK_TIME == 2 && current_UTC_date_and_time.tm_sec == 0 && check_if_previous_block_producer() == 1)
     {
+      // load the private group configuration
+      if (private_group.private_group_settings == 1 && load_private_group_configuration() == 0)
+      {
+        color_print("The private group file could not be loaded","yellow");
+      } 
+      
       // make sure the round is not replayed
       if (replayed_round_settings == 1)
       {
@@ -747,6 +753,8 @@ int load_private_group_configuration(void)
   int count;
   int count2;
 
+  memset(data,0,sizeof(data));
+
   // reset all of the private group members
   for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE_PRIVATE_GROUP; count++)
   {
@@ -854,14 +862,6 @@ void* payment_timer_thread(void* parameters)
         memcpy(data+strlen(data),") to be able to send payments.\nPlease add at least ",51);
         snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%lld",(MINIMUM_AMOUNT_SHARED_DELEGATE_SEND_PAYMENT_AMOUNT - total_amount) / XCASH_WALLET_DECIMAL_PLACES_AMOUNT);
         memcpy(data+strlen(data)," to the wallet, before voter payments can be sent out",53);
-        sleep(60);
-        goto start;
-      }
-
-      // load the private group configuration
-      if (private_group.private_group_settings == 1 && load_private_group_configuration() == 0)
-      {
-        color_print("The private group file could not be loaded","yellow");
         sleep(60);
         goto start;
       }
