@@ -806,7 +806,7 @@ void* payment_timer_thread(void* parameters)
   struct tm current_UTC_date_and_time;
   int count;
   int counter; 
-  int private_group_count;
+  int private_group_count = 0;
   long long int number;
   long long int amount_of_payments;
   long long int total_amount;
@@ -949,7 +949,7 @@ void* payment_timer_thread(void* parameters)
         for (count = 0; count < transaction_list_data_count; count++)
         {
           memset(tx_hash,0,sizeof(tx_hash));
-          memset(tx_key,0,sizeof(tx_key));
+          memset(tx_key,0,sizeof(tx_key));          
 
           if (send_payment(transaction_list_data[count],tx_hash,tx_key,0) == 0 || strlen(tx_hash) != TRANSACTION_HASH_LENGTH || strlen(tx_key) != TRANSACTION_HASH_LENGTH)
           {
@@ -984,11 +984,23 @@ void* payment_timer_thread(void* parameters)
         sscanf(database_multiple_documents_fields.value[count][1], "%lld", &number);
         if (number >= (minimum_amount * XCASH_WALLET_DECIMAL_PLACES_AMOUNT))
         {
+          // check if the private group is on, and if so send it to the payment address instead of the voter address
+          if (private_group.private_group_settings == 1)
+          {
+            for (private_group_count = 0; private_group_count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE_PRIVATE_GROUP; private_group_count++)
+            {
+              if (strncmp(database_multiple_documents_fields.value[count][0],private_group.private_group_voting_public_address[private_group_count],BUFFER_SIZE) == 0)
+              {
+                break;
+              }
+            }
+          }
+
           // update the database for the public address
           for (counter = 0; counter < transaction_list_data_count; counter++)
           {
-            if (strstr(transaction_list_data[counter],database_multiple_documents_fields.value[count][0]) != NULL)
-            {
+            if ((private_group.private_group_settings == 0 && strstr(transaction_list_data[counter],database_multiple_documents_fields.value[count][0]) != NULL) || (private_group.private_group_settings == 1 && strstr(transaction_list_data[counter],private_group.private_group_payment_public_address[private_group_count]) != NULL))
+            {              
               if (payment_timer_send_payment_and_update_databases(database_multiple_documents_fields.value[count][0],database_multiple_documents_fields.value[count][1],database_multiple_documents_fields.value[count][2],transaction_list_data_tx_hash[counter],transaction_list_data_tx_key[counter]) == 0)
               {
                 color_print("Failed to update the database for a delegate\nManually update the following data (run the commands in the terminal), as the delegate has already been paid.\nFirst open the mongodb terminal by typing \"mongo\"\n Next use the shared delegates database by typing \"use XCASH_PROOF_OF_STAKE_DELEGATES\"\nUse the following command in the mongodb terminal to update values in the database:\ndb.collection.update({\"field_to_find_delegate\":\"value\"},{$set:{\"field_to_update_for_delegate\":\"value\"}}","red");
@@ -1003,18 +1015,6 @@ void* payment_timer_thread(void* parameters)
                 memcpy(data+strlen(data),database_multiple_documents_fields.value[count][0],strlen(database_multiple_documents_fields.value[count][0]));
                 memcpy(data+strlen(data),"\n\n#3 Run the following command to add the document to the database collection\ndb.public_addresses_payments.insertOne({\"public_address\":\"",136);
                 memcpy(data+strlen(data),database_multiple_documents_fields.value[count][0],strlen(database_multiple_documents_fields.value[count][0]));
-               
-                // check if the private group is on, and if so send it to the payment address instead of the voter address
-                if (private_group.private_group_settings == 1)
-                {
-                  for (private_group_count = 0; private_group_count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE_PRIVATE_GROUP; private_group_count++)
-                  {
-                    if (strncmp(database_multiple_documents_fields.value[count][0],private_group.private_group_voting_public_address[private_group_count],BUFFER_SIZE) == 0)
-                    {
-                      break;
-                    }
-                  }
-                }
 
                 memcpy(data+strlen(data),"\",\"payment_name\":\"",18);
                 if (private_group.private_group_settings == 1)
