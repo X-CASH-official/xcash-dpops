@@ -80,6 +80,7 @@ Using define statements instead of constants for increased efficiency
 #define MINIMUM_AMOUNT_RESERVE_PROOF 2000000000000 // The minimum amount to create a reserve proof, 2M xcash
 #define MINIMUM_AMOUNT_REGISTER_DELEGATE 20000000000000 // The minimum amount to keep a registered delegate from being removed from the inactive delegates timer thread, if the delegate has not mined a block yet, 20M xcash
 #define DATABASE_DATA_SYNC_DELEGATE_MINIMUM_AMOUNT 0 // The minimum amount to sync the database. This is used for delegates below the top 100 delegates that want to leave the xcash-dpops program running to sync in case they move to the top 100, 100M xcash
+#define MINIMUM_AMOUNT_SHARED_DELEGATE_SEND_PAYMENT_AMOUNT 500000000000 // The minimum amount the shared delegate needs to keep in the wallet in order for payments to be sent (500K)
 #define START_TIME_MINUTE_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 1 // the start time in minutes that the block verifiers synchronize the database each round
 #define START_TIME_SECONDS_BLOCK_VERIFIERS_SYNCHRONIZE_DATABASE 10 // the start time in seconds that the block verifiers synchronize the database each round
 #define SUBMIT_NETWORK_BLOCK_TIME_SECONDS 25 // The time to submit the network block

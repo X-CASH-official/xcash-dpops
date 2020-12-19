@@ -830,19 +830,30 @@ void* payment_timer_thread(void* parameters)
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     if (current_UTC_date_and_time.tm_min == (BLOCK_TIME-1))
     {
+      // wait to make sure the checking of reserve proofs have stoped
+      sleep(5);
       color_print("Sending the hourly payments","yellow");
 
       memset(data,0,sizeof(data));
       memset(data2,0,sizeof(data2));
       memset(data3,0,sizeof(data3));
-
-      // reset the amount of payments and total amount
-      amount_of_payments = 0;
-      total_amount = 0;
       
       if ((document_count = count_all_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION)) <= 0)
       {
         color_print("The database is empty so there are no payments to send","yellow");
+        sleep(60);
+        goto start;
+      }
+
+      // check if the wallet has above MINIMUM_AMOUNT_SHARED_DELEGATE_SEND_PAYMENT_AMOUNT to avoid errors
+      if ((total_amount = get_total_amount()) < MINIMUM_AMOUNT_SHARED_DELEGATE_SEND_PAYMENT_AMOUNT)
+      {
+        memset(data,0,sizeof(data));
+        memcpy(data,"The wallet is under the minimum amount (",40);
+        snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%ld",MINIMUM_AMOUNT_SHARED_DELEGATE_SEND_PAYMENT_AMOUNT / XCASH_WALLET_DECIMAL_PLACES_AMOUNT);
+        memcpy(data+strlen(data),") to be able to send payments.\nPlease add at least ",51);
+        snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%lld",(MINIMUM_AMOUNT_SHARED_DELEGATE_SEND_PAYMENT_AMOUNT - total_amount) / XCASH_WALLET_DECIMAL_PLACES_AMOUNT);
+        memcpy(data+strlen(data)," to the wallet, before voter payments can be sent out",53);
         sleep(60);
         goto start;
       }
@@ -854,6 +865,10 @@ void* payment_timer_thread(void* parameters)
         sleep(60);
         goto start;
       }
+
+      // reset the amount of payments and total amount
+      amount_of_payments = 0;
+      total_amount = 0;
 
       // initialize the database_multiple_documents_fields struct 
       INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_RESERVE_PROOFS_DATABASE_FIELDS,"payment_timer_thread",data,current_date_and_time,current_UTC_date_and_time);

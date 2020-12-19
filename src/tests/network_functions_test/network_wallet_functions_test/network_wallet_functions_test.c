@@ -41,6 +41,17 @@ int network_wallet_functions_test(void)
   // write the start test message
   fprintf(stderr,"\033[1;34m%s\nnetwork wallet functions test - Total test: %d\n%s\n\n\033[0m",TEST_OUTLINE,NETWORK_WALLET_FUNCTIONS_TEST,TEST_OUTLINE);
 
+  // test the get_total_amount function
+  if (get_total_amount() == 0)
+  {   
+    color_print("FAILED! Test for get_total_amount","red");   
+  }
+  else
+  {
+    color_print("PASSED! Test for get_total_amount","green");
+    count_test++;
+  }
+  
   // test the get_public_address function
   memset(xcash_wallet_public_address,0,strnlen(xcash_wallet_public_address,BUFFER_SIZE));
   if (get_public_address() == 1)

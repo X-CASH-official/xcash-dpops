@@ -74,6 +74,50 @@ int get_public_address(void)
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: get_total_amount
+Description: Gets the total amount of your wallet
+Return: 0 if an error has occured, otherwise the total amount
+-----------------------------------------------------------------------------------------------------------
+*/
+
+long long int get_total_amount(void)
+{
+  // Constants
+  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
+  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
+
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
+  long long int total_amount = 0;
+
+  // define macros
+  #define GET_TOTAL_AMOUNT_DATA "{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"get_balance\"}"
+  #define GET_TOTAL_AMOUNT_ERROR \
+  memcpy(error_message.function[error_message.total],"get_total_amount",16); \
+  memcpy(error_message.data[error_message.total],"Could not get the total amount",30); \
+  error_message.total++; \
+  return 0;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  
+  if (send_http_request(data,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,GET_TOTAL_AMOUNT_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0 || parse_json_data(data,"balance",data2,sizeof(data2)) == 0)
+  {  
+    GET_TOTAL_AMOUNT_ERROR;
+  }
+
+  sscanf(data2,"%lld", &total_amount);
+  return total_amount;
+
+  #undef GET_TOTAL_AMOUNT_DATA
+  #undef GET_TOTAL_AMOUNT_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: send_payment
 Description: Sends a payment
 Parameters:
