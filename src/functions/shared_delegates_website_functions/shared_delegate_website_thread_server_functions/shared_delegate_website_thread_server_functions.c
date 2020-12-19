@@ -862,6 +862,7 @@ void* payment_timer_thread(void* parameters)
         memcpy(data+strlen(data),") to be able to send payments.\nPlease add at least ",51);
         snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%lld",(MINIMUM_AMOUNT_SHARED_DELEGATE_SEND_PAYMENT_AMOUNT - total_amount) / XCASH_WALLET_DECIMAL_PLACES_AMOUNT);
         memcpy(data+strlen(data)," to the wallet, before voter payments can be sent out",53);
+        color_print(data,"red");
         sleep(60);
         goto start;
       }
