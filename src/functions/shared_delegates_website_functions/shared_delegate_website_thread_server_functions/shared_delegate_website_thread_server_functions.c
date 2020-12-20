@@ -753,6 +753,9 @@ int load_private_group_configuration(void)
   int count;
   int count2;
 
+  // define macros
+  #define NO_DATA_START_STRING "#"
+
   memset(data,0,sizeof(data));
 
   // reset all of the private group members
@@ -775,6 +778,14 @@ int load_private_group_configuration(void)
     memset(data_read,0,sizeof(data_read));
     memcpy(data_read,search_item,strnlen(search_item,sizeof(data_read)));
 
+    // check if this has no data
+    if (strstr(data_read,NO_DATA_START_STRING) != NULL)
+    {
+      // subtract one from the count, so it stays the same on the next loop
+      count--;
+      continue;
+    }
+
     for (count2 = 0, search_item_2 = strtok_r(data_read, "|",&search_item_data_2); search_item_2 != NULL; count2++, search_item_2 = strtok_r(NULL, "|",&search_item_data_2))
     {
       memset(data_read_2,0,sizeof(data_read_2));
@@ -783,6 +794,8 @@ int load_private_group_configuration(void)
     }
   }
   return 1;
+
+  #undef NO_DATA_START_STRING
 }
 
 
