@@ -502,7 +502,7 @@ void server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databa
     snprintf(data2+18,sizeof(data2)-19,"%zu",current_block_height_reserve_bytes);
     memcpy(data2+strlen(data2),"\"}",2);
 
-    count2 = test_settings == 0 ? ((current_block_height_reserve_bytes - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1 : ((current_block_height_reserve_bytes - 521850) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+    count2 = ((current_block_height_reserve_bytes - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
   
     memcpy(data,"reserve_bytes_",14);
     snprintf(data+14,MAXIMUM_NUMBER_SIZE,"%zu",count2);

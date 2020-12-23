@@ -123,7 +123,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
   }
   else
   {
-    memcpy(data,"521850",6);
+    memcpy(data,XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_DATA,sizeof(XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_DATA)-1);
   }
   
   memcpy(database_data.item[database_data.count],"current_block_height",20);

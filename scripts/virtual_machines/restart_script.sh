@@ -10,7 +10,7 @@ XCASH_WALLETS_DIR="/root/xcash-official/xcash-wallets/"
 MONGODB_DIR="/root/xcash-official/mongodb-linux-x86_64-ubuntu1804-4.2.1/bin/"
 IP_ADDRESS=$(hostname -I | awk '{print $1}')
 MAIN_NODES_IP_ADDRESS="192.168.1.201"
-XCASH_DPOPS_BLOCK_HEIGHT=521850
+XCASH_DPOPS_BLOCK_HEIGHT=760000
 
 TEST_WALLET_1="XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP"
 TEST_WALLET_2="XCA1VSDHKCc4Qhvqb3fquebSYxfMeyGteQeAYtDSpaTcgquBY1bkKWtQ42tZG2w7Ak7GyqnaiTgWL4bMHE9Lwd2A3g2Recxz7B"
