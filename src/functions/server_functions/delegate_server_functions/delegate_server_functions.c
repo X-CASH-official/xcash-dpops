@@ -344,7 +344,7 @@ void server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const 
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
   // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
-  if (test_settings == 0 && current_UTC_date_and_time.tm_min != 2 && current_UTC_date_and_time.tm_min != 3)
+  if (test_settings == 0 && current_UTC_date_and_time.tm_min != 3)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Invalid vote time\nValid times are the second and third minute of each hour}");
   }
