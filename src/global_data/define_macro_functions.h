@@ -231,7 +231,7 @@ else \
   { \
     count--; \
   } \
-  if (count-1 == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) \
+  if (count-1 == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || count <= XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) \
   { \
     count = 1; \
   } \
