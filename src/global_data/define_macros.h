@@ -17,8 +17,8 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_EMMISION_FACTOR 524288 // The emmision factor (2^19)
 #define XCASH_DPOPS_EMMISION_FACTOR 262144 // The xcash-dpops emmision factor (2^18)
 #define FIRST_BLOCK_MINING_REWARD 190734.863281 // The first blocks mining reward
-#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 760000 // The start block height for X-CASH proof of stake
-#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_DATA "767000" // The start block height for X-CASH proof of stake
+#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 800000 // The start block height for X-CASH proof of stake
+#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_DATA "800000" // The start block height for X-CASH proof of stake
 #define BLOCK_TIME 5 // The block time in minutes
 #define BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME 288 // The blocks per day with a 5 minute block time
 #define UNLOCK_BLOCK_AMOUNT 60 // The default unlock block amount for a block reward transaction
