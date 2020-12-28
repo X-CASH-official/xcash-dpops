@@ -231,7 +231,7 @@ int update_block_verifiers_list(void)
   load the previous block verifiers from the public addresses in the previous block before the previous block
   */
 
-  if (current_block_height_count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+  if (current_block_height_count <= XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
   {
     // load all of block verifiers from the current delegate database since there are no previous blocks
     for (count = 0; count < total_delegates; count++)
