@@ -132,7 +132,7 @@ int server_receive_data_socket_delegates_website_get_statistics(const int CLIENT
 
   // get the xcash proof of stake round number
   sscanf(data,"%zu", &block_height);
-  count = block_height - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT;  
+  count = block_height < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT ? 0 : block_height - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT;  
   memset(data,0,strlen(data));
   snprintf(data,sizeof(data)-1,"%zu",count);
 
