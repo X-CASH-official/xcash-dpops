@@ -164,12 +164,16 @@ void* current_block_height_timer_thread(void* parameters)
   get_current_block_height(current_block_height);
   get_previous_block_hash(previous_block_hash);
   sscanf(current_block_height,"%zu", &count);
-  while (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+
+  if (registration_settings == 0)
   {
-    get_current_block_height(current_block_height);
-    get_previous_block_hash(previous_block_hash);
-    sscanf(current_block_height,"%zu", &count);
-    sleep(1);
+    while (count < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+    {
+      get_current_block_height(current_block_height);
+      get_previous_block_hash(previous_block_hash);
+      sscanf(current_block_height,"%zu", &count);
+      sleep(1);
+    }
   }
 
   for (;;)
