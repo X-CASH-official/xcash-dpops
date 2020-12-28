@@ -151,7 +151,7 @@ void* current_block_height_timer_thread(void* parameters)
       nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);  
 
       // check if it is 30 minutes before the start time and restart, this way non network data nodes get an up to date copy of the database
-      if (network_data_node_settings == 0 && current_UTC_date_and_time.tm_mon == block_height_start_time.block_height_start_time_month && current_UTC_date_and_time.tm_mday == block_height_start_time.block_height_start_time_day && current_UTC_date_and_time.tm_hour == block_height_start_time.block_height_start_time_hour && block_height_start_time.block_height_start_time_minute - current_UTC_date_and_time.tm_min == 30)
+      if (network_data_node_settings == 0 && current_UTC_date_and_time.tm_year == block_height_start_time.block_height_start_time_year && current_UTC_date_and_time.tm_mon == block_height_start_time.block_height_start_time_month && current_UTC_date_and_time.tm_mday == block_height_start_time.block_height_start_time_day && current_UTC_date_and_time.tm_hour == block_height_start_time.block_height_start_time_hour && block_height_start_time.block_height_start_time_minute - current_UTC_date_and_time.tm_min == 30)
       {
         sleep(60);
         color_print("Restarting to get a up to date copy of the database","green");

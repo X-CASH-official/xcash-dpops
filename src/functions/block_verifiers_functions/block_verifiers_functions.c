@@ -135,7 +135,7 @@ int start_new_round(void)
   sscanf(current_block_height,"%zu", &count);
 
   // reload the initial previous, current and next block verifiers list if its the first block or if you had to restart
-  if (count == XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || sync_previous_current_next_block_verifiers_settings == 1)
+  if (count <= XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || sync_previous_current_next_block_verifiers_settings == 1)
   {
     sync_previous_current_next_block_verifiers_settings = 0;
     count2 = get_network_data_nodes_online_status();
@@ -161,7 +161,7 @@ int start_new_round(void)
 
     // check if the start time is 1 hour away
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (current_UTC_date_and_time.tm_mon == block_height_start_time.block_height_start_time_month && current_UTC_date_and_time.tm_mday == block_height_start_time.block_height_start_time_day && current_UTC_date_and_time.tm_hour == block_height_start_time.block_height_start_time_hour-1 && abs(current_UTC_date_and_time.tm_min - block_height_start_time.block_height_start_time_minute) <= 5)
+    if (current_UTC_date_and_time.tm_year == block_height_start_time.block_height_start_time_year && current_UTC_date_and_time.tm_mon == block_height_start_time.block_height_start_time_month && current_UTC_date_and_time.tm_mday == block_height_start_time.block_height_start_time_day && current_UTC_date_and_time.tm_hour == block_height_start_time.block_height_start_time_hour-1 && abs(current_UTC_date_and_time.tm_min - block_height_start_time.block_height_start_time_minute) <= 5)
     {
       color_print("Stoping registration mode","green");
       registration_settings = 0;
