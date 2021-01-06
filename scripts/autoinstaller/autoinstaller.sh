@@ -2395,7 +2395,7 @@ function backup()
   # Backup the decentralized database
   if [ "${SHARED_DELEGATE^^}" == "YES" ]; then
     cd ~
-    systemctl start mongodb
+    sudo systemctl start mongodb
     mongodump --db XCASH_PROOF_OF_STAKE_DELEGATES &>/dev/null
     7z a shared_delegates_database_backup.7z dump &>/dev/null
     sudo rm -r dump &>/dev/null  
