@@ -2396,10 +2396,10 @@ function backup()
   if [ "${SHARED_DELEGATE^^}" == "YES" ]; then
     cd ~
     sudo systemctl start mongodb
-    mongodump --db XCASH_PROOF_OF_STAKE_DELEGATES &>/dev/null
-    7z a shared_delegates_database_backup.7z dump &>/dev/null
-    sudo rm -r dump &>/dev/null  
-  fi
+    mongodump --db XCASH_PROOF_OF_STAKE_DELEGATES &>/dev/null || true
+    7z a shared_delegates_database_backup.7z dump &>/dev/null || true
+    sudo rm -r dump &>/dev/null || true
+    fi
 
   echo
   echo
@@ -2409,7 +2409,6 @@ function backup()
 
   # Display the decentralized database backup data
   if [ "${SHARED_DELEGATE^^}" == "YES" ]; then
-    ls ~
     echo
     echo
     echo -e "${COLOR_PRINT_YELLOW}After running the autoinstaller on a different machine run this command to import your shared delegates database (place the shared_delegates_database_backup.7z in the $HOME directory)${END_COLOR_PRINT}" 
