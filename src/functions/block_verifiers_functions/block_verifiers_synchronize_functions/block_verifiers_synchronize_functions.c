@@ -255,7 +255,7 @@ void sync_block_verifiers_database(void)
   // Variables
   char data[SMALL_BUFFER_SIZE];
   char data2[SMALL_BUFFER_SIZE];
-  char data3[4096];
+  char data3[BUFFER_SIZE_DATABASE_BEFORE_MAJORITY_PATH];
   char database_data_hash_majority[DATABASE_TOTAL][DATA_HASH_LENGTH+1];
   int count;
   int count3;
