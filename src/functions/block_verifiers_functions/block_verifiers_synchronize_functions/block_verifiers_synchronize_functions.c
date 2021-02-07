@@ -255,6 +255,7 @@ void sync_block_verifiers_database(void)
   // Variables
   char data[SMALL_BUFFER_SIZE];
   char data2[SMALL_BUFFER_SIZE];
+  char data3[4096];
   char database_data_hash_majority[DATABASE_TOTAL][DATA_HASH_LENGTH+1];
   int count;
   int count3;
@@ -422,11 +423,11 @@ void sync_block_verifiers_database(void)
   if (production_settings == 1 && strncmp(xcash_wallet_public_address,OFFICIAL_SHARED_DELEGATE_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) == 0)
   {
     color_print("Saving a copy of the database before the majority check","yellow");
-    memset(data,0,sizeof(data));
-    memcpy(data,database_path_write_before_majority,strnlen(database_path_write_before_majority,sizeof(data)));
-    memcpy(data+strlen(data),current_block_height,strnlen(current_block_height,sizeof(data)));
-    memcpy(data+strlen(data),"/",1);
-    count = system(data);
+    memset(data3,0,sizeof(data3));
+    memcpy(data3,database_path_write_before_majority,strnlen(database_path_write_before_majority,sizeof(data3)));
+    memcpy(data3+strlen(data3),current_block_height,strnlen(current_block_height,sizeof(data3)));
+    memcpy(data3+strlen(data3),"/",1);
+    count = system(data3);
   }
 
   // wait for all of the block verifiers to process the data
