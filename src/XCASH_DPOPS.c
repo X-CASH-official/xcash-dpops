@@ -97,6 +97,7 @@ int xcash_wallet_port; // The xcash wallet port
 char database_name[BUFFER_SIZE_NETWORK_BLOCK_DATA];
 char shared_delegates_database_name[BUFFER_SIZE_NETWORK_BLOCK_DATA];
 char database_path_write[1024]; // holds the database write path
+char database_path_write_before_majority[1024]; // holds the database write path before the majority sync
 char database_path_read[1024]; // holds the database read path
 int network_functions_test_settings;
 int network_functions_test_error_settings; // 1 to display errors, 0 to not display errors when running the reset variables allocated on the heap test
@@ -178,6 +179,7 @@ void initialize_data(int parameters_count, char* parameters[])
   memset(database_name,0,sizeof(database_name));
   memset(shared_delegates_database_name,0,sizeof(shared_delegates_database_name));
   memset(database_path_write,0,sizeof(database_path_write));
+  memset(database_path_write_before_majority,0,sizeof(database_path_write_before_majority));
   memset(database_path_read,0,sizeof(database_path_read));
   memset(voter_inactivity_count,0,sizeof(voter_inactivity_count));
   log_file_settings = 0;
@@ -533,7 +535,9 @@ void get_delegates_data(void)
       GET_DELEGATES_DATA_ERROR("Could not get the mongo database path");
     }
     memcpy(database_path_read,database_path_write,strnlen(database_path_write,sizeof(database_path_read)));
+    memcpy(database_path_write_before_majority,database_path_write,strnlen(database_path_write,sizeof(database_path_write_before_majority)));
     memcpy(database_path_write+strlen(database_path_write)-1,"/bin/mongodump --quiet --out /root/database_backup/",51);
+    memcpy(database_path_write_before_majority+strlen(database_path_write_before_majority)-1,"/bin/mongodump --quiet --out /root/database_backup_before_majority/",67);
     memcpy(database_path_read+strlen(database_path_read)-1,"/bin/mongorestore --quiet --dir /root/database_backup/",54);
   }
 
