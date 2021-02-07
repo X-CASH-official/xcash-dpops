@@ -935,7 +935,7 @@ void database_sync_check(void)
 
   // check if all of the databases are synced
   sscanf(current_block_height,"%zu", &count);
-  if (((count <= XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || strncmp(network_data_nodes_list.network_data_nodes_public_address[0],xcash_wallet_public_address,BUFFER_SIZE) == 0) && check_if_databases_are_synced(2,0) == 0) || (count > XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT && check_if_databases_are_synced(1,0) == 0))
+  if (((count <= XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || strncmp(network_data_nodes_list.network_data_nodes_public_address[0],xcash_wallet_public_address,BUFFER_SIZE) == 0) && check_if_databases_are_synced(2,0) == 0) || (count > XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT && check_if_databases_are_synced(2,0) == 0))
   {
     DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
   }
