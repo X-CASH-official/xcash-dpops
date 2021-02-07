@@ -95,9 +95,9 @@ void sync_network_data_nodes_database(void)
     memset(network_data_nodes_sync_database_list.network_data_node_public_address[count],0,sizeof(network_data_nodes_sync_database_list.network_data_node_public_address[count]));
     memset(network_data_nodes_sync_database_list.network_data_nodes_IP_address[count],0,sizeof(network_data_nodes_sync_database_list.network_data_nodes_IP_address[count]));
     memset(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count],0,sizeof(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count]));
-    
     memcpy(network_data_nodes_sync_database_list.network_data_node_public_address[count],network_data_nodes_list.network_data_nodes_public_address[count],strnlen(network_data_nodes_list.network_data_nodes_public_address[count],sizeof(network_data_nodes_sync_database_list.network_data_node_public_address[count])));
     memcpy(network_data_nodes_sync_database_list.network_data_nodes_IP_address[count],network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(network_data_nodes_sync_database_list.network_data_nodes_IP_address[count])));
+    network_data_nodes_sync_database_list.network_data_nodes_previous_block_settings[count] = 0;  
   }
   
   print_start_message(current_date_and_time,current_UTC_date_and_time,"Network data nodes are now checking if all network data nodes databases are synced",data);
@@ -349,10 +349,10 @@ void sync_block_verifiers_database(void)
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {    
     memset(block_verifiers_sync_database_list.block_verifiers_public_address[count],0,sizeof(block_verifiers_sync_database_list.block_verifiers_public_address[count]));
-    memset(block_verifiers_sync_database_list.block_verifiers_IP_address[count],0,sizeof(block_verifiers_sync_database_list.block_verifiers_IP_address[count]));
-    
+    memset(block_verifiers_sync_database_list.block_verifiers_IP_address[count],0,sizeof(block_verifiers_sync_database_list.block_verifiers_IP_address[count]));    
     memcpy(block_verifiers_sync_database_list.block_verifiers_public_address[count],current_block_verifiers_list.block_verifiers_public_address[count],strnlen(current_block_verifiers_list.block_verifiers_public_address[count],sizeof(block_verifiers_sync_database_list.block_verifiers_public_address[count])));
     memcpy(block_verifiers_sync_database_list.block_verifiers_IP_address[count],current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(block_verifiers_sync_database_list.block_verifiers_IP_address[count])));
+    block_verifiers_sync_database_list.block_verifiers_previous_block_settings[count] = 0;
   }
 
   // wait so all block verifiers start at the same time, this way one is not reseting the variables as another one is sending them data
