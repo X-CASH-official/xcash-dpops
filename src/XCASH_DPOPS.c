@@ -941,7 +941,7 @@ void database_sync_check(void)
   sscanf(current_block_height,"%zu", &count);
 
   // special blocks where we had to restart the code
-  if (count == 800118)
+  if (count == 800123)
   {
     if (check_if_databases_are_synced(2,0) == 0)
     {
