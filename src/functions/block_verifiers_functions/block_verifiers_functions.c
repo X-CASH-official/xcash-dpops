@@ -265,6 +265,7 @@ int start_new_round(void)
     if (count2 == BLOCK_VERIFIERS_AMOUNT && strncmp(xcash_wallet_public_address,OFFICIAL_SHARED_DELEGATE_PUBLIC_ADDRESS_PRODUCTION,BUFFER_SIZE) != 0)
     {
       color_print("Your delegate is not a current block verifier, waiting until the next round","yellow");
+      print_block_producer();
       sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
       return 2;
     }
