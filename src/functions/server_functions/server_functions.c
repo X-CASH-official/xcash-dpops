@@ -898,10 +898,14 @@ void* socket_receive_data_thread(void* parameters)
        // a file descriptor is ready for a new socket connection
        new_socket_thread();
      }
-     else
+     else if (events[count2].events & EPOLLIN)
      {
        // a file descriptor is ready for a current socket connection
        socket_thread(events[count2].data.fd);
+       close(events[count2].data.fd);
+     }
+     else
+     {
        close(events[count2].data.fd);
      }
    } 
