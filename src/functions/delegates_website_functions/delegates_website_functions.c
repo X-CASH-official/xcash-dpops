@@ -596,7 +596,7 @@ int server_receive_data_socket_check_vote_status(const int CLIENT_SOCKET, const 
 
   if (count == TOTAL_RESERVE_PROOFS_DATABASES)
   {
-    memcpy(message,"{\"Error\":\"The public address does not an active vote\"}",54);
+    memcpy(message,"{\"Error\":\"The public address does not have an active vote\"}",59);
     send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json");
   }
 
