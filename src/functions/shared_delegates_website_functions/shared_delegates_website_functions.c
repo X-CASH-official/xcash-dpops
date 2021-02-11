@@ -461,15 +461,13 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(1,"Invalid parameters");
   }
   
-  // check if the data is a public address or a delegate name
+  // check if there is any data in the database that matches the message
   memcpy(data3,"{\"",2);
   memcpy(data3+2,"public_address\":\"",17);
   memcpy(data3+19,data2,XCASH_WALLET_LENGTH);
   memcpy(data3+19+XCASH_WALLET_LENGTH,"\"}",2);
   
-  // check if there is any data in the database that matches the message
-  document_count = count_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION,data3);
-  if (document_count <= 0)
+  if ((document_count = count_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION,data3)) <= 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(1,"There is no payment data for the public address");
   }
@@ -477,7 +475,7 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   // initialize the database_multiple_documents_fields struct
   INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS,"server_receive_data_socket_get_public_address_payment_information",data2,current_date_and_time,current_UTC_date_and_time);
   
-  if (read_multiple_documents_all_fields_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"") == 0)
+  if (read_multiple_documents_all_fields_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,data3,&database_multiple_documents_fields,1,document_count,0,"") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(0,"Could not get the payment data for the public address");
   }
@@ -485,17 +483,21 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   // count how many bytes to allocate for the json data
   for (count = 0, counter = BUFFER_SIZE; count < document_count; count++)
   {
-    counter += 20; // 20 is for quotes for the items and values
+    counter += 100000;
     counter += strlen(database_multiple_documents_fields.item[count][0]);
     counter += strlen(database_multiple_documents_fields.item[count][1]);
     counter += strlen(database_multiple_documents_fields.item[count][2]);
     counter += strlen(database_multiple_documents_fields.item[count][3]);
     counter += strlen(database_multiple_documents_fields.item[count][4]);
+    counter += strlen(database_multiple_documents_fields.item[count][5]);
+    counter += strlen(database_multiple_documents_fields.item[count][6]);
     counter += strlen(database_multiple_documents_fields.value[count][0]);
     counter += strlen(database_multiple_documents_fields.value[count][1]);
     counter += strlen(database_multiple_documents_fields.value[count][2]);
     counter += strlen(database_multiple_documents_fields.value[count][3]);
     counter += strlen(database_multiple_documents_fields.value[count][4]);
+    counter += strlen(database_multiple_documents_fields.value[count][5]);
+    counter += strlen(database_multiple_documents_fields.value[count][6]);
   }
   
   char* message = (char*)calloc(counter,sizeof(char)); 
