@@ -1356,6 +1356,14 @@ void server_receive_data_socket_nodes_to_network_data_nodes_check_vote_status(co
     }
   }
 
+  if (count == TOTAL_RESERVE_PROOFS_DATABASES)
+  {
+    memset(message,0,sizeof(message));
+    memcpy(message,"Error: The public address does not have an active vote}",55);
+    send_data(CLIENT_SOCKET,(unsigned char*)message,0,0,"");
+    return;
+  }
+
   // get the delegate name
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
@@ -1370,13 +1378,6 @@ void server_receive_data_socket_nodes_to_network_data_nodes_check_vote_status(co
   }
 
   memset(message,0,sizeof(message));
-
-  if (count == TOTAL_RESERVE_PROOFS_DATABASES)
-  {
-    memcpy(message,"Error: The public address does not have an active vote}",55);
-    send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json");
-  }
-
   memcpy(message,"delegate_name: ",15);
   memcpy(message+strlen(message),data2,strnlen(data2,sizeof(message)));
   memcpy(message+strlen(message),", total: ",9);

@@ -211,6 +211,25 @@ int delegate_server_functions_test(void)
     fprintf(stderr,"\033[1;31mFAILED! Test for server_receive_data_socket_nodes_to_block_verifiers_update_delegates\033[0m\n");
   }
 
+  // check_vote_status
+  delete_database(database_name);
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" NETWORK_DATA_NODE_1_PUBLIC_ADDRESS "\",\"total_vote_count\":\"240000000\",\"IP_address\":\"" NETWORK_DATA_NODE_1_IP_ADDRESS "\",\"delegate_name\":\"delegate_name_1\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"shared_delegate_status\":\"solo\",\"delegate_fee\":\"\",\"server_specs\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"" TEST_WALLET_PUBLIC_KEY_1 "\"}");
+  insert_document_into_collection_json(database_name,"reserve_proofs_1",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_1);
+  insert_document_into_collection_json(database_name,"reserve_proofs_5",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_1);
+  memcpy(result_test,"NODE_TO_NETWORK_DATA_NODES_CHECK_VOTE_STATUS|" TEST_WALLET_1 "|",144);
+  send_and_receive_data_socket(data_test,sizeof(data_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  if (strncmp(data_test,"delegate_name: delegate_name_1, total: 120000000}",BUFFER_SIZE) == 0)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for check_vote_status\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for check_vote_status\033[0m\n");
+  }
+
   // test check_for_valid_delegate_name
   if (check_for_valid_delegate_name("us1.xcash.foundation") == 1 && check_for_valid_delegate_name("(us1.xcash.foundation)") == 0)
   {
@@ -620,6 +639,24 @@ int delegate_server_functions_test(void)
 
   DELEGATES_SERVER_FUNCTIONS_TEST_ERROR("NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE|about|data|" TEST_WALLET_DELEGATES_REGISTER "|" TEST_SIGNATURE_DELEGATES_UPDATE "|","server_receive_data_socket_nodes_to_block_verifiers_update_delegates","The delegate could not be updated from the database}"); 
   RESET_ERROR_MESSAGES;
+
+  // check_vote_status
+  delete_database(database_name);
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  insert_document_into_collection_json(database_name,"delegates","{\"public_address\":\"" NETWORK_DATA_NODE_1_PUBLIC_ADDRESS "\",\"total_vote_count\":\"240000000\",\"IP_address\":\"" NETWORK_DATA_NODE_1_IP_ADDRESS "\",\"delegate_name\":\"delegate_name_1\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"shared_delegate_status\":\"solo\",\"delegate_fee\":\"\",\"server_specs\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"" TEST_WALLET_PUBLIC_KEY_1 "\"}");
+  insert_document_into_collection_json(database_name,"reserve_proofs_5",DATABASE_COLLECTION_RESERVE_PROOFS_DATA_5);
+  memcpy(result_test,"NODE_TO_NETWORK_DATA_NODES_CHECK_VOTE_STATUS|" TEST_WALLET_1 "|",144);
+  send_and_receive_data_socket(data_test,sizeof(data_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  if (strncmp(data_test,"Error: The public address does not have an active vote}",BUFFER_SIZE) == 0)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for check_vote_status for no vote\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for check_vote_status for no vote\033[0m\n");
+  }
 
   // test the check_for_valid_delegate_fee
   if (check_for_valid_delegate_fee("2") == 1 && check_for_valid_delegate_fee("2.5") == 1)
