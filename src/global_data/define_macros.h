@@ -66,7 +66,7 @@ Using define statements instead of constants for increased efficiency
 
 // XCASH DPOPS
 // Note the BLOCK_VERIFIERS_TOTAL_AMOUNT and BLOCK_VERIFIERS_AMOUNT should be a number that is a multiple of 4 or of 5 or BLOCK_VERIFIERS_TOTAL_AMOUNT should be lower than 50, otherwise it will not have enough time in the round to verify all of the block verifiers signatures
-#define XCASH_DPOPS_CURRENT_VERSION "xcash-dpops - Version 1.0.0\n"
+#define XCASH_DPOPS_CURRENT_VERSION "xcash-dpops - Version 1.0.1\n"
 #define BLOCK_VERIFIERS_TOTAL_AMOUNT 100 // The total amount of block verifiers
 #define BLOCK_VERIFIERS_AMOUNT 50 // The amount of block verifiers in a round
 #define BLOCK_VERIFIERS_VALID_AMOUNT 27 // The amount of block verifiers that need to vote true for the part of the round to be valid
@@ -171,6 +171,10 @@ Using define statements instead of constants for increased efficiency
 #define NETWORK_DATA_NODES_AMOUNT 5 // The amount of network data nodes
 #define NETWORK_DATA_NODES_VALID_AMOUNT 3 // The amount of network data nodes need to reach a consensus on the database data
 #define NETWORK_DATA_NODES_VALID_AMOUNT_PERCENTAGE 0.60 // The percentage of network data nodes need to reach a consensus on the database data
+
+// Updates data
+#define BLOCK_HEIGHT_RESTART 800123
+#define BLOCK_HEIGHT_SF_V_1_0_1 801000
 
 
 #define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION "XCA1a9usG2UKajV1Dqzp8fL1BbN3hzuaaJMYjCo7qDoC4C3Vvc5owiLAqKbVw2cRbwRqx3mgrau1Z7LkX6cxR2NC4ZmFBLe2Mf"
@@ -749,5 +753,5 @@ sleep(BLOCK_VERIFIERS_SETTINGS);
 "--synchronize-database-from-specific-delegate <delegates_IP_address> - Synchronize the database from a specific node, and does not check the majority. It will also exit the program once done syncing.\nNote: This method of syncing is likely to be the most error prone, since it skips the majority checks, but will also likely be the fastest.\nShould only be used in specific circumstances.\n" \
 "--disable-synchronizing-databases-and-starting-timers - Disables synchronizing the databases and starting the timers. Used for testing. Parameter needs to be passed last.\n" \
 "--registration-mode <month> <day> <hour> <minute> - Runs the registration mode for network data nodes. Used to keep a majority for the database before the block producing starts <month> is the month of the year (0-11), <day> is the day of the month (1-31), <hour> is the hour in UTC (1-23), <minute> is the minute (31-59). Parameter needs to be passed last.\n" \
-"--start-time <month> <day> <hour> <minute> - Starts the current block height timer at a specific time. <month> is the month of the year (0-11), <day> is the day of the month (1-31), <hour> is the hour in UTC (1-23), <minute> is the minute (31-59). Parameter needs to be passed last.\n"
+"--start-time <year> <month> <day> <hour> <minute> - Starts the current block height timer at a specific time. <year> is how many years since 1900, <month> is the month of the year (0-11), <day> is the day of the month (1-31), <hour> is the hour in UTC (1-23), <minute> is the minute (31-59). Parameter needs to be passed last.\n"
 #endif

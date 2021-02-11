@@ -11,6 +11,7 @@
 
 #include "database_functions.h"
 #include "count_database_functions.h"
+#include "update_database_functions.h"
 #include "network_functions.h"
 #include "string_functions.h"
 #include "vrf.h"
@@ -367,5 +368,220 @@ size_t get_database_collection_size(const char* DATABASE, const char* COLLECTION
   database_reset_all;  
   return count;
 
+  #undef database_reset_all
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: reserve_proofs_delegate_check
+Description: Checks the reserve proofs and delegates data
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void reserve_proofs_delegate_check(void)
+{
+  // Structures
+  struct delegate_total_vote_count {
+    char public_address[MAXIMUM_AMOUNT_OF_DELEGATES][XCASH_WALLET_LENGTH+1];
+    long long int total_vote_count[MAXIMUM_AMOUNT_OF_DELEGATES];
+  };
+
+  // Constants
+  const bson_t* current_document;
+
+  // Variables
+  mongoc_client_t* database_client_thread = NULL;
+  mongoc_collection_t* collection = NULL;
+  mongoc_cursor_t* document_settings = NULL;
+  bson_t* document = NULL; 
+  char* message;
+  char* message_copy1;
+  char* message_copy2;
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
+  char buffer[BUFFER_SIZE];
+  struct delegate_total_vote_count delegate_total_vote_count;
+  int count;
+  int count2;
+  long long int current_total;
+
+  // define macros
+  #define DATABASE_FIELD_NAME_DELEGATES ", \"public_address\" : \""
+  #define DATABASE_FIELD_NAME_RESERVE_PROOFS_1 ", \"public_address_voted_for\" : \""
+  #define DATABASE_FIELD_NAME_RESERVE_PROOFS_2 ", \"total\" : \""
+
+  #define database_reset_all \
+  bson_destroy(document); \
+  mongoc_cursor_destroy(document_settings); \
+  mongoc_collection_destroy(collection); \
+  mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+  memset(buffer,0,sizeof(buffer));
+
+  // initialize the struct delegate_total_vote_count
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_DELEGATES; count++)
+  {
+    memset(delegate_total_vote_count.public_address[count],0,sizeof(delegate_total_vote_count.public_address[count]));
+    delegate_total_vote_count.total_vote_count[count] = 0;
+  }
+
+  // get a temporary connection
+  if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
+  {
+    return;
+  }
+
+  // set the collection
+  collection = mongoc_client_get_collection(database_client_thread, database_name, "delegates");
+
+  if (!(document = bson_new()))
+  {
+    return;
+  }
+
+  document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
+
+  count = 0;
+  while (mongoc_cursor_next(document_settings, &current_document))
+  {
+    // get the current document  
+    message = bson_as_canonical_extended_json(current_document, NULL);
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,message,strnlen(message,sizeof(data2)));    
+    bson_free(message);
+    
+    // parse the public_address
+    if (strstr(data2,DATABASE_FIELD_NAME_DELEGATES) == NULL)
+    {
+      continue;
+    }
+    message_copy1 = strstr(data2,DATABASE_FIELD_NAME_DELEGATES) + strnlen(DATABASE_FIELD_NAME_DELEGATES,BUFFER_SIZE);
+    if (message_copy1 == NULL)
+    {
+      continue;
+    }
+    message_copy2 = strstr(message_copy1,"\"");
+    if (message_copy2 == NULL)
+    {
+      continue;
+    }
+    memset(data,0,sizeof(data));
+    memcpy(data,message_copy1,message_copy2 - message_copy1); 
+
+    memcpy(delegate_total_vote_count.public_address[count],data,XCASH_WALLET_LENGTH);
+    count++;
+  }
+
+
+  for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASES; count++)
+  {
+    memcpy(data3,"reserve_proofs_",15);
+    snprintf(data3+15,MAXIMUM_NUMBER_SIZE,"%d",count);
+
+    // set the collection
+    collection = mongoc_client_get_collection(database_client_thread, database_name, data3);
+
+    // check if the database collection exist
+    if (check_if_database_collection_exist(database_name,data3) == 0)
+    {
+      continue;
+    }
+
+    if (!(document = bson_new()))
+    {
+      return;
+    }
+
+    document_settings = mongoc_collection_find_with_opts(collection, document, NULL, NULL);
+
+    while (mongoc_cursor_next(document_settings, &current_document))
+    { 
+      // get the current document  
+      message = bson_as_canonical_extended_json(current_document, NULL);
+      memset(data2,0,sizeof(data2));
+      memcpy(data2,message,strnlen(message,sizeof(data2)));    
+      bson_free(message);
+
+      // parse the public_address_voted_for
+      if (strstr(data2,DATABASE_FIELD_NAME_RESERVE_PROOFS_1) == NULL)
+      {
+        return;
+      }
+      message_copy1 = strstr(data2,DATABASE_FIELD_NAME_RESERVE_PROOFS_1) + strnlen(DATABASE_FIELD_NAME_RESERVE_PROOFS_1,BUFFER_SIZE);
+      if (message_copy1 == NULL)
+      {
+        return;
+      }
+      message_copy2 = strstr(message_copy1,"\"");
+      if (message_copy2 == NULL)
+      {
+        return;
+      }
+      memset(data,0,sizeof(data));
+      memcpy(data,message_copy1,message_copy2 - message_copy1);       
+    
+      // parse the total
+      if (strstr(data2,DATABASE_FIELD_NAME_RESERVE_PROOFS_2) == NULL)
+      {
+        return;
+      }
+      message_copy1 = strstr(data2,DATABASE_FIELD_NAME_RESERVE_PROOFS_2) + strnlen(DATABASE_FIELD_NAME_RESERVE_PROOFS_2,BUFFER_SIZE);
+      if (message_copy1 == NULL)
+      {
+        return;
+      }
+      message_copy2 = strstr(message_copy1,"\"");
+      if (message_copy2 == NULL)
+      {
+        return;
+      }
+      memset(buffer,0,sizeof(buffer));
+      memcpy(buffer,message_copy1,message_copy2 - message_copy1); 
+
+      sscanf(buffer,"%lld", &current_total);
+
+      for (count2 = 0; count2 < MAXIMUM_AMOUNT_OF_DELEGATES; count2++)
+      {
+        if (strncmp(data,delegate_total_vote_count.public_address[count2],BUFFER_SIZE) == 0)
+        {
+          delegate_total_vote_count.total_vote_count[count2] += current_total;
+          break;
+        }
+      }
+    }
+  }
+
+  for (count2 = 0; count2 < MAXIMUM_AMOUNT_OF_DELEGATES; count2++)
+  {
+    if (strlen(delegate_total_vote_count.public_address[count2]) == XCASH_WALLET_LENGTH)
+    {
+      memset(data,0,sizeof(data));
+      memset(data2,0,sizeof(data2));
+      memset(data3,0,sizeof(data3));
+
+      memcpy(data,"{\"public_address\":\"",19);
+      memcpy(data+strlen(data),delegate_total_vote_count.public_address[count2],XCASH_WALLET_LENGTH);
+      memcpy(data+strlen(data),"\"}",2);
+
+      memcpy(data2,"{\"total_vote_count\":\"",21);
+      snprintf(data2+strlen(data2),MAXIMUM_NUMBER_SIZE,"%lld",delegate_total_vote_count.total_vote_count[count2]);
+      memcpy(data2+strlen(data2),"\"}",2);
+
+      update_document_from_collection(database_name,"delegates",data,data2);
+    }
+  }
+  
+  database_reset_all;
+  return;
+
+  #undef DATABASE_FIELD_NAME_DELEGATES
+  #undef DATABASE_FIELD_NAME_RESERVE_PROOFS_1
+  #undef DATABASE_FIELD_NAME_RESERVE_PROOFS_2
   #undef database_reset_all
 }

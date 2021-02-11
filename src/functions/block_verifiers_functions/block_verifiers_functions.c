@@ -26,6 +26,7 @@
 #include "block_verifiers_synchronize_functions.h"
 #include "block_verifiers_thread_server_functions.h"
 #include "block_verifiers_update_functions.h"
+#include "database_functions.h"
 #include "count_database_functions.h"
 #include "insert_database_functions.h"
 #include "read_database_functions.h"
@@ -1344,7 +1345,10 @@ int block_verifiers_create_block_and_update_database(void)
   char data[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
   size_t count;
+  size_t block_height;
 
   // threads
   pthread_t thread_id;
@@ -1360,6 +1364,8 @@ int block_verifiers_create_block_and_update_database(void)
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
+
+  sscanf(current_block_height,"%zu", &block_height);
 
   // remove any database data if its a replayed round, since this is not a false positive since that was checked at the start of the round
   get_reserve_bytes_database(count,0); 
@@ -1407,14 +1413,25 @@ int block_verifiers_create_block_and_update_database(void)
   }
 
   color_print("Added the reserve bytes to the database\n","green");
-
-  color_print("Part 28 - Check for invalid reserve proofs and wait for the block producer to submit the block to the network","yellow");
   
-  // start the reserve proofs timer
   if (strncmp(current_round_part_backup_node,"0",1) == 0)
   {
-    pthread_create(&thread_id, NULL, &check_reserve_proofs_timer_thread, NULL);
-    pthread_detach(thread_id);
+    // get the current date and time
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+    if (block_height >= BLOCK_HEIGHT_SF_V_1_0_1 && current_UTC_date_and_time.tm_hour == 0 && current_UTC_date_and_time.tm_min < BLOCK_TIME)
+    {
+      // start the reserve proofs delegate check
+      color_print("Part 28 - Starting the reserve proofs delegate check","yellow");
+      reserve_proofs_delegate_check();
+      color_print("The reserve proofs delegate check is finished","green");
+    }
+    else
+    {
+      // start the reserve proofs timer
+      color_print("Part 28 - Check for invalid reserve proofs and wait for the block producer to submit the block to the network","yellow");
+      pthread_create(&thread_id, NULL, &check_reserve_proofs_timer_thread, NULL);
+      pthread_detach(thread_id);
+    }
   }
 
   sync_block_verifiers_minutes_and_seconds((BLOCK_TIME-1),SUBMIT_NETWORK_BLOCK_TIME_SECONDS);
