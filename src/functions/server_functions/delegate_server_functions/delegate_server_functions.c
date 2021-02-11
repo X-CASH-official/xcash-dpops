@@ -1274,3 +1274,117 @@ void server_receive_data_socket_nodes_to_block_verifiers_recover_delegates(const
   #undef DATABASE_COLLECTION
   #undef SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE_ERROR
 }
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_nodes_to_network_data_nodes_check_vote_status
+Description: Runs the code when the server receives the NODE_TO_NETWORK_DATA_NODES_CHECK_VOTE_STATUS message
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  MESSAGE - The message
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void server_receive_data_socket_nodes_to_network_data_nodes_check_vote_status(const int CLIENT_SOCKET, const char* MESSAGE)
+{
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
+  char message[BUFFER_SIZE];
+  char total_vote_count[SMALL_BUFFER_SIZE];
+  char public_address_voted_for[SMALL_BUFFER_SIZE];
+  int count;
+  int count2;
+  size_t data_size;
+
+  // define macros
+  #define SERVER_RECEIVE_DATA_SOCKET_CHECK_VOTE_STATUS_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_network_data_nodes_check_vote_status",72); \
+    memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+    error_message.total++; \
+  } \
+  memset(message,0,strlen(message)); \
+  memcpy(message,"Error: Could not get the vote status}",37); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,0,0,""); \
+  return;
+  
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+  memset(message,0,sizeof(message));
+  memset(total_vote_count,0,sizeof(total_vote_count));
+  memset(public_address_voted_for,0,sizeof(public_address_voted_for));
+
+  // parse the message
+  for (count = 0, count2 = 0; count < RECOVER_PARAMETER_AMOUNT; count++)
+  {
+    if (count == 1)
+    {
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
+      {
+        SERVER_RECEIVE_DATA_SOCKET_CHECK_VOTE_STATUS_ERROR("Invalid message data}");
+      }
+      memcpy(data2,&MESSAGE[count2],data_size);
+    }
+    count2 = (int)(strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1);
+  }
+
+  // create the message
+  memcpy(message,"{\"public_address_created_reserve_proof\":\"",41);
+  memcpy(message+strlen(message),data2,XCASH_WALLET_LENGTH);
+  memcpy(message+strlen(message),"\"}",2);
+
+  for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASES; count++)
+  {
+    memset(data3,0,sizeof(data3));
+    memcpy(data3,"reserve_proofs_",15);
+    snprintf(data3+15,MAXIMUM_NUMBER_SIZE,"%d",count);
+
+    if (count_documents_in_collection(database_name,data3,message) == 1)
+    {
+      // get the delegate public address and vote amount
+      if (read_document_field_from_collection(database_name,data3,message,"public_address_voted_for",public_address_voted_for) == 0 || read_document_field_from_collection(database_name,data3,message,"total",total_vote_count) == 0)
+      {
+        SERVER_RECEIVE_DATA_SOCKET_CHECK_VOTE_STATUS_ERROR("Could not get the voters data");
+      }
+      break;
+    }
+  }
+
+  // get the delegate name
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+
+  memcpy(data3,"{\"public_address\":\"",19);
+  memcpy(data3+strlen(data3),public_address_voted_for,XCASH_WALLET_LENGTH);
+  memcpy(data3+strlen(data3),"\"}",2);
+
+  if (read_document_field_from_collection(database_name,"delegates",data3,"delegate_name",data2) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_CHECK_VOTE_STATUS_ERROR("Could not get the voters data");
+  }
+
+  memset(message,0,sizeof(message));
+
+  if (count == TOTAL_RESERVE_PROOFS_DATABASES)
+  {
+    memcpy(message,"Error: The public address does not have an active vote}",55);
+    send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json");
+  }
+
+  memcpy(message,"delegate_name: ",15);
+  memcpy(message+strlen(message),data2,strnlen(data2,sizeof(message)));
+  memcpy(message+strlen(message),", total: ",9);
+  memcpy(message+strlen(message),total_vote_count,strnlen(total_vote_count,sizeof(message)));
+  memcpy(message+strlen(message),"}",2);
+
+  send_data(CLIENT_SOCKET,(unsigned char*)message,0,0,"");
+  return;
+  
+  #undef SERVER_RECEIVE_DATA_SOCKET_CHECK_VOTE_STATUS_ERROR
+}

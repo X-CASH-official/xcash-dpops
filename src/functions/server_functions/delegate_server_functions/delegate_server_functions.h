@@ -16,4 +16,5 @@ void server_receive_data_socket_nodes_to_block_verifiers_register_delegates(cons
 int check_for_valid_delegate_fee(const char* MESSAGE);
 void server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const int CLIENT_SOCKET, const char* MESSAGE);
 void server_receive_data_socket_nodes_to_block_verifiers_recover_delegates(const int CLIENT_SOCKET, const char* MESSAGE);
+void server_receive_data_socket_nodes_to_network_data_nodes_check_vote_status(const int CLIENT_SOCKET, const char* MESSAGE);
 #endif

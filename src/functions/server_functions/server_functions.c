@@ -781,6 +781,14 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
+ else if (strstr(buffer,"NODE_TO_NETWORK_DATA_NODES_CHECK_VOTE_STATUS") != NULL)
+ {
+   if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
+   {
+     server_receive_data_socket_nodes_to_network_data_nodes_check_vote_status(CLIENT_SOCKET,(const char*)buffer);
+     server_limit_IP_addresses(0,(const char*)client_IP_address);
+   }
+ }
  else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_NETWORK_DATA_NODE_BLOCK_VERIFIERS_CURRENT_TIME\"") != NULL)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)

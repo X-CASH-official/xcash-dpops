@@ -1360,6 +1360,16 @@ memset(data_test,0,sizeof(data_test));
 
 
 
+/*
+  The purpose of this message is for a node to get their vote status
+ 
+  message_settings - The type of the message
+  public_address - The public address of the node that is sending the data.
+  */
+  #define NODE_TO_NETWORK_DATA_NODES_CHECK_VOTE_STATUS "NODE_TO_NETWORK_DATA_NODES_CHECK_VOTE_STATUS|" TEST_WALLET "|"
+
+
+
   // Blockchain syncing process 
  
  /*
