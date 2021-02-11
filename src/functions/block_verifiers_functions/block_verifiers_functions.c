@@ -1418,7 +1418,7 @@ int block_verifiers_create_block_and_update_database(void)
   {
     // get the current date and time
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    if (block_height >= BLOCK_HEIGHT_SF_V_1_0_1 && current_UTC_date_and_time.tm_hour == 0 && current_UTC_date_and_time.tm_min < BLOCK_TIME)
+    if (block_height >= BLOCK_HEIGHT_SF_V_1_0_1 && current_UTC_date_and_time.tm_min > 30 && current_UTC_date_and_time.tm_min < 35)
     {
       // start the reserve proofs delegate check
       color_print("Part 28 - Starting the reserve proofs delegate check","yellow");
