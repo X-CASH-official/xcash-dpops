@@ -481,6 +481,7 @@ void reserve_proofs_delegate_check(void)
 
   for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASES; count++)
   {
+    memset(data3,0,sizeof(data3));
     memcpy(data3,"reserve_proofs_",15);
     snprintf(data3+15,MAXIMUM_NUMBER_SIZE,"%d",count);
 

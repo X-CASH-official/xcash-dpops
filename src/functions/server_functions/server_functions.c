@@ -556,6 +556,14 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
+ else if (strstr(buffer,"GET /checkvotestatus?parameter1=") != NULL && delegates_website == 1)
+ {
+   if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
+   {
+     server_receive_data_socket_check_vote_status(CLIENT_SOCKET,(const char*)buffer);
+     server_limit_IP_addresses(0,(const char*)client_IP_address);
+   }
+ } 
  else if (strstr(buffer,"GET /getdelegatesvoterslist?parameter1=") != NULL && (delegates_website == 1 || shared_delegates_website == 1))
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)

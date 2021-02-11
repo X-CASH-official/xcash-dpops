@@ -508,6 +508,114 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_check_vote_status
+Description: Runs the code when the server receives /checkvotestatus
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  DATA - The data
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_check_vote_status(const int CLIENT_SOCKET, const char* DATA)
+{
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
+  char message[BUFFER_SIZE];
+  char total_vote_count[SMALL_BUFFER_SIZE];
+  char public_address_voted_for[SMALL_BUFFER_SIZE];
+  int count;
+
+  // define macros
+  #define SERVER_RECEIVE_DATA_SOCKET_CHECK_VOTE_STATUS_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_check_vote_status",44); \
+    memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+    error_message.total++; \
+  } \
+  memset(message,0,strlen(message)); \
+  memcpy(message,"{\"Error\":\"Could not get the vote status\"}",41); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
+  return 0;
+  
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+  memset(message,0,sizeof(message));
+  memset(total_vote_count,0,sizeof(total_vote_count));
+  memset(public_address_voted_for,0,sizeof(public_address_voted_for));
+
+  // get the parameter1
+  memcpy(data2,&DATA[32],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-32);
+
+  // error check
+  if (strncmp(data2,"",BUFFER_SIZE) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_CHECK_VOTE_STATUS_ERROR("Invalid parameters");
+  } 
+
+  // create the message
+  memcpy(message,"{\"public_address_created_reserve_proof\":\"",41);
+  memcpy(message+strlen(message),data2,XCASH_WALLET_LENGTH);
+  memcpy(message+strlen(message),"\"}",2);
+
+  for (count = 0; count < TOTAL_RESERVE_PROOFS_DATABASES; count++)
+  {
+    memset(data3,0,sizeof(data3));
+    memcpy(data3,"reserve_proofs_",15);
+    snprintf(data3+15,MAXIMUM_NUMBER_SIZE,"%d",count);
+
+    if (count_documents_in_collection(database_name,data3,message) == 1)
+    {
+      // get the delegate public address and vote amount
+      if (read_document_field_from_collection(database_name,data3,message,"public_address_voted_for",public_address_voted_for) == 0 || read_document_field_from_collection(database_name,data3,message,"total",total_vote_count) == 0)
+      {
+        SERVER_RECEIVE_DATA_SOCKET_CHECK_VOTE_STATUS_ERROR("Could not get the voters data");
+      }
+      break;
+    }
+  }
+
+  // get the delegate name
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+
+  memcpy(data3,"{\"public_address\":\"",19);
+  memcpy(data3+strlen(data3),public_address_voted_for,XCASH_WALLET_LENGTH);
+  memcpy(data3+strlen(data3),"\"}",2);
+
+  if (read_document_field_from_collection(database_name,"delegates",data3,"delegate_name",data2) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_CHECK_VOTE_STATUS_ERROR("Could not get the voters data");
+  }
+
+  memset(message,0,sizeof(message));
+
+  if (count == TOTAL_RESERVE_PROOFS_DATABASES)
+  {
+    memcpy(message,"{\"Error\":\"The public address does not an active vote\"}",54);
+    send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json");
+  }
+
+  memcpy(message,"{\"delegate_name\":\"",18);
+  memcpy(message+strlen(message),data2,strnlen(data2,sizeof(message)));
+  memcpy(message+strlen(message),"\",\"total\":\"",11);
+  memcpy(message+strlen(message),total_vote_count,strnlen(total_vote_count,sizeof(message)));
+  memcpy(message+strlen(message),"\"}",2);
+
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");
+  return 1;
+  
+  #undef SERVER_RECEIVE_DATA_SOCKET_CHECK_VOTE_STATUS_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_get_delegates_voters_list
 Description: Runs the code when the server receives /getdelegatesvoterslist
 Parameters:

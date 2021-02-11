@@ -960,6 +960,13 @@ int validate_data(const char* MESSAGE)
         VALIDATE_DATA_ERROR("Invalid message");
       } 
     }
+    if (strncmp(MESSAGE,"GET /checkvotestatus?parameter1=",32) == 0)
+    {
+      if (strlen(&MESSAGE[32]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[32]," HTTP/") == NULL)
+      {
+        VALIDATE_DATA_ERROR("Invalid message");
+      }      
+    }
     else if (strncmp(MESSAGE,"GET /getdelegatesvoterslist?parameter1=",39) == 0)
     {
       if (strlen(&MESSAGE[39]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[39]," HTTP/") == NULL)
