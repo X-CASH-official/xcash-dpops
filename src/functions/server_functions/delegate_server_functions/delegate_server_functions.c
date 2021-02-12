@@ -1382,7 +1382,7 @@ void server_receive_data_socket_nodes_to_network_data_nodes_check_vote_status(co
   memcpy(message+strlen(message),data2,strnlen(data2,sizeof(message)));
   memcpy(message+strlen(message),", total: ",9);
   memcpy(message+strlen(message),total_vote_count,strnlen(total_vote_count,sizeof(message)));
-  memcpy(message+strlen(message),"}",2);
+  memcpy(message+strlen(message),"}",1);
 
   send_data(CLIENT_SOCKET,(unsigned char*)message,0,0,"");
   return;
