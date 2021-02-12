@@ -459,17 +459,17 @@ void reserve_proofs_delegate_check(void)
     // parse the public_address
     if (strstr(data2,DATABASE_FIELD_NAME_DELEGATES) == NULL)
     {
-      continue;
+      return;
     }
     message_copy1 = strstr(data2,DATABASE_FIELD_NAME_DELEGATES) + strnlen(DATABASE_FIELD_NAME_DELEGATES,BUFFER_SIZE);
     if (message_copy1 == NULL)
     {
-      continue;
+      return;
     }
     message_copy2 = strstr(message_copy1,"\"");
     if (message_copy2 == NULL)
     {
-      continue;
+      return;
     }
     memset(data,0,sizeof(data));
     memcpy(data,message_copy1,message_copy2 - message_copy1); 
