@@ -136,8 +136,8 @@ int send_payment(const char* DATA, char *tx_hash, char *tx_key, const int SETTIN
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char data[5000];
-  char message[5000];
+  char data[BUFFER_SIZE];
+  char message[BUFFER_SIZE];
 
   memset(data,0,sizeof(data));
   memset(message,0,sizeof(message));
