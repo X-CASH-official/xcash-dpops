@@ -442,6 +442,7 @@ void reserve_proofs_delegate_check(void)
 
   if (!(document = bson_new()))
   {
+    database_reset_all;
     return;
   }
 
@@ -459,16 +460,19 @@ void reserve_proofs_delegate_check(void)
     // parse the public_address
     if (strstr(data2,DATABASE_FIELD_NAME_DELEGATES) == NULL)
     {
+      database_reset_all;
       return;
     }
     message_copy1 = strstr(data2,DATABASE_FIELD_NAME_DELEGATES) + strnlen(DATABASE_FIELD_NAME_DELEGATES,BUFFER_SIZE);
     if (message_copy1 == NULL)
     {
+      database_reset_all;
       return;
     }
     message_copy2 = strstr(message_copy1,"\"");
     if (message_copy2 == NULL)
     {
+      database_reset_all;
       return;
     }
     memset(data,0,sizeof(data));
@@ -491,11 +495,13 @@ void reserve_proofs_delegate_check(void)
     // check if the database collection exist
     if (check_if_database_collection_exist(database_name,data3) == 0)
     {
+      database_reset_all;
       continue;
     }
 
     if (!(document = bson_new()))
     {
+      database_reset_all;
       return;
     }
 
@@ -512,16 +518,19 @@ void reserve_proofs_delegate_check(void)
       // parse the public_address_voted_for
       if (strstr(data2,DATABASE_FIELD_NAME_RESERVE_PROOFS_1) == NULL)
       {
+        database_reset_all;
         return;
       }
       message_copy1 = strstr(data2,DATABASE_FIELD_NAME_RESERVE_PROOFS_1) + strnlen(DATABASE_FIELD_NAME_RESERVE_PROOFS_1,BUFFER_SIZE);
       if (message_copy1 == NULL)
       {
+        database_reset_all;
         return;
       }
       message_copy2 = strstr(message_copy1,"\"");
       if (message_copy2 == NULL)
       {
+        database_reset_all;
         return;
       }
       memset(data,0,sizeof(data));
@@ -530,16 +539,19 @@ void reserve_proofs_delegate_check(void)
       // parse the total
       if (strstr(data2,DATABASE_FIELD_NAME_RESERVE_PROOFS_2) == NULL)
       {
+        database_reset_all;
         return;
       }
       message_copy1 = strstr(data2,DATABASE_FIELD_NAME_RESERVE_PROOFS_2) + strnlen(DATABASE_FIELD_NAME_RESERVE_PROOFS_2,BUFFER_SIZE);
       if (message_copy1 == NULL)
       {
+        database_reset_all;
         return;
       }
       message_copy2 = strstr(message_copy1,"\"");
       if (message_copy2 == NULL)
       {
+        database_reset_all;
         return;
       }
       memset(buffer,0,sizeof(buffer));
