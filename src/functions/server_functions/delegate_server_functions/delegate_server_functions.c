@@ -386,6 +386,15 @@ void server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const 
     }
   }
 
+  // dont allow votes for network data nodes
+  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+  {
+    if (strncmp(network_data_nodes_list.network_data_nodes_public_address[count],reserve_proof.public_address_voted_for,BUFFER_SIZE) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Can not vote for a network data node}");
+    }
+  } 
+
   // create the message
   memcpy(data,"{\"public_address_created_reserve_proof\":\"",41);
   memcpy(data+41,reserve_proof.public_address_created_reserve_proof,XCASH_WALLET_LENGTH);
