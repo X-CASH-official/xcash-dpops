@@ -495,7 +495,6 @@ void reserve_proofs_delegate_check(void)
     // check if the database collection exist
     if (check_if_database_collection_exist(database_name,data3) == 0)
     {
-      database_reset_all;
       continue;
     }
 
