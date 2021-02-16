@@ -227,7 +227,6 @@ void server_receive_data_socket_node_to_network_data_nodes_get_current_block_ver
 {
   // Variables
   char data[BUFFER_SIZE];
-  int total_delegates = 0;
   int count;
 
   // define macros
@@ -243,34 +242,33 @@ void server_receive_data_socket_node_to_network_data_nodes_get_current_block_ver
   
   memset(data,0,sizeof(data));
 
-  // get the delegate amount
-  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
-  {
-    if (strlen(current_block_verifiers_list.block_verifiers_public_address[count]) != XCASH_WALLET_LENGTH)
-    {
-      total_delegates = count;
-      break;
-    }
-  }
-
   // create the message
   memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODE_TO_NODE_SEND_CURRENT_BLOCK_VERIFIERS_LIST\",\r\n \"block_verifiers_public_address_list\": \"",129);
-  for (count = 0; count < total_delegates; count++)
+  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
-    memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
-    memcpy(data+strlen(data),"|",sizeof(char));
+    if (strlen(current_block_verifiers_list.block_verifiers_public_address[count]) == XCASH_WALLET_LENGTH)
+    {
+      memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
+      memcpy(data+strlen(data),"|",sizeof(char));
+    }
   }
   memcpy(data+strlen(data),"\",\r\n \"block_verifiers_public_key_list\": \"",41);
-  for (count = 0; count < total_delegates; count++)
+  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
-    memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_public_key[count],VRF_PUBLIC_KEY_LENGTH);
-    memcpy(data+strlen(data),"|",sizeof(char));
+    if (strlen(current_block_verifiers_list.block_verifiers_public_address[count]) == XCASH_WALLET_LENGTH)
+    {
+      memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_public_key[count],VRF_PUBLIC_KEY_LENGTH);
+      memcpy(data+strlen(data),"|",sizeof(char));
+    }
   }
   memcpy(data+strlen(data),"\",\r\n \"block_verifiers_IP_address_list\": \"",41);
-  for (count = 0; count < total_delegates; count++)
+  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
   {
-    memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(data)));
-    memcpy(data+strlen(data),"|",sizeof(char));
+    if (strlen(current_block_verifiers_list.block_verifiers_public_address[count]) == XCASH_WALLET_LENGTH)
+    {
+      memcpy(data+strlen(data),current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(data)));
+      memcpy(data+strlen(data),"|",sizeof(char));
+    }
   }
   memcpy(data+strlen(data),"\",\r\n}",5);
   
