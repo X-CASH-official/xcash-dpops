@@ -957,7 +957,13 @@ void* payment_timer_thread(void* parameters)
           {
             transaction_list_data_count++;
           }
-        }      
+        }    
+
+        // make sure their is at least 1 transaction list
+        if (transaction_list_data_count <= 0)
+        {
+          PAYMENT_TIMER_THREAD_ERROR("Their is no transaction list.\nno action is needed");
+        }
         
         // check if we need to add the end string to the last transaction list
         if (strstr(transaction_list_data[transaction_list_data_count-1],"get_tx_keys") == NULL)
