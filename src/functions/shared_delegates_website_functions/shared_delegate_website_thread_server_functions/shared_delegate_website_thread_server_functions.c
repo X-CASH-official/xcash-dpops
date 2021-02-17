@@ -1019,7 +1019,7 @@ void* payment_timer_thread(void* parameters)
           // update the database for the public address
           for (counter = 0; counter < transaction_list_data_count; counter++)
           {
-            if ((private_group.private_group_settings == 0 && strstr(transaction_list_data[counter],database_multiple_documents_fields.value[count][0]) != NULL) || (private_group.private_group_settings == 1 && strstr(transaction_list_data[counter],private_group.private_group_payment_public_address[private_group_count]) != NULL))
+            if (strstr(transaction_list_data[counter],database_multiple_documents_fields.value[count][0]) != NULL || strstr(transaction_list_data[counter],private_group.private_group_payment_public_address[private_group_count]) != NULL)
             {              
               if (payment_timer_send_payment_and_update_databases(database_multiple_documents_fields.value[count][0],database_multiple_documents_fields.value[count][1],database_multiple_documents_fields.value[count][2],transaction_list_data_tx_hash[counter],transaction_list_data_tx_key[counter]) == 0)
               {
