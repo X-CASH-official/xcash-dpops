@@ -787,7 +787,7 @@ int load_private_group_configuration(void)
     {
       memset(data_read_2,0,sizeof(data_read_2));
       memcpy(data_read_2,search_item_2,strnlen(search_item_2,sizeof(data_read_2)));
-      count2 == 0 ? memcpy(private_group.private_group_name[count],data_read_2,strnlen(data_read_2,sizeof(private_group.private_group_name[count]))) : count2 == 1 ? memcpy(private_group.private_group_voting_public_address[count],data_read_2,strnlen(data_read_2,sizeof(private_group.private_group_voting_public_address[count]))) : memcpy(private_group.private_group_payment_public_address[count],data_read_2,strnlen(data_read_2,sizeof(private_group.private_group_payment_public_address[count])));
+      count2 == 0 ? memcpy(private_group.private_group_name[count],data_read_2,strnlen(data_read_2,sizeof(private_group.private_group_name[count]))) : count2 == 1 ? memcpy(private_group.private_group_voting_public_address[count],data_read_2,XCASH_WALLET_LENGTH) : memcpy(private_group.private_group_payment_public_address[count],data_read_2,XCASH_WALLET_LENGTH);
     }
   }
   return 1;
@@ -821,7 +821,7 @@ void* payment_timer_thread(void* parameters)
   double total;
   struct database_multiple_documents_fields database_multiple_documents_fields;
   int document_count;
-  char* transaction_list_data[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE];
+  char transaction_list_data[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE][4000];
   char transaction_list_data_tx_hash[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE][TRANSACTION_HASH_LENGTH+1];
   char transaction_list_data_tx_key[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE][TRANSACTION_HASH_LENGTH+1];
   int transaction_list_data_count;
@@ -838,22 +838,13 @@ void* payment_timer_thread(void* parameters)
   sleep(60); \
   goto start;
 
-  // initialize the data
-  for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++)
-  {
-    if ((transaction_list_data[count] = (char*)calloc(BUFFER_SIZE,sizeof(char))) == NULL)
-    {
-      exit(0);
-    } 
-  }
-
   for (;;)
   {
     start:
     // check if it is time to send the payments
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     sscanf(current_block_height, "%lld", &number);
-    if (current_UTC_date_and_time.tm_min == (BLOCK_TIME-1) && number > XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+    if (current_UTC_date_and_time.tm_min == (BLOCK_TIME -1) && number > XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
     {
       // wait to make sure the checking of reserve proofs have stoped
       sleep(5);
@@ -906,7 +897,7 @@ void* payment_timer_thread(void* parameters)
         // reset the transaction_list_data
         for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++)
         {
-          memset(transaction_list_data[count],0,BUFFER_SIZE);
+          memset(transaction_list_data[count],0,sizeof(transaction_list_data[count]));
           memcpy(transaction_list_data[count],"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"transfer_split\",\"params\":{\"destinations\":[",78);
         }
 
@@ -1010,23 +1001,27 @@ void* payment_timer_thread(void* parameters)
         sscanf(database_multiple_documents_fields.value[count][1], "%lld", &number);
         if (number >= (minimum_amount * XCASH_WALLET_DECIMAL_PLACES_AMOUNT))
         {
-          // check if the private group is on, and if so send it to the payment address instead of the voter address
-          if (private_group.private_group_settings == 1)
-          {
-            for (private_group_count = 0; private_group_count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE_PRIVATE_GROUP; private_group_count++)
+           // check if the private group is on, and if so send it to the payment address instead of the voter address
+            if (private_group.private_group_settings == 1)
             {
-              if (strncmp(database_multiple_documents_fields.value[count][0],private_group.private_group_voting_public_address[private_group_count],BUFFER_SIZE) == 0)
+              for (private_group_count = 0; private_group_count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE_PRIVATE_GROUP; private_group_count++)
               {
-                break;
+                if (strncmp(database_multiple_documents_fields.value[count][0],private_group.private_group_voting_public_address[private_group_count],BUFFER_SIZE) == 0)
+                {
+                  break;
+                }
               }
-            }
-          }
+              if (private_group_count == MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE_PRIVATE_GROUP)
+              {
+                continue;
+              }
+            }      
 
           // update the database for the public address
           for (counter = 0; counter < transaction_list_data_count; counter++)
           {
-            if (strstr(transaction_list_data[counter],database_multiple_documents_fields.value[count][0]) != NULL || strstr(transaction_list_data[counter],private_group.private_group_payment_public_address[private_group_count]) != NULL)
-            {              
+            if ((private_group.private_group_settings == 0 && strstr(transaction_list_data[counter],database_multiple_documents_fields.value[count][0]) != NULL) || (private_group.private_group_settings == 1 && strstr(transaction_list_data[counter],private_group.private_group_payment_public_address[private_group_count]) != NULL))
+            { 
               if (payment_timer_send_payment_and_update_databases(database_multiple_documents_fields.value[count][0],database_multiple_documents_fields.value[count][1],database_multiple_documents_fields.value[count][2],transaction_list_data_tx_hash[counter],transaction_list_data_tx_key[counter]) == 0)
               {
                 color_print("Failed to update the database for a delegate\nManually update the following data (run the commands in the terminal), as the delegate has already been paid.\nFirst open the mongodb terminal by typing \"mongo\"\n Next use the shared delegates database by typing \"use XCASH_PROOF_OF_STAKE_DELEGATES\"\nUse the following command in the mongodb terminal to update values in the database:\ndb.collection.update({\"field_to_find_delegate\":\"value\"},{$set:{\"field_to_update_for_delegate\":\"value\"}}","red");
@@ -1060,7 +1055,7 @@ void* payment_timer_thread(void* parameters)
                 memcpy(data+strlen(data),"\",\"tx_key\":\"",12);
                 memcpy(data+strlen(data),transaction_list_data_tx_key[counter],TRANSACTION_LENGTH);
                 memcpy(data+strlen(data),"\"})",2);
-                color_print(data,"yellow");                
+                color_print(data,"yellow");           
               }
               else
               {
@@ -1096,13 +1091,6 @@ void* payment_timer_thread(void* parameters)
     }
     nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);
   }
-
-  // reset the data
-  for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++)
-  {
-    pointer_reset(transaction_list_data[count]);
-  }
-
   pthread_exit((void *)(intptr_t)1);
   
   #undef DATABASE_COLLECTION
