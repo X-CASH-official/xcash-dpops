@@ -844,7 +844,7 @@ void* payment_timer_thread(void* parameters)
     // check if it is time to send the payments
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
     sscanf(current_block_height, "%lld", &number);
-    if (current_UTC_date_and_time.tm_min == (BLOCK_TIME -1) && number > XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+    if (current_UTC_date_and_time.tm_min == (BLOCK_TIME-1) && number > XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
     {
       // wait to make sure the checking of reserve proofs have stoped
       sleep(5);
@@ -924,7 +924,7 @@ void* payment_timer_thread(void* parameters)
             }            
 
             memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),"{\"amount\":",10);
-            memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),database_multiple_documents_fields.value[count][1],strnlen(database_multiple_documents_fields.value[count][1],BUFFER_SIZE));
+            memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),database_multiple_documents_fields.value[count][1],strnlen(database_multiple_documents_fields.value[count][1],sizeof(transaction_list_data[transaction_list_data_count])));
             memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),",\"address\":\"",12);             
             private_group.private_group_settings == 1 ? memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),private_group.private_group_payment_public_address[private_group_count],XCASH_WALLET_LENGTH) : memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),database_multiple_documents_fields.value[count][0],XCASH_WALLET_LENGTH);          
             memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),"\"}",2);
