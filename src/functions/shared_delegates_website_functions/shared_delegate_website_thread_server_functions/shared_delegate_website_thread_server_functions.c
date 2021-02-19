@@ -821,7 +821,7 @@ void* payment_timer_thread(void* parameters)
   double total;
   struct database_multiple_documents_fields database_multiple_documents_fields;
   int document_count;
-  char transaction_list_data[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE][4000];
+  char* transaction_list_data[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE];
   char transaction_list_data_tx_hash[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE][TRANSACTION_HASH_LENGTH+1];
   char transaction_list_data_tx_key[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE][TRANSACTION_HASH_LENGTH+1];
   int transaction_list_data_count;
@@ -831,12 +831,22 @@ void* payment_timer_thread(void* parameters)
   (void)parameters;
 
   // define macros
+  #define TRANSACTION_LIST_BUFFER 5000
   #define DATABASE_COLLECTION "public_addresses"
   #define PAYMENT_TIMER_THREAD_ERROR(message) \
   color_print(message,"red"); \
   RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_PUBLIC_ADDRESSES_DATABASE_FIELDS); \
   sleep(60); \
   goto start;
+
+  // initialize the data
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++)
+  {
+    if ((transaction_list_data[count] = (char*)calloc(TRANSACTION_LIST_BUFFER,sizeof(char))) == NULL)
+    {
+      exit(0);
+    } 
+  }
 
   for (;;)
   {
@@ -897,7 +907,7 @@ void* payment_timer_thread(void* parameters)
         // reset the transaction_list_data
         for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++)
         {
-          memset(transaction_list_data[count],0,sizeof(transaction_list_data[count]));
+          memset(transaction_list_data[count],0,TRANSACTION_LIST_BUFFER);
           memcpy(transaction_list_data[count],"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"transfer_split\",\"params\":{\"destinations\":[",78);
         }
 
@@ -924,7 +934,7 @@ void* payment_timer_thread(void* parameters)
             }            
 
             memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),"{\"amount\":",10);
-            memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),database_multiple_documents_fields.value[count][1],strnlen(database_multiple_documents_fields.value[count][1],sizeof(transaction_list_data[transaction_list_data_count])));
+            memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),database_multiple_documents_fields.value[count][1],strnlen(database_multiple_documents_fields.value[count][1],TRANSACTION_LIST_BUFFER));
             memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),",\"address\":\"",12);             
             private_group.private_group_settings == 1 ? memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),private_group.private_group_payment_public_address[private_group_count],XCASH_WALLET_LENGTH) : memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),database_multiple_documents_fields.value[count][0],XCASH_WALLET_LENGTH);          
             memcpy(transaction_list_data[transaction_list_data_count]+strlen(transaction_list_data[transaction_list_data_count]),"\"}",2);
@@ -1091,8 +1101,16 @@ void* payment_timer_thread(void* parameters)
     }
     nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);
   }
+
+  // reset the data
+  for (count = 0; count < MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE; count++)
+  {
+    pointer_reset(transaction_list_data[count]);
+  }
+
   pthread_exit((void *)(intptr_t)1);
   
+  #undef TRANSACTION_LIST_BUFFER
   #undef DATABASE_COLLECTION
   #undef PAYMENT_TIMER_THREAD_ERROR
 }
