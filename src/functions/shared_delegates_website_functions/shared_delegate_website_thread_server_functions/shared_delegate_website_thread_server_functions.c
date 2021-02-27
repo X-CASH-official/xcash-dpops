@@ -853,8 +853,7 @@ void* payment_timer_thread(void* parameters)
     start:
     // check if it is time to send the payments
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
-    sscanf(current_block_height, "%lld", &number);
-    if (current_UTC_date_and_time.tm_min == (BLOCK_TIME-1) && number > XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+    if (current_UTC_date_and_time.tm_min == (BLOCK_TIME-1))
     {
       // wait to make sure the checking of reserve proofs have stoped
       sleep(5);
