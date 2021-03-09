@@ -2412,7 +2412,7 @@ function backup()
     echo
     echo
     echo -e "${COLOR_PRINT_YELLOW}After running the autoinstaller on a different machine run this command to import your shared delegates database (place the shared_delegates_database_backup.7z in the $HOME directory)${END_COLOR_PRINT}" 
-    echo -e "${COLOR_PRINT_GREEN}cd ~ && 7z x shared_delegates_database_backup.7z && mongorestore --db XCASH_PROOF_OF_STAKE_DELEGATES && sudo rm -r dump${END_COLOR_PRINT}"
+    echo -e "${COLOR_PRINT_GREEN}cd ~ && 7z x shared_delegates_database_backup.7z && mongorestore --db XCASH_PROOF_OF_STAKE_DELEGATES dump/XCASH_PROOF_OF_STAKE_DELEGATES && sudo rm -r dump${END_COLOR_PRINT}"
   fi
   
   # Display X-CASH current wallet data
