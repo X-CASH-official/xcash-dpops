@@ -134,7 +134,7 @@ Using define statements instead of constants for increased efficiency
 #define MAXIMUM_BUFFER_SIZE_DELEGATES_BACKUP_NAMES 505 // The maximum length of the block verifiers name
 #define MINIMUM_BUFFER_SIZE_DELEGATES_BACKUP_NAMES 30 // The minimum length of the block verifiers name
 #define TOTAL_ERROR_MESSAGES 1000 // The total amount of error messages
-#define MAXIMUM_INVALID_RESERVE_PROOFS 50000 // The maximum invalid reserve proofs for the delegate
+#define MAXIMUM_INVALID_RESERVE_PROOFS 100000 // The maximum invalid reserve proofs for the delegate
 #define VOTE_PARAMETER_AMOUNT 5 // The vote parameter amount
 #define REGISTER_PARAMETER_AMOUNT 6 // The register parameter amount
 #define UPDATE_PARAMETER_AMOUNT 5 // The update parameter amount

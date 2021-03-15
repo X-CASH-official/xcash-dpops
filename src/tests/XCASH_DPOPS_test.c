@@ -114,7 +114,7 @@ void test(int settings)
   }
   else
   {
-    /*XCASH_DPOPS_total_passed_test += blockchain_functions_test();
+    XCASH_DPOPS_total_passed_test += blockchain_functions_test();
     XCASH_DPOPS_total_passed_test += database_test(); 
     XCASH_DPOPS_total_passed_test += insert_database_functions_test(); 
     XCASH_DPOPS_total_passed_test += read_database_functions_test();
@@ -122,9 +122,9 @@ void test(int settings)
     XCASH_DPOPS_total_passed_test += delete_database_functions_test();
     XCASH_DPOPS_total_passed_test += count_database_functions_test();
     XCASH_DPOPS_total_passed_test += file_functions_test();
-    XCASH_DPOPS_total_passed_test += network_daemon_functions_test();*/
+    XCASH_DPOPS_total_passed_test += network_daemon_functions_test();
     XCASH_DPOPS_total_passed_test += network_functions_test();
-    /*XCASH_DPOPS_total_passed_test += network_security_functions_test();
+    XCASH_DPOPS_total_passed_test += network_security_functions_test();
     XCASH_DPOPS_total_passed_test += network_wallet_functions_test();
     XCASH_DPOPS_total_passed_test += optimizations_functions_test();
     XCASH_DPOPS_total_passed_test += organize_functions_test();
@@ -135,11 +135,11 @@ void test(int settings)
     XCASH_DPOPS_total_passed_test += block_verifiers_synchronize_functions_test();
     XCASH_DPOPS_total_passed_test += block_verifiers_synchronize_server_functions_test();
     XCASH_DPOPS_total_passed_test += block_verifiers_thread_server_functions_test();
-    XCASH_DPOPS_total_passed_test += block_verifiers_update_functions_test();*/
+    XCASH_DPOPS_total_passed_test += block_verifiers_update_functions_test();
     XCASH_DPOPS_total_passed_test += delegate_server_functions_test();
-    /*XCASH_DPOPS_total_passed_test += delegate_website_functions_test();
+    XCASH_DPOPS_total_passed_test += delegate_website_functions_test();
     XCASH_DPOPS_total_passed_test += shared_delegate_website_functions_test();
-    XCASH_DPOPS_total_passed_test += shared_delegate_website_thread_server_functions_test();*/
+    XCASH_DPOPS_total_passed_test += shared_delegate_website_thread_server_functions_test();
     if (settings == 0)
     {
       XCASH_DPOPS_total_passed_test += reset_variables_allocated_on_the_heap_test();
