@@ -509,6 +509,7 @@ void* block_height_timer_thread(void* parameters)
       if (private_group.private_group_settings == 1 && load_private_group_configuration() == 0)
       {
         color_print("The private group file could not be loaded","yellow");
+        exit(0);
       } 
       
       // make sure the round is not replayed
@@ -787,7 +788,30 @@ int load_private_group_configuration(void)
     {
       memset(data_read_2,0,sizeof(data_read_2));
       memcpy(data_read_2,search_item_2,strnlen(search_item_2,sizeof(data_read_2)));
-      count2 == 0 ? memcpy(private_group.private_group_name[count],data_read_2,strnlen(data_read_2,sizeof(private_group.private_group_name[count]))) : count2 == 1 ? memcpy(private_group.private_group_voting_public_address[count],data_read_2,XCASH_WALLET_LENGTH) : memcpy(private_group.private_group_payment_public_address[count],data_read_2,XCASH_WALLET_LENGTH);
+
+      // load the data and check that each voting address is only a XCA address, and each payment address is not an integrated address
+      if (count2 == 0)
+      {
+        memcpy(private_group.private_group_name[count],data_read_2,strnlen(data_read_2,sizeof(private_group.private_group_name[count])));
+      }
+      else if (count2 == 1)
+      {
+        if (strncmp(data_read_2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+        {
+          color_print("Voting address can only be XCA addresses","red");
+          return 0;
+        }
+        memcpy(private_group.private_group_voting_public_address[count],data_read_2,XCASH_WALLET_LENGTH);
+      }
+      else
+      {
+        if (strncmp(data_read_2,"XCB",sizeof(XCASH_WALLET_PREFIX)-1) == 0)
+        {
+          color_print("Payment address can not be a XCB addresses","red");
+          return 0;
+        }
+        memcpy(private_group.private_group_payment_public_address[count],data_read_2,XCASH_WALLET_LENGTH);
+      }
     }
   }
   return 1;
