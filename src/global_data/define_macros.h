@@ -66,7 +66,7 @@ Using define statements instead of constants for increased efficiency
 
 // XCASH DPOPS
 // Note the BLOCK_VERIFIERS_TOTAL_AMOUNT and BLOCK_VERIFIERS_AMOUNT should be a number that is a multiple of 4 or of 5 or BLOCK_VERIFIERS_TOTAL_AMOUNT should be lower than 50, otherwise it will not have enough time in the round to verify all of the block verifiers signatures
-#define XCASH_DPOPS_CURRENT_VERSION "xcash-dpops - Version 1.0.3\n"
+#define XCASH_DPOPS_CURRENT_VERSION "xcash-dpops - Version 1.0.4\n"
 #define BLOCK_VERIFIERS_TOTAL_AMOUNT 100 // The total amount of block verifiers
 #define BLOCK_VERIFIERS_AMOUNT 50 // The amount of block verifiers in a round
 #define BLOCK_VERIFIERS_VALID_AMOUNT 27 // The amount of block verifiers that need to vote true for the part of the round to be valid
