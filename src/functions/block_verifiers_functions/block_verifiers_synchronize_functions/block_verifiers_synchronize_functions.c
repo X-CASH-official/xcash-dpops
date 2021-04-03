@@ -1643,7 +1643,7 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   {
     memset(data2,0,strlen(data2));
     memcpy(data2,"Getting the database data from ",31);
-    memcpy(data2+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,sizeof(data2)));
+    memcpy(data2+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
     memcpy(data2+strlen(data2),"\n",sizeof(char));
     color_print(data2,"white");
   }
@@ -1779,7 +1779,7 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   {
     memset(data2,0,strlen(data2));
     memcpy(data2,"Getting the database data from ",31);
-    memcpy(data2+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,sizeof(data2)));
+    memcpy(data2+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
     memcpy(data2+strlen(data2),"\n",sizeof(char));
     color_print(data2,"white");
   }
