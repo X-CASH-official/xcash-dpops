@@ -597,8 +597,6 @@ int check_for_valid_ip_address(const char* HOST)
     inet_ntop(settings->ai_family,settings->ai_addr->sa_data,ip_address,sizeof(ip_address));    
     ptr = &((struct sockaddr_in *)settings->ai_addr)->sin_addr;
     inet_ntop(settings->ai_family,ptr,ip_address,sizeof(ip_address));
-
-    freeaddrinfo(settings);
   }
   
   // check if the host is valid
@@ -695,7 +693,7 @@ void server_receive_data_socket_nodes_to_block_verifiers_register_delegates(cons
   }
 
   // check if the maximum amount of delegates has been registered
-  if (count_all_documents_in_collection(database_name,DATABASE_COLLECTION) >= (MAXIMUM_AMOUNT_OF_DELEGATES - 1))
+  if (count_all_documents_in_collection(database_name,DATABASE_COLLECTION) >= MAXIMUM_AMOUNT_OF_DELEGATES)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("The maximum amount of delegates has been registered}");
   }

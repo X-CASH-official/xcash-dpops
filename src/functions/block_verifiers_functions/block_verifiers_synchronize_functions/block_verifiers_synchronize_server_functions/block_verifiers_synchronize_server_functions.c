@@ -695,8 +695,16 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proof
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not parse the message");
   }
 
-  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  // get the size of the database and allocate the amount of memory
+  const size_t DATABASE_COLLECTION_SIZE = get_database_collection_size(database_name,buffer);
+
+  if (DATABASE_COLLECTION_SIZE == 0)
+  {
+    ERROR_DATA_MESSAGE;
+  }
+
+  char* data = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
 
   // define macros
   #define pointer_reset_all \
@@ -886,8 +894,16 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not parse the message");
   }
 
-  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  // get the size of the database and allocate the amount of memory
+  const size_t DATABASE_COLLECTION_SIZE = get_database_collection_size(database_name,buffer);
+
+  if (DATABASE_COLLECTION_SIZE == 0)
+  {
+    ERROR_DATA_MESSAGE;
+  }
+
+  char* data = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
 
   // define macros
   #define pointer_reset_all \
@@ -1022,10 +1038,18 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_dat
 {
   // define macros
   #define DATABASE_COLLECTION "delegates"
+  
+  // Constants
+  const size_t DATABASE_COLLECTION_SIZE = get_database_collection_size(database_name,DATABASE_COLLECTION);
+
+  if (DATABASE_COLLECTION_SIZE == 0)
+  {
+    ERROR_DATA_MESSAGE;
+  }
 
   // Variables
-  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char* data = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
   char buffer[1024];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
@@ -1174,10 +1198,18 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_da
 {
   // define macros
   #define DATABASE_COLLECTION "statistics"
+  
+  // Constants
+  const size_t DATABASE_COLLECTION_SIZE = get_database_collection_size(database_name,DATABASE_COLLECTION);
+
+  if (DATABASE_COLLECTION_SIZE == 0)
+  {
+    ERROR_DATA_MESSAGE;
+  }
 
   // Variables
-  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char* data = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
   char buffer[1024];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
