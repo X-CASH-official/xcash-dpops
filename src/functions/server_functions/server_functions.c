@@ -756,30 +756,30 @@ void socket_thread(const int CLIENT_SOCKET)
  }  
  else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") != NULL)
  {
-   if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
+   /*if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
      server_receive_data_socket_nodes_to_block_verifiers_register_delegates(CLIENT_SOCKET,(const char*)buffer);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
-   }
+   }*/
  }
  else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") != NULL)
  {
-   if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
+   /*if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
      server_receive_data_socket_nodes_to_block_verifiers_update_delegates(CLIENT_SOCKET,(const char*)buffer);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
-   }
+   }*/
  } 
  else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE") != NULL)
  {
-   if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
+   /*if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
      // since this function will modify the delegate and all of the reserve proofs voted for the delegate, only run this one at a time and not at the same time as the adding a reserve proof
      pthread_mutex_lock(&add_reserve_proof_lock);
      server_receive_data_socket_nodes_to_block_verifiers_recover_delegates(CLIENT_SOCKET,(const char*)buffer);
      pthread_mutex_unlock(&add_reserve_proof_lock);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
-   }
+   }*/
  } 
  else if (strstr(buffer,"NODE_TO_NETWORK_DATA_NODES_CHECK_VOTE_STATUS") != NULL)
  {
