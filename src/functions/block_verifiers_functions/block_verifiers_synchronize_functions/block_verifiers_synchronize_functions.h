@@ -18,4 +18,5 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
 int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETTINGS, const char* DELEGATES_IP_ADDRESS);
 int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS);
 int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS);
+int sync_delegates_database_fixed(int settings, const char* DELEGATES_IP_ADDRESS);
 #endif

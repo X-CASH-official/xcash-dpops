@@ -1582,6 +1582,15 @@ Return: 0 if an error has occured, 1 if successfull
 
 int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
 {
+
+  // check the light hard fork time and allocate more bytes
+  if (time(NULL) > TIME_SF_V_1_0_5_PART_1)
+  {
+    // run the correct allocation function
+    return sync_delegates_database_fixed(settings,DELEGATES_IP_ADDRESS);
+  }
+
+
   // Variables
   char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
   char data2[BUFFER_SIZE];
@@ -1823,4 +1832,140 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   #undef DATABASE_COLLECTION
   #undef MESSAGE
   #undef SYNC_STATISTICS_DATABASE_ERROR   
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: sync_delegates_database_fixed
+Description: Syncs the delegates database (with the correct bytes allocated)
+Paramters:
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, otherwise the index of the network data node to sync from + 3
+  DELEGATES_IP_ADDRESS - The specific delegates IP address, if you are syncing directly from a delegate, otherwise an empty string
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int sync_delegates_database_fixed(int settings, const char* DELEGATES_IP_ADDRESS)
+{
+  // Variables
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char* data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char buffer[BUFFER_SIZE];
+  char block_verifiers_ip_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  int reset_count = 1;
+  
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL;
+
+  #define DATABASE_COLLECTION "delegates"
+  #define MESSAGE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n}"
+  #define SYNC_DELEGATES_DATABASE_ERROR(message) \
+  memset(data,0,strlen(data)); \
+  memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
+  memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
+  memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
+  color_print(data,"red"); \
+  if (reset_count >= MAXIMUM_DATABASE_SYNC_CONNECTIONS_ATTEMPTS) \
+  { \
+    pointer_reset_all; \
+    exit(0); \
+  } \
+  else \
+  { \
+    reset_count++; \
+    goto start; \
+  }
+
+  memset(buffer,0,sizeof(buffer));
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data2 == NULL)
+  {
+    memcpy(error_message.function[error_message.total],"sync_delegates_database",23);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
+    exit(0);
+  }
+
+  start:
+
+  memset(data,0,strlen(data));
+  memset(data2,0,strlen(data2));
+  memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
+
+  // get a block verifier to sync the database from
+  get_block_verifier_for_syncing_database(settings,DELEGATES_IP_ADDRESS,block_verifiers_ip_address,2);
+
+  // get the database data hash for the delegates database
+  if (test_settings == 0)
+  {
+    memset(data2,0,strlen(data2));
+    memcpy(data2,"Getting the database data from ",31);
+    memcpy(data2+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH));
+    memcpy(data2+strlen(data2),"\n",sizeof(char));
+    color_print(data2,"white");
+  }
+  if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
+  {
+    SYNC_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the delegates database from ");
+  }
+
+  // create the message
+  memset(data2,0,strlen(data2));
+  memcpy(data2,MESSAGE,sizeof(MESSAGE)-1);
+
+  // sign_data
+  if (sign_data(data2) == 0)
+  { 
+    SYNC_DELEGATES_DATABASE_ERROR("Could not sign_data");
+  }     
+  memset(data,0,strlen(data));
+
+  // allow the database data to be received over the socket
+  database_data_socket_settings = 1;
+
+  if (send_and_receive_data_socket(data,MAXIMUM_BUFFER_SIZE,block_verifiers_ip_address,SEND_DATA_PORT,data2,DATABASE_SYNCING_TIMEOUT_SETTINGS) == 0)
+  {
+    database_data_socket_settings = 0;
+    SYNC_DELEGATES_DATABASE_ERROR("Could not receive data from ");
+  }
+  database_data_socket_settings = 0;
+
+  // parse the message
+  memset(data2,0,strlen(data2));
+  if (parse_json_data(data,"delegates_database",data2,MAXIMUM_BUFFER_SIZE) == 0)
+  {
+    SYNC_DELEGATES_DATABASE_ERROR("Could not receive data from ");
+  }
+
+  // delete the collection from the database
+  delete_collection_from_database(database_name,DATABASE_COLLECTION);
+
+  // if the database is empty dont add any data
+  if (strncmp(data2,DATABASE_EMPTY_STRING,BUFFER_SIZE) != 0)
+  {
+    // add the data to the database
+    //data2[strlen(data2)-2] = 0;
+    // insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data2,sizeof(data2));
+    memset(data,0,strlen(data));
+    memcpy(data,data2,strlen(data2)-2);
+    insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data,MAXIMUM_BUFFER_SIZE);
+  }  
+
+  pointer_reset_all;
+  return 1;
+
+  #undef pointer_reset_all
+  #undef DATABASE_COLLECTION
+  #undef MESSAGE
+  #undef SYNC_DELEGATES_DATABASE_ERROR   
 }

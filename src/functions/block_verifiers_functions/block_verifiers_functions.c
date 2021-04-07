@@ -1382,6 +1382,68 @@ int block_verifiers_create_block_and_update_database(void)
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
 
+
+
+
+
+
+  // add the seed nodes to the database if their not there
+  if (production_settings == 1 && time(NULL) > TIME_SF_V_1_0_5_PART_2)
+  {
+    memcpy(data2,"{\"public_address\":\"",19);
+    memcpy(data2+19,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH);
+    memcpy(data2+strlen(data2),"\"}",2);
+    if (count_documents_in_collection(database_name,"delegates",data2) == 0)
+    { 
+      insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1_PRODUCTION);
+    }
+    memset(data2,0,sizeof(data2));
+
+    memcpy(data2,"{\"public_address\":\"",19);
+    memcpy(data2+19,NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH);
+    memcpy(data2+strlen(data2),"\"}",2);
+    if (count_documents_in_collection(database_name,"delegates",data2) == 0)
+    { 
+      insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_2_PRODUCTION);
+    }
+    memset(data2,0,sizeof(data2));
+
+    memcpy(data2,"{\"public_address\":\"",19);
+    memcpy(data2+19,NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH);
+    memcpy(data2+strlen(data2),"\"}",2);
+    if (count_documents_in_collection(database_name,"delegates",data2) == 0)
+    { 
+      insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_3_PRODUCTION);
+    }
+    memset(data2,0,sizeof(data2));
+
+    memcpy(data2,"{\"public_address\":\"",19);
+    memcpy(data2+19,NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH);
+    memcpy(data2+strlen(data2),"\"}",2);
+    if (count_documents_in_collection(database_name,"delegates",data2) == 0)
+    { 
+      insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_4_PRODUCTION);
+    }
+    memset(data2,0,sizeof(data2));
+
+    memcpy(data2,"{\"public_address\":\"",19);
+    memcpy(data2+19,NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH);
+    memcpy(data2+strlen(data2),"\"}",2);
+    if (count_documents_in_collection(database_name,"delegates",data2) == 0)
+    { 
+      insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_5_PRODUCTION);
+    }
+    memset(data2,0,sizeof(data2));
+  }
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+
+
+
+
+
+
   // add the data hash to the network block string
   color_print("Part 26 - Add the data hash of the reserve bytes to the block","yellow");
 

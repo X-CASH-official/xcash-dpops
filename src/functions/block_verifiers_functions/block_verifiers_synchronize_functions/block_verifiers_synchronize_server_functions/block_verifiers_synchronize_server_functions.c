@@ -703,8 +703,19 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proof
     ERROR_DATA_MESSAGE;
   }
 
-  char* data = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
+  char* data;
+  char* data2;
+
+  if (time(NULL) > TIME_SF_V_1_0_5_PART_1)
+  {
+    data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+    data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  }
+  else
+  {
+    data = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
+    data2 = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));    
+  }
 
   // define macros
   #define pointer_reset_all \
@@ -902,8 +913,20 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes
     ERROR_DATA_MESSAGE;
   }
 
-  char* data = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
+  char* data;
+  char* data2;
+
+  if (time(NULL) > TIME_SF_V_1_0_5_PART_1)
+  {
+    data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+    data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  }
+  else
+  {
+    data = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
+    data2 = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));    
+  }
+  
 
   // define macros
   #define pointer_reset_all \
@@ -1047,9 +1070,21 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_dat
     ERROR_DATA_MESSAGE;
   }
 
+  char* data;
+  char* data2;
+
+  if (time(NULL) > TIME_SF_V_1_0_5_PART_1)
+  {
+    data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+    data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  }
+  else
+  {
+    data = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
+    data2 = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));    
+  }
+
   // Variables
-  char* data = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
   char buffer[1024];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
@@ -1207,9 +1242,21 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_da
     ERROR_DATA_MESSAGE;
   }
 
+  char* data;
+  char* data2;
+
+  if (time(NULL) > TIME_SF_V_1_0_5_PART_1)
+  {
+    data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+    data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  }
+  else
+  {
+    data = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
+    data2 = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));    
+  }
+
   // Variables
-  char* data = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
-  char* data2 = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
   char buffer[1024];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;

@@ -175,6 +175,8 @@ Using define statements instead of constants for increased efficiency
 // Updates data
 #define BLOCK_HEIGHT_RESTART 800123
 #define BLOCK_HEIGHT_SF_V_1_0_1 802000
+#define TIME_SF_V_1_0_5_PART_1 1617984900 // Fri 09 Apr 2021 16:15:00 UTC - fix allocation of memory for delegates database
+#define TIME_SF_V_1_0_5_PART_2 1618071300 // Sat 10 Apr 2021 16:15:00 UTC - re add missing seed nodes (need to run restart script on missing seed nodes after)
 
 
 #define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION "XCA1a9usG2UKajV1Dqzp8fL1BbN3hzuaaJMYjCo7qDoC4C3Vvc5owiLAqKbVw2cRbwRqx3mgrau1Z7LkX6cxR2NC4ZmFBLe2Mf"
