@@ -1349,6 +1349,7 @@ int block_verifiers_create_block_and_update_database(void)
   struct tm current_UTC_date_and_time;
   size_t count;
   size_t block_height;
+  time_t current_time = time(NULL);
 
   // threads
   pthread_t thread_id;
@@ -1387,9 +1388,11 @@ int block_verifiers_create_block_and_update_database(void)
 
 
 
-  // add the seed nodes to the database if their not there
-  if (production_settings == 1 && time(NULL) > TIME_SF_V_1_0_5_PART_2)
+  // add the seed nodes to the database if their not there, and remove all block heights from the delegates database. only run this for the first five hours to ensure it gets run
+  if (current_time > TIME_SF_V_1_0_6 && current_time < (TIME_SF_V_1_0_6 + (BLOCK_TIME * 60 * 12 * 5)))
   {
+    color_print("Adding any missing seed nodes to the delegates database","yellow");
+
     memcpy(data2,"{\"public_address\":\"",19);
     memcpy(data2+19,NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION,XCASH_WALLET_LENGTH);
     memcpy(data2+strlen(data2),"\"}",2);
@@ -1434,6 +1437,10 @@ int block_verifiers_create_block_and_update_database(void)
       insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_5_PRODUCTION);
     }
     memset(data2,0,sizeof(data2));
+    memset(data,0,sizeof(data));
+
+    // remove block heights from delegates db
+    remove_block_heights_from_delegates();
   }
 
   memset(data,0,sizeof(data));

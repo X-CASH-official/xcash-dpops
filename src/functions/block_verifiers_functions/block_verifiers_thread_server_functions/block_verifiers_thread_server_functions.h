@@ -19,4 +19,5 @@ int select_random_unique_reserve_proof(struct reserve_proof* reserve_proof);
 int send_invalid_reserve_proof_to_block_verifiers(const struct reserve_proof* reserve_proof);
 void* check_reserve_proofs_timer_thread(void* parameters);
 void remove_inactive_delegates(void);
+void remove_block_heights_from_delegates(void);
 #endif

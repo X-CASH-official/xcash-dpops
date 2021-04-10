@@ -446,6 +446,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
   size_t number;
   size_t block_verifier_total_rounds;
   size_t block_verifier_online_total_rounds;
+  time_t current_time = time(NULL);
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
@@ -550,7 +551,9 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
       memcpy(data2,"{\"block_producer_block_heights\":\"",33);
       memcpy(data2+33,data,strnlen(data,sizeof(data2)));
       memcpy(data2+strlen(data2),"\"}",2);
-      if (update_document_from_collection(database_name,DATABASE_COLLECTION,message,data2) == 0)
+      
+      // disable this part for now, as we need to see why the delegates db growing to a large size causes and error above 200KB
+      if (current_time < TIME_SF_V_1_0_6 && update_document_from_collection(database_name,DATABASE_COLLECTION,message,data2) == 0)
       {
         ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_block_heights in the database");
       }
@@ -599,7 +602,7 @@ int add_block_verifiers_round_statistics(const char* BLOCK_HEIGHT)
     memcpy(data2,"{\"block_producer_block_heights\":\"",33);
     memcpy(data2+33,data,strnlen(data,sizeof(data2)));
     memcpy(data2+strlen(data2),"\"}",2);
-    if (update_document_from_collection(database_name,DATABASE_COLLECTION,message,data2) == 0)
+    if (current_time < TIME_SF_V_1_0_6 && update_document_from_collection(database_name,DATABASE_COLLECTION,message,data2) == 0)
     {
       ADD_BLOCK_VERIFIERS_ROUND_STATISTICS_ERROR("Could not update the block_producer_block_heights in the database");
     }

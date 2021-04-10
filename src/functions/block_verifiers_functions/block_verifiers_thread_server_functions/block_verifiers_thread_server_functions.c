@@ -937,8 +937,7 @@ void remove_inactive_delegates(void)
   // initialize the delegates struct
   INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"remove_inactive_delegates_timer_thread",data,current_date_and_time,current_UTC_date_and_time);
 
-  // organize the delegates
-  
+  // organize the delegates  
   if ((total_delegates = organize_delegates(delegates)) == 0)
   {
     POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
@@ -974,6 +973,65 @@ void remove_inactive_delegates(void)
       memcpy(data+strlen(data),"\"}",2);
       delete_document_from_collection(database_name,DATABASE_COLLECTION,data);
     }
+  }
+  RESET_ERROR_MESSAGES;
+  POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+  return;
+
+  #undef DATABASE_COLLECTION
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: remove_block_heights_from_delegates
+Description: Removes block heights from the delegates database
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void remove_block_heights_from_delegates(void)
+{
+  // Variables
+  char data[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+  char message[BUFFER_SIZE];
+  char message2[BUFFER_SIZE];
+  struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  int count;
+  int total_delegates;
+
+  // define macros
+  #define DATABASE_COLLECTION "delegates"
+
+  memset(data,0,sizeof(data));
+
+  color_print("Removing block heights from the delegates database","yellow");
+
+  // initialize the delegates struct
+  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"remove_block_heights_from_delegates",data,current_date_and_time,current_UTC_date_and_time);
+
+  // organize the delegates  
+  if ((total_delegates = organize_delegates(delegates)) == 0)
+  {
+    POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+    return;
+  }
+
+  for (count = 0; count < total_delegates; count++)
+  {
+    // create the message
+    memset(message,0,sizeof(message));
+    memcpy(message,"{\"public_address\":\"",19);
+    memcpy(message+19,delegates[count].public_address,XCASH_WALLET_LENGTH);
+    memcpy(message+19+XCASH_WALLET_LENGTH,"\"}",2);
+
+    // create the message
+    memset(message2,0,sizeof(message2));
+    memcpy(message2,"{\"block_producer_block_heights\":\"\"}",35);
+
+    update_document_from_collection(database_name,DATABASE_COLLECTION,message,message2);
   }
   RESET_ERROR_MESSAGES;
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
