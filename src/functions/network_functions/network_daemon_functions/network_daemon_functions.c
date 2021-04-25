@@ -36,6 +36,7 @@ int check_if_blockchain_is_fully_synced(void)
   char data[SMALL_BUFFER_SIZE];
   int count;
   int count2;
+  int count3;
   size_t block_height;
   
   memset(data,0,sizeof(data));
@@ -54,16 +55,35 @@ int check_if_blockchain_is_fully_synced(void)
   // send the message to all block verifiers. This function will wait until all messages have arrived
   block_verifiers_send_data_socket((const char*)data);
 
+  sleep(2);
+
   // check if the blockchain is fully synced
-  for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  for (count = 0, count2 = 0, count3 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
+    // check if the block height is less than the majorites block height
     if (block_height < block_verifiers_current_block_height[count])
     {
       count2++;
     }
+
+    // check if the received block height is still 0 (the reset value) because this means a timeout has occured
+    if (block_verifiers_current_block_height[count] == 0)
+    {
+      count3++;
+    }
   }
 
-  return count2 >= BLOCK_VERIFIERS_VALID_AMOUNT ? 0 : 1;
+  // if the majority of received block heights are larger than the current block height, or they are the starting value then your not fully synced
+  if (count2 < BLOCK_VERIFIERS_VALID_AMOUNT && count3 < BLOCK_VERIFIERS_VALID_AMOUNT)
+  {
+    color_print("The blockchain is fully synced\n","green");
+    return 1;
+  }
+  else
+  {
+    color_print("The blockchain is not fully synced\n","red");
+    return 0;
+  }
 }
 
 

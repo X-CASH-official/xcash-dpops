@@ -754,7 +754,7 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }  
- else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") != NULL && time(NULL) > 1619626500)
+ else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") != NULL && time(NULL) > 1619799300)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
@@ -762,7 +762,7 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }
- else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") != NULL && time(NULL) > 1619626500)
+ else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") != NULL && time(NULL) > 1619799300)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
