@@ -66,7 +66,7 @@ Using define statements instead of constants for increased efficiency
 
 // XCASH DPOPS
 // Note the BLOCK_VERIFIERS_TOTAL_AMOUNT and BLOCK_VERIFIERS_AMOUNT should be a number that is a multiple of 4 or of 5 or BLOCK_VERIFIERS_TOTAL_AMOUNT should be lower than 50, otherwise it will not have enough time in the round to verify all of the block verifiers signatures
-#define XCASH_DPOPS_CURRENT_VERSION "xcash-dpops - Version 1.0.7\n"
+#define XCASH_DPOPS_CURRENT_VERSION "xcash-dpops - Version 1.0.8\n"
 #define BLOCK_VERIFIERS_TOTAL_AMOUNT 100 // The total amount of block verifiers
 #define BLOCK_VERIFIERS_AMOUNT 50 // The amount of block verifiers in a round
 #define BLOCK_VERIFIERS_VALID_AMOUNT 27 // The amount of block verifiers that need to vote true for the part of the round to be valid
@@ -154,6 +154,7 @@ Using define statements instead of constants for increased efficiency
 #define DATABASE_NAME_DELEGATES "XCASH_PROOF_OF_STAKE_DELEGATES" // The name of the database for the delegates
 #define DATABASE_EMPTY_STRING "empty_database_collection" // The database data to give when the database collection is empty
 #define MAXIMUM_DATABASE_WRITE_SIZE 48000000 // The maximum database write size
+#define MAXIMUM_DATABASE_COLLECTION_DOCUMENTS 5000 // The maximum amount of documents in a database collection
 #define DATABASE_TOTAL 4 // The amount of databases
 #define TOTAL_RESERVE_PROOFS_DATABASES 50 // The total reserve proofs databases
 #define TOTAL_RESERVE_BYTES_DATABASE_FIELDS 3 // The reserve bytes database fields
