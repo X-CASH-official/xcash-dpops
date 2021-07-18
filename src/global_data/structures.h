@@ -246,8 +246,8 @@ struct database_document_fields {
 struct database_multiple_documents_fields {
     size_t document_count; // The amount of documents in the database_multiple_documents_fields
     size_t database_fields_count; // The amount of items in each document
-    char* item[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE][TOTAL_DELEGATES_DATABASE_FIELDS+1]; // The item
-    char* value[MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE][TOTAL_DELEGATES_DATABASE_FIELDS+1]; // The value
+    char* item[MAXIMUM_DATABASE_COLLECTION_DOCUMENTS][TOTAL_DELEGATES_DATABASE_FIELDS+1]; // The item
+    char* value[MAXIMUM_DATABASE_COLLECTION_DOCUMENTS][TOTAL_DELEGATES_DATABASE_FIELDS+1]; // The value
 };
 
 struct block_verifiers_send_data_socket {
