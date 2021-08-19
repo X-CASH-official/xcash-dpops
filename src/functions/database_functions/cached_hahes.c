@@ -355,7 +355,8 @@ int calc_multi_hash(mongoc_client_t *client, const char *db_prefix, int max_inde
         MD5_Update(&md5, l_db_hash, strlen(l_db_hash));
     }
     MD5_Final(md5_bin, &md5);
-    bin_to_hex(md5_bin, sizeof(md5_bin), hash);
+    memset(hash, '0', 96);
+    bin_to_hex(md5_bin, sizeof(md5_bin), hash+96);
     return 0;
 }
 
