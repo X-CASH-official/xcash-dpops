@@ -21,5 +21,6 @@
         "algorithm": "c",
         "initializer_list": "cpp",
         "utility": "cpp"
-    }
+    },
+    "editor.formatOnSave": false
 }

@@ -133,6 +133,10 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
     return 0;
   }
 
+
+  // we need to rehash this db next time
+  del_hash(database_client_thread, COLLECTION);
+
   // set the collection
   collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
 
@@ -145,6 +149,8 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   {
     INSERT_DOCUMENT_INTO_COLLECTION_JSON_ERROR("Could not insert the document into the database collection");
   }
+
+  
   database_reset_all;
   return 1;
 
@@ -230,6 +236,9 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     pointer_reset_all;
     return 0;
   }
+
+  // we need to rehash this db next time
+  del_hash(database_client_thread, COLLECTION);
 
   // set the collection
   collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);

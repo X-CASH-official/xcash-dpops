@@ -16,6 +16,7 @@
 #include "crypto_vrf.h"
 #include "VRF_functions.h"
 #include "sha512EL.h"
+#include "cached_hashes.h"
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -62,6 +63,9 @@ int delete_document_from_collection(const char* DATABASE, const char* COLLECTION
     return 0;
   }
 
+  // we need to rehash this db next time
+  del_hash(database_client_thread, COLLECTION);
+
   // set the collection
   collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
 
@@ -71,6 +75,8 @@ int delete_document_from_collection(const char* DATABASE, const char* COLLECTION
   }
   
   mongoc_collection_delete_one(collection, document, NULL, NULL, &error);
+
+
   database_reset_all;
   return 1;
 
@@ -123,6 +129,10 @@ int delete_collection_from_database(const char* DATABASE, const char* COLLECTION
   {    
     DELETE_COLLECTION_FROM_DATABASE_ERROR("Could not delete the database collection from the database");
   }
+
+  // we need to rehash this db next time
+  del_hash(database_client_thread, COLLECTION);
+
   database_reset_all;
   return 1;
 
@@ -169,6 +179,10 @@ int delete_database(const char* DATABASE)
   database = mongoc_client_get_database(database_client_thread, DATABASE);
    
   mongoc_database_drop(database, &error);
+
+  // we need to rehash this db next time
+  del_hash(database_client_thread, DATABASE);
+
   database_reset_all;
   return 1;
 

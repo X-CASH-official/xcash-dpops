@@ -18,6 +18,7 @@
 #include "crypto_vrf.h"
 #include "VRF_functions.h"
 #include "sha512EL.h"
+#include "cached_hashes.h"
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -199,6 +200,23 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   {
     return 0;
   }
+
+  // get cached result, of recalculate only needed 
+  if (get_multi_hash(database_client_thread, COLLECTION, data_hash))
+  {
+    // some error happens
+    // release the client
+    mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
+    return 0;
+  }else
+  {
+    // everythin ok, cleanup and return
+
+    // release the client
+    mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
+    return 1;
+  }
+  
 
   // set the collection
   collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
