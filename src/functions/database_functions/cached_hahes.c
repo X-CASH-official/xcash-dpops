@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include "md5.h"
 #include "define_macro_functions.h"
+#include <time.h>
+
 
 int get_data(mongoc_client_t *client, const char *db_name, const char *field_name, char *data)
 {
@@ -232,9 +234,15 @@ int get_hash(mongoc_client_t *client, const char *db_name, char *hash)
     char l_db_hash[33];
     int result = 0;
 
+    time_t start_time, current_time;
+
+    // start measuring
+    time(&start_time);
+
     result = get_data(client, db_name, "hash", hash);
     if (result != 0)
     {
+        // fprintf(stderr, "Missed hash for %s recalculating...\n", db_name);
         // recalculate hashes
         result = calc_db_hashes(client, db_name, l_hash, l_db_hash);
         if (result != 0)
@@ -245,7 +253,15 @@ int get_hash(mongoc_client_t *client, const char *db_name, char *hash)
         if (result != 0)
             return -2;
 
+        time(&current_time);
+        if (debug_settings == 1)
+            fprintf(stderr, "Missed hash for %s recalculation takes %d sec\n", db_name,current_time-start_time);
+
         strcpy(hash, l_hash);
+    }else
+    {
+        if (debug_settings == 1)
+            fprintf(stderr, "Hash hit cache for %s\n", db_name);
     }
 
     return result;
@@ -257,9 +273,16 @@ int get_dbhash(mongoc_client_t *client, const char *db_name, char *db_hash)
     char l_db_hash[33];
     int result = 0;
 
+    time_t start_time, current_time;
+
+    // start measuring
+    time(&start_time);
+
     result = get_data(client, db_name, "db_hash", db_hash);
     if (result != 0)
     {
+        // fprintf(stderr, "Missed hash for %s recalculating\n", db_name);
+
         // recalculate hashes
         result = calc_db_hashes(client, db_name, l_hash, l_db_hash);
         if (result != 0)
@@ -270,8 +293,17 @@ int get_dbhash(mongoc_client_t *client, const char *db_name, char *db_hash)
         if (result != 0)
             return -2;
 
+        time(&current_time);
+        if (debug_settings == 1)
+            fprintf(stderr, "Missed hash for %s recalculation takes %d sec\n", db_name,current_time-start_time);
+
         strcpy(db_hash, l_db_hash);
+    }else
+    {
+        if (debug_settings == 1)
+            fprintf(stderr, "Hash hit cache for %s\n", db_name);
     }
+    
 
     return result;
 }
@@ -296,6 +328,9 @@ int del_hash(mongoc_client_t *client, const char *db_name)
 
     bson_destroy(filter);
     mongoc_collection_destroy(collection);
+
+    if (debug_settings == 1)
+        fprintf(stderr, "Hash been deleted for %s\n", db_name);
 
     return result;
 }
@@ -348,10 +383,10 @@ int calc_multi_hash(mongoc_client_t *client, const char *db_prefix, int max_inde
         snprintf(db_name, sizeof(db_name), "%s_%d", db_prefix, i);
         if (get_dbhash(client, db_name, l_db_hash) != 0)
         {
-            fprintf(stderr, "Get hash for %s", db_name);
+            fprintf(stderr, "Error getting hash for %s", db_name);
             return -1;
         }
-        printf("%s", l_db_hash);
+        // printf("%s", l_db_hash);
         MD5_Update(&md5, l_db_hash, strlen(l_db_hash));
     }
     MD5_Final(md5_bin, &md5);
@@ -383,11 +418,10 @@ int get_multi_hash(mongoc_client_t *client, const char *db_prefix, char *hash)
         result = get_hash(client, db_prefix, hash);
     }
 
-    if (result ==0)
-        fprintf(stderr, "Cached hash for %s %s\n", db_prefix, hash);
+    // if (result ==0)
+    //     fprintf(stderr, "Cached hash for %s %s\n", db_prefix, hash);
 
-    // make result compatibility with DPOPS code
-    return result == 0 ? 1 : 0;
+    return result;
 }
 /*
 int main(int argc, char *argv[])
