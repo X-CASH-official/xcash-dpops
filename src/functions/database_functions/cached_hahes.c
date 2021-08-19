@@ -260,8 +260,8 @@ int get_hash(mongoc_client_t *client, const char *db_name, char *hash)
         strcpy(hash, l_hash);
     }else
     {
-        if (debug_settings == 1)
-            fprintf(stderr, "Hash hit cache for %s\n", db_name);
+        // if (debug_settings == 1)
+        //     fprintf(stderr, "Hash hit cache for %s\n", db_name);
     }
 
     return result;
@@ -300,8 +300,8 @@ int get_dbhash(mongoc_client_t *client, const char *db_name, char *db_hash)
         strcpy(db_hash, l_db_hash);
     }else
     {
-        if (debug_settings == 1)
-            fprintf(stderr, "Hash hit cache for %s\n", db_name);
+        // if (debug_settings == 1)
+        //     fprintf(stderr, "Hash hit cache for %s\n", db_name);
     }
     
 
