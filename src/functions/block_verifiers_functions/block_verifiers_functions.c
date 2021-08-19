@@ -217,8 +217,19 @@ int start_new_round(void)
     color_print("\nChecking to make sure all block verifiers databases are synced\n","blue");
     sync_block_verifiers_database();
 
-    // wait for all block verifiers to sync
-    sync_block_verifiers_minutes_and_seconds(1,40);
+    // if we're late just a little bit, it can help
+    // just skip waiting
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+    if (current_UTC_date_and_time.tm_min % BLOCK_TIME < 1 || (current_UTC_date_and_time.tm_min % BLOCK_TIME == 1 && current_UTC_date_and_time.tm_sec < 40))
+    {
+      // wait for all block verifiers to sync
+      sync_block_verifiers_minutes_and_seconds(1,40);
+    }else
+    {
+      fprintf(stderr,"\033[1;33mCurrent time %d:%d\033[0m\n",current_UTC_date_and_time.tm_min, current_UTC_date_and_time.tm_sec);
+      color_print("We're late!!! skip waiting 1:40\n","red");
+    }
+    
 
     // update the previous, current and next block verifiers after syncing the database
     if (update_block_verifiers_list() == 0)
