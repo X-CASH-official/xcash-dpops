@@ -383,6 +383,9 @@ int get_multi_hash(mongoc_client_t *client, const char *db_prefix, char *hash)
         result = get_hash(client, db_prefix, hash);
     }
 
+    if (result ==0)
+        fprintf(stderr, "Cached hash for %s %s\n", db_prefix, hash);
+
     // make result compatibility with DPOPS code
     return result == 0 ? 1 : 0;
 }
