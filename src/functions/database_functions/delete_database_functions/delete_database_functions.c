@@ -180,8 +180,8 @@ int delete_database(const char* DATABASE)
    
   mongoc_database_drop(database, &error);
 
-  // we need to rehash this db next time
-  del_hash(database_client_thread, DATABASE);
+  // clear hashes db
+  drop_all_hashes(database_client_thread);
 
   database_reset_all;
   return 1;

@@ -16,6 +16,7 @@
 #include "crypto_vrf.h"
 #include "VRF_functions.h"
 #include "sha512EL.h"
+#include "cached_hashes.h"
 
 /*
 -----------------------------------------------------------------------------------------------------------
