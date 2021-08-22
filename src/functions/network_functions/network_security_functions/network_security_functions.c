@@ -221,7 +221,6 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
   char* result = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
   char data[BUFFER_SIZE];
   char* string = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
-  char extended_error[SMALL_BUFFER_SIZE];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   size_t message_length;
@@ -241,10 +240,10 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
   if (network_functions_test_error_settings == 1 && debug_settings == 1) \
   { \
   memcpy(error_message.function[error_message.total],"verify_data",11); \
-  snprintf(extended_error,sizeof(extended_error),"%s\n MESSAGE: %s\n", settings, MESSAGE); \
-  memcpy(error_message.data[error_message.total],extended_error,strlen(extended_error)+1); \
+  strncpy(error_message.data[error_message.total],settings,sizeof(error_message.data)); \
   error_message.total++; \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
+  fprintf(stderr, "MESSAGE: %s\n", MESSAGE); \
   } \
   pointer_reset_all; \
   return 0;
