@@ -242,7 +242,7 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
   { \
   memcpy(error_message.function[error_message.total],"verify_data",11); \
   snprintf(extended_error,sizeof(extended_error),"%s\n MESSAGE: %s\n", settings, MESSAGE); \
-  memcpy(error_message.data[error_message.total],extended_error,sizeof(extended_error)-1); \
+  memcpy(error_message.data[error_message.total],extended_error,strlen(extended_error)+1); \
   error_message.total++; \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
   } \
