@@ -321,6 +321,7 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
   { \
     memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28); \
     memcpy(error_message.data[error_message.total],data_settings,sizeof(data_settings)-1); \
+    print_error_message(current_date_and_time, current_UTC_date_and_time, str);            \
     error_message.total++; \
   } \
   freeaddrinfo(settings); \
