@@ -202,20 +202,20 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   }
 
   // get cached result, of recalculate only needed 
-  if (get_multi_hash(database_client_thread, COLLECTION, data_hash))
-  {
-    // some error happens
-    // release the client
-    mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
-    return 0;
-  }else
-  {
-    // everythin ok, cleanup and return
+  // if (get_multi_hash(database_client_thread, COLLECTION, data_hash))
+  // {
+  //   // some error happens
+  //   // release the client
+  //   mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
+  //   return 0;
+  // }else
+  // {
+  //   // everythin ok, cleanup and return
 
-    // release the client
-    mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
-    return 1;
-  }
+  //   // release the client
+  //   mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
+  //   return 1;
+  // }
   
 
   // set the collection
