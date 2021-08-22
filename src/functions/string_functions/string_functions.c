@@ -101,7 +101,7 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
     const size_t LENGTH = str2 - str1 - start;
     if (LENGTH <= 0)
     {
-      PARSE_JSON_DATA_ERROR("empy field");
+      PARSE_JSON_DATA_ERROR("empty field");
     }
 
     // copy the field's data
@@ -125,7 +125,9 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
   }
   else
   {
-    PARSE_JSON_DATA_ERROR("");
+    char err_str[1000];
+    snprintf(err_str,1000,"Field %s not in the message", FIELD_NAME);
+    PARSE_JSON_DATA_ERROR(err_str);
   }
   pointer_reset(message);
   return 1;
