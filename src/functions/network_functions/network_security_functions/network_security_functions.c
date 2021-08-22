@@ -666,6 +666,7 @@ int validate_data(const char* MESSAGE)
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
+  fprintf(stderr, "MESSAGE: %s\n\n", MESSAGE);\
   } \
   return 0;
 
