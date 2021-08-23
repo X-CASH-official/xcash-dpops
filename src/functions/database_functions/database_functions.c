@@ -201,22 +201,12 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     return 0;
   }
 
-  // get cached result, of recalculate only needed 
-  // if (get_multi_hash(database_client_thread, COLLECTION, data_hash))
-  // {
-  //   // some error happens
-  //   // release the client
-  //   mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
-  //   return 0;
-  // }else
-  // {
-  //   // everythin ok, cleanup and return
+  // // get cached result, of recalculate only needed 
+  int cach_request_result = get_multi_hash(database_client_thread, COLLECTION, data_hash);
+  mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
 
-  //   // release the client
-  //   mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
-  //   return 1;
-  // }
-  
+  return cach_request_result < 0? 0:1;
+  // end caching replace 
 
   // set the collection
   collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
@@ -295,6 +285,17 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   memset(data_hash,0,strlen(data_hash));
   memcpy(data_hash,"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",96);
   memcpy(data_hash+96,&message2[9],32);
+
+
+  // char my_hash[129];
+  // int cach_request_result = get_multi_hash(database_client_thread, COLLECTION, my_hash);
+  // if (cach_request_result <0 ){
+  //   fprintf(stderr, "My cache error occured");
+  // }else{
+  //   if (strcmp(data_hash, my_hash)!=0)
+  //     fprintf(stderr, "dbHash result difference found for DB %s max index %d:\n 00: %s\n MY: %s\n",COLLECTION, count2, data_hash, my_hash);
+  // }
+
 
   database_reset_all;  
   return 1;

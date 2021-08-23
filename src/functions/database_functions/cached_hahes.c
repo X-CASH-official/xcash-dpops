@@ -367,7 +367,12 @@ void md5_hex(const char *src, char *dest)
     MD5_Final(md5_bin, &md5);
 
     bin_to_hex(md5_bin, sizeof(md5_bin), dest);
-    // printf("%s\n", dest);
+}
+
+// compare strings function
+int cmpfunc(const void *a, const void *b)
+{
+    return strcmp((const char *)a, (const char *)b);
 }
 
 int calc_multi_hash(mongoc_client_t *client, const char *db_prefix, int max_index, char *hash)
@@ -376,31 +381,46 @@ int calc_multi_hash(mongoc_client_t *client, const char *db_prefix, int max_inde
 
     char l_db_hash[33];
     unsigned char md5_bin[16];
+    int result = 0;
+
+    // array of db index names for sorting
+    char(*names_array)[MAXIMUM_NUMBER_SIZE];
 
     // this is more than enough for name+index
     char db_name[64];
 
-    MD5_Init(&md5);
-
-    for (int i = 1; i <= max_index; i++)
+    names_array = calloc(max_index, MAXIMUM_NUMBER_SIZE);
+    for (int i = 0; i < max_index; i++)
     {
-        snprintf(db_name, sizeof(db_name), "%s_%d", db_prefix, i);
+        snprintf(names_array[i], MAXIMUM_NUMBER_SIZE, "%d", i + 1);
+    }
+
+    // we need to sort by indexes accodding to mongodb algorithm
+    // like: 1,2,3,4,5,6,7,8,9,10,11 -> 1,10,11,2,3,4,5,6,7,8,9
+    qsort(names_array, max_index, MAXIMUM_NUMBER_SIZE, cmpfunc);
+
+    MD5_Init(&md5);
+    for (int i = 0; i < max_index; i++)
+    {
+        snprintf(db_name, sizeof(db_name), "%s_%s", db_prefix, names_array[i]);
         if (get_dbhash(client, db_name, l_db_hash) != 0)
         {
             PRINT_ERROR("Error getting hash for %s", db_name);
-            return -1;
+            result = -1;
+            break;
         }
-        // printf("%s", l_db_hash);
         MD5_Update(&md5, l_db_hash, strlen(l_db_hash));
     }
     MD5_Final(md5_bin, &md5);
     memset(hash, '0', 96);
     bin_to_hex(md5_bin, sizeof(md5_bin), hash + 96);
-    return 0;
+
+    free(names_array);
+
+    return result;
 }
 
-// #define TOTAL_RESERVE_PROOFS_DATABASES 50
-// 0 - error, 1 ok
+// 0 - ok, <0 error
 int get_multi_hash(mongoc_client_t *client, const char *db_prefix, char *hash)
 {
 
@@ -409,7 +429,6 @@ int get_multi_hash(mongoc_client_t *client, const char *db_prefix, char *hash)
 
     if (strcmp(db_prefix, "reserve_bytes") == 0)
     {
-        // get_reserve_bytes_database(reserve_bytes_index, 0);
         get_reserve_bytes_database(reserve_bytes_index, 0);
         result = calc_multi_hash(client, db_prefix, reserve_bytes_index, hash);
     }
@@ -421,9 +440,6 @@ int get_multi_hash(mongoc_client_t *client, const char *db_prefix, char *hash)
     {
         result = get_hash(client, db_prefix, hash);
     }
-
-    // if (result ==0)
-    //     PRINT_ERROR("Cached hash for %s %s\n", db_prefix, hash);
 
     return result;
 }
