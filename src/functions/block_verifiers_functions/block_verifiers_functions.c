@@ -1796,7 +1796,7 @@ int block_verifiers_create_block(void)
   // temporary fix
 for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
 {
-if (strlen(VRF_data.block_verifiers_vrf_secret_key_data[count]) == 0 || strlen((char*)VRF_data.block_verifiers_vrf_secret_key[count]) == 0 || strlen(VRF_data.block_verifiers_vrf_public_key_data[count]) == 0 || $
+if (strlen(VRF_data.block_verifiers_vrf_secret_key_data[count]) == 0 || strlen((char*)VRF_data.block_verifiers_vrf_secret_key[count]) == 0 || strlen(VRF_data.block_verifiers_vrf_public_key_data[count]) == 0 || strlen((char*)VRF_data.block_verifiers_vrf_public_key[count][count]) == 0 || strlen(VRF_data.block_verifiers_random_data[count]) == 0)
 {
 // The majority is the empty response, so put the default empty responses for each VRF data  
             memcpy(VRF_data.block_verifiers_vrf_secret_key_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA)-1);
