@@ -1790,7 +1790,25 @@ int block_verifiers_create_block(void)
     // check each specific block verifier to see if they have a majority
     color_print("Part 7 - Check each specific block verifier to see if they have a majority for the VRF data","yellow");
 
-    count = (size_t)block_verifiers_calculate_vote_majority_results(0);
+    //count = (size_t)block_verifiers_calculate_vote_majority_results(0);
+  
+  
+  // temporary fix
+for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+{
+if (strlen(VRF_data.block_verifiers_vrf_secret_key_data[count]) == 0 || strlen((char*)VRF_data.block_verifiers_vrf_secret_key[count]) == 0 || strlen(VRF_data.block_verifiers_vrf_public_key_data[count]) == 0 || $
+{
+// The majority is the empty response, so put the default empty responses for each VRF data  
+            memcpy(VRF_data.block_verifiers_vrf_secret_key_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY_DATA)-1);
+            memcpy(VRF_data.block_verifiers_vrf_secret_key[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_SECRET_KEY)-1);
+            memcpy(VRF_data.block_verifiers_vrf_public_key_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY_DATA)-1);
+            memcpy(VRF_data.block_verifiers_vrf_public_key[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_VRF_PUBLIC_KEY)-1);
+            memcpy(VRF_data.block_verifiers_random_data[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_RANDOM_STRING)-1);
+} 
+}
+count = BLOCK_VERIFIERS_AMOUNT;
+// temporary fix
+
 
     color_print("Checked each specific block verifier to see if they have a majority for the VRF data\n","green");
 
@@ -1994,7 +2012,20 @@ int block_verifiers_create_block(void)
     // check each specific block verifier to see if they have a majority
     color_print("Part 18 - Check each specific block verifier to see if they have a majority for the block template signature","yellow");
 
-    count = (size_t)block_verifiers_calculate_vote_majority_results(1);
+    //count = (size_t)block_verifiers_calculate_vote_majority_results(1);
+    
+    // temporary fix
+for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+{
+if (strlen(VRF_data.block_blob_signature[count]) == 0)
+{
+// The majority is the empty response, so put the default empty responses for each VRF data  
+memcpy(VRF_data.block_blob_signature[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE,sizeof(GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_SIGNATURE)-1);
+} 
+}
+count = BLOCK_VERIFIERS_AMOUNT;
+// temporary fix
+
 
     color_print("Checked each specific block verifier to see if they have a majority for the block template signature\n","green");
 
