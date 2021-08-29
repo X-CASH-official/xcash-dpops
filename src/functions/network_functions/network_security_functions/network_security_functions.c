@@ -527,6 +527,12 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
   if (strstr(MESSAGE,"\"XCASH_DPOPS_signature\": \"SigV1") == NULL && strstr(MESSAGE,"|SigV1") == NULL)
   {
     start:
+    // if (strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH") != NULL &&  strstr(MESSAGE,"}") == NULL){
+    //       color_print("Special case for non-json NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH. Skip signature validation","green");
+    //       //stupid logic solution because of above "start:" label
+    //       goto we_re_done_ok;
+    // }
+
 
     // get the public key, proof and beta string
     memcpy(proof,XCASH_DPOPS_signature,VRF_PROOF_LENGTH);
@@ -628,7 +634,8 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
        VERIFY_DATA_ERROR("Invalid message3:  RPC verify return not 'true'");
     }
   }
- 
+
+  // we_re_done_ok:
   pointer_reset_all;
   return 1;
   

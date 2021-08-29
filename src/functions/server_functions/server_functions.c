@@ -473,6 +473,21 @@ void socket_thread(const int CLIENT_SOCKET)
   // validate the message
   if (validate_data(buffer) == 0)
   {
+    char str_ip[INET_ADDRSTRLEN];
+    struct sockaddr_in err_addr;
+    struct sockaddr_in* pV4Addr;
+    struct in_addr ipAddr;
+    socklen_t len = sizeof(err_addr);
+
+    bzero(&err_addr, sizeof(err_addr));
+    getsockname(CLIENT_SOCKET, (struct sockaddr *) &err_addr, &len);
+
+    pV4Addr = (struct sockaddr_in*)&err_addr;
+    ipAddr = pV4Addr->sin_addr; 
+
+    inet_ntop( AF_INET, &ipAddr, str_ip, INET_ADDRSTRLEN );
+    fprintf(stderr,"IP: %s : Invalid message. Need to ban sucker!", str_ip);
+    
     pointer_reset(buffer);
     return;
   }
