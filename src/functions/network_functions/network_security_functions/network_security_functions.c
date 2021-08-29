@@ -524,6 +524,10 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
     }
   }
 
+  // check for non-json message, there is no signature, we have nothing to check
+  if (strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH",sizeof(message_settings)) == 0 &&  strstr(MESSAGE,"}") == NULL){
+        color_print("Special case for non-json NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH. Skip signature validation","green");
+  }else
   if (strstr(MESSAGE,"\"XCASH_DPOPS_signature\": \"SigV1") == NULL && strstr(MESSAGE,"|SigV1") == NULL)
   {
     start:
