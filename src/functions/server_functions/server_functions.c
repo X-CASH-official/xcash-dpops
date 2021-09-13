@@ -616,7 +616,10 @@ void socket_thread(const int CLIENT_SOCKET)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
+     pthread_mutex_lock(&update_current_block_height_lock);
      server_receive_data_socket_get_current_block_height((const char*)client_IP_address);
+     pthread_mutex_unlock(&update_current_block_height_lock);
+
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
@@ -624,7 +627,10 @@ void socket_thread(const int CLIENT_SOCKET)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
+     pthread_mutex_lock(&update_current_block_height_lock);
      server_receive_data_socket_send_current_block_height((const char*)buffer);
+     pthread_mutex_unlock(&update_current_block_height_lock);
+
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
