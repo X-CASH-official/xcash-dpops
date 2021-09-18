@@ -32,6 +32,7 @@ Return: 1 if fully synced, 0 if not or an error
 
 int check_if_blockchain_is_fully_synced(void)
 {
+
   // Variables
   char data[SMALL_BUFFER_SIZE];
   int count;
@@ -40,11 +41,13 @@ int check_if_blockchain_is_fully_synced(void)
   
   memset(data,0,sizeof(data));
 
+  pthread_mutex_lock(&update_current_block_height_lock);
   // reset the block_verifiers_current_block_height
   for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
   {
     block_verifiers_current_block_height[count2] = 0;
   }
+  pthread_mutex_unlock(&update_current_block_height_lock);
 
   sscanf(current_block_height,"%zu",&block_height);
 
@@ -54,6 +57,7 @@ int check_if_blockchain_is_fully_synced(void)
   // send the message to all block verifiers. This function will wait until all messages have arrived
   block_verifiers_send_data_socket((const char*)data);
 
+  pthread_mutex_lock(&update_current_block_height_lock);
   // check if the blockchain is fully synced
   for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
@@ -62,7 +66,7 @@ int check_if_blockchain_is_fully_synced(void)
       count2++;
     }
   }
-
+  pthread_mutex_unlock(&update_current_block_height_lock);
   return count2 >= BLOCK_VERIFIERS_VALID_AMOUNT ? 0 : 1;
 }
 

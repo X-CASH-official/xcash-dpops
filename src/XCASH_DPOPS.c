@@ -79,6 +79,7 @@ pthread_mutex_t vote_lock;
 pthread_mutex_t add_reserve_proof_lock;
 pthread_mutex_t invalid_reserve_proof_lock;
 pthread_mutex_t database_data_IP_address_lock;
+pthread_mutex_t update_current_block_height_lock;
 
 pthread_t server_threads[100];
 int epoll_fd;
@@ -206,6 +207,7 @@ void initialize_data(int parameters_count, char* parameters[])
   pthread_mutex_init(&add_reserve_proof_lock, NULL);
   pthread_mutex_init(&invalid_reserve_proof_lock, NULL);
   pthread_mutex_init(&database_data_IP_address_lock, NULL);
+  pthread_mutex_init(&update_current_block_height_lock, NULL);
 
   server_limit_IP_address_list = (char*)calloc(15728640,sizeof(char)); // 15 MB
   server_limit_public_address_list = (char*)calloc(15728640,sizeof(char)); // 15 MB
