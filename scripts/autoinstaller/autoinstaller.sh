@@ -730,7 +730,7 @@ function update_packages_list()
 {
     wait_for_package_manager
     echo -ne "${COLOR_PRINT_YELLOW}Updating Packages List${END_COLOR_PRINT}"
-    sudo apt update -y
+    sudo apt update -y &>/dev/null
     echo -ne "\r${COLOR_PRINT_GREEN}Updating Packages List${END_COLOR_PRINT}"
     echo
 }
