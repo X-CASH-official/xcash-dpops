@@ -1707,6 +1707,7 @@ function update()
   # Update all dependencies
   if [ ! "$MONGODB_CURRENT_VERSION" == "$MONGODB_LATEST_VERSION" ]; then
     update_mongodb
+    install_mongodb_tools
   else
     echo -e "${COLOR_PRINT_GREEN}MongoDB Is Already Up To Date${END_COLOR_PRINT}"
   fi
