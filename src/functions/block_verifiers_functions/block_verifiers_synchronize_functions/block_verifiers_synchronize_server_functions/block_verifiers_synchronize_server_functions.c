@@ -387,15 +387,14 @@ Parameters:
 void server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash(const int CLIENT_SOCKET, const char* MESSAGE)
 {  
   // Variables
-  char data[SMALL_BUFFER_SIZE];
-  char data2[SMALL_BUFFER_SIZE];
-  char message[SMALL_BUFFER_SIZE];
-  char* message2 = (char*)calloc(1500000,sizeof(char)); // 1.5 MB
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char message[BUFFER_SIZE];
+  char message2[BUFFER_SIZE];
   size_t count;
   size_t count2;
   size_t current_block_height_reserve_bytes;
+  size_t current_block_height_reserve_bytes_copy;
   size_t reserve_bytes_blocks_amount;
   size_t data_size;
 
@@ -407,24 +406,13 @@ void server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databa
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
   error_message.total++; \
   } \
-  pointer_reset(message2); \
   send_data(CLIENT_SOCKET,(unsigned char*)"Could not get the network blocks reserve bytes database hash}",0,0,""); \
   return;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (message2 == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash",82);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
-    send_data(CLIENT_SOCKET,(unsigned char*)"Could not get the network blocks reserve bytes database hash}",0,0,"");
-    exit(0);
-  }
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
+  memset(message2,0,sizeof(message2));
   
   if (strstr(MESSAGE,"|") == NULL && parse_json_data(MESSAGE,"block_height",data,sizeof(data)) == 0)
   {
@@ -470,17 +458,20 @@ void server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databa
     count2 = 521855;
   }
   sscanf(data,"%zu",&current_block_height_reserve_bytes);
+  current_block_height_reserve_bytes_copy = current_block_height_reserve_bytes;
 
   // check if the block height is under the XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT or over the current_block_height
   if (test_settings == 0 && (current_block_height_reserve_bytes < XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || current_block_height_reserve_bytes > count2))
   {
     SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Invalid block height");
   }
-  
+
+  // get how many blocks they have requested to sync
   reserve_bytes_blocks_amount = (count2 - current_block_height_reserve_bytes);
+
   if (reserve_bytes_blocks_amount > BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME)
   {
-    // maximum range of blocks returned is 1 months worth of blocks
+    // maximum range of blocks returned is 1 days worth of blocks
     reserve_bytes_blocks_amount = BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME;
   }
   if (reserve_bytes_blocks_amount == 0)
@@ -489,7 +480,7 @@ void server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databa
     reserve_bytes_blocks_amount = 1;
   }
 
-  // create the message
+  // create the message for the data hash
   for (count = 0; count < reserve_bytes_blocks_amount; count++, current_block_height_reserve_bytes++)
   {
     // create the message
@@ -510,15 +501,47 @@ void server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databa
     {
       SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Could not get the previous blocks reserve bytes");
     }
-    memcpy(message2+strlen(message2),message,strnlen(message,1500000));
+    memcpy(message2+strlen(message2),message,strnlen(message,sizeof(message2)));
     memcpy(message2+strlen(message2),"|",sizeof(char));
+  }
+
+  if (current_block_height_reserve_bytes >= BLOCK_HEIGHT_SF_V_1_1_0)
+  {
+    // reset the count
+    current_block_height_reserve_bytes = current_block_height_reserve_bytes_copy;
+
+    // create the message for the stealth addresses
+    for (count = 0; count < reserve_bytes_blocks_amount; count++, current_block_height_reserve_bytes++)
+    {
+      // create the message
+      memset(data,0,strlen(data));
+      memset(data2,0,strlen(data2));
+      memset(message,0,strlen(message));
+      memcpy(data2,"{\"block_height\": \"",18);
+      snprintf(data2+18,sizeof(data2)-19,"%zu",current_block_height_reserve_bytes);
+      memcpy(data2+strlen(data2),"\"}",2);
+
+      count2 = ((current_block_height_reserve_bytes - XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT) / BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME) + 1;
+  
+      memcpy(data,"reserve_bytes_",14);
+      snprintf(data+14,MAXIMUM_NUMBER_SIZE,"%zu",count2);
+    
+      // get the reserve bytes
+      if (read_document_field_from_collection(database_name,data,data2,"reserve_bytes",message) == 0 || strstr(message,BLOCKCHAIN_STEALTH_ADDRESS_END) == NULL)
+      {
+        SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR("Could not get the previous blocks reserve bytes");
+      }
+
+      // get the stealth address    
+      memcpy(message2+strlen(message2),&message[(strlen(message) - strlen(strstr(message,BLOCKCHAIN_STEALTH_ADDRESS_END))) - STEALTH_ADDRESS_OUTPUT_LENGTH],STEALTH_ADDRESS_OUTPUT_LENGTH);
+      memcpy(message2+strlen(message2),"|",sizeof(char));
+    }
   }
   
   memcpy(message2+strlen(message2),"}",sizeof(char));
   
   // send the data
   test_settings == 0 ? send_data(CLIENT_SOCKET,(unsigned char*)message2,0,0,"") : send_data(CLIENT_SOCKET,(unsigned char*)message2,0,1,"");
-  pointer_reset(message2);
   return;
   
   #undef SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_ERROR
@@ -1317,3 +1340,4 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_da
   #undef pointer_reset_all
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR
 }
+

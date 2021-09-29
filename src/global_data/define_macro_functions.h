@@ -309,6 +309,21 @@ return;
 
 
 
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: CHECK_IF_PAUSE
+Description: Checks if we need to pause the delegate for a HF update to the network
+Return: Writes the correct code
+-----------------------------------------------------------------------------------------------------------
+*/
+#define CHECK_IF_PAUSE \
+if (strncmp(current_block_height,PAUSE_BLOCK_HEIGHT,BUFFER_SIZE) == 0) \
+{ \
+  color_print("Pausing the code","yellow"); \
+  exit(0); \
+}
+
+
 
 /*
 -----------------------------------------------------------------------------------------------------------

@@ -1150,7 +1150,7 @@ void server_receive_data_socket_nodes_to_block_verifiers_recover_delegates(const
     if ((message = strstr(data2,TXT_RECORD_START_STRING)) != NULL)
     {
       message += (sizeof(TXT_RECORD_START_STRING)-1);
-      if (strstr(message,XCASH_WALLET_PREFIX) && strlen(message) >= XCASH_WALLET_LENGTH)
+      if (strstr(message,XCASH_WALLET_PREFIX) != NULL && strlen(message) >= XCASH_WALLET_LENGTH)
       {
         memset(delegate_recover_public_address,0,sizeof(delegate_recover_public_address));
         memcpy(delegate_recover_public_address,message,XCASH_WALLET_LENGTH);

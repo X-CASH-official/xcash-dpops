@@ -1791,9 +1791,8 @@ int block_verifiers_create_block(void)
     color_print("Part 7 - Check each specific block verifier to see if they have a majority for the VRF data","yellow");
 
     //count = (size_t)block_verifiers_calculate_vote_majority_results(0);
-  
-  
-  // temporary fix
+
+// temporary fix
 for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
 {
 if (strlen(VRF_data.block_verifiers_vrf_secret_key_data[count]) == 0 || strlen((char*)VRF_data.block_verifiers_vrf_secret_key[count]) == 0 || strlen(VRF_data.block_verifiers_vrf_public_key_data[count]) == 0 || strlen((char*)VRF_data.block_verifiers_vrf_public_key[count]) == 0 || strlen(VRF_data.block_verifiers_random_data[count]) == 0)
@@ -1808,7 +1807,6 @@ if (strlen(VRF_data.block_verifiers_vrf_secret_key_data[count]) == 0 || strlen((
 }
 count = BLOCK_VERIFIERS_AMOUNT;
 // temporary fix
-
 
     color_print("Checked each specific block verifier to see if they have a majority for the VRF data\n","green");
 
@@ -2013,8 +2011,8 @@ count = BLOCK_VERIFIERS_AMOUNT;
     color_print("Part 18 - Check each specific block verifier to see if they have a majority for the block template signature","yellow");
 
     //count = (size_t)block_verifiers_calculate_vote_majority_results(1);
-    
-    // temporary fix
+
+ // temporary fix
 for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
 {
 if (strlen(VRF_data.block_blob_signature[count]) == 0)
@@ -2025,7 +2023,6 @@ memcpy(VRF_data.block_blob_signature[count],GET_BLOCK_TEMPLATE_BLOCK_VERIFIERS_S
 }
 count = BLOCK_VERIFIERS_AMOUNT;
 // temporary fix
-
 
     color_print("Checked each specific block verifier to see if they have a majority for the block template signature\n","green");
 
@@ -2443,3 +2440,4 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   
   #undef BLOCK_VERIFIERS_SEND_DATA_SOCKET
 }
+

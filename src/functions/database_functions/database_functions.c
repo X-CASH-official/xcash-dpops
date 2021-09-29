@@ -272,7 +272,11 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   memcpy(data,message,strnlen(message,sizeof(data)));
   bson_free(message);
 
-  message2 = strstr(data,"\"md5\"");
+  if ((message2 = strstr(data,"\"md5\"")) == NULL)
+  {
+    database_reset_all;
+    return 0;
+  }
 
   memset(data_hash,0,strlen(data_hash));
   memcpy(data_hash,"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",96);
@@ -359,8 +363,11 @@ size_t get_database_collection_size(const char* DATABASE, const char* COLLECTION
   memcpy(data,message,strnlen(message,sizeof(data)));
   bson_free(message);
 
-  message2 = strstr(data,"\"size\"");
-  message3 = strstr(message2,",");
+  if ((message2 = strstr(data,"\"size\"")) == NULL || (message3 = strstr(message2,",")) == NULL)
+  {
+    database_reset_all;
+    return 0;
+  }
   memcpy(data2,&message2[9],(strlen(message2) - strlen(message3)) - 9);
   
   sscanf(data2, "%zu", &count);

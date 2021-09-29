@@ -561,7 +561,7 @@ void string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1
     return;
   }
     
-  while((find = strstr(b, STR1)))
+  while((find = strstr(b, STR1)) != NULL)
   {   
     memcpy(buf+strlen(buf), b, find - b);  /* copy up to occurrence */
     memcpy(buf+strlen(buf), STR2, rlen);   /* add replacement */
@@ -612,7 +612,7 @@ void string_replace_limit(char *data, const size_t DATA_TOTAL_LENGTH, const char
     return;
   }
   
-  while((find = strstr(b, STR1)))
+  while((find = strstr(b, STR1)) != NULL)
   {
     if (count2 == COUNT)
     {

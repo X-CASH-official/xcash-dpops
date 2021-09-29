@@ -448,6 +448,7 @@ void socket_thread(const int CLIENT_SOCKET)
   struct tm current_UTC_date_and_time;
   struct sockaddr_in addr;
   socklen_t addrlength = sizeof(addr);
+  long long int count;
   
   memset(buffer2,0,sizeof(buffer2));
   memset(data2,0,sizeof(data2));
@@ -482,8 +483,13 @@ void socket_thread(const int CLIENT_SOCKET)
     memcpy(data2,"HTTP ",5);
     memcpy(data2+5,buffer,strnlen(buffer,sizeof(data2)) - strnlen(strstr(buffer," HTTP/"),sizeof(data2)));
   }
-  else if (strlen(buffer) > 25 && strstr(buffer,"}") != NULL)
+  else if (strlen(buffer) > 25 && strstr(buffer,"}") != NULL && strstr(buffer,"\",\r\n") != NULL)
   {
+    if ((count = strlen(buffer) - strlen(strstr(buffer,"\",\r\n")) - 25) < 0)
+    {
+      pointer_reset(buffer);
+      return;
+    }
     memcpy(data2,&buffer[25],strlen(buffer) - strlen(strstr(buffer,"\",\r\n")) - 25);
     if ((strncmp(data2,"XCASH_PROOF_OF_STAKE_TEST_DATA",BUFFER_SIZE) == 0 || strncmp(data2,"NODE_TO_NETWORK_DATA_NODES_GET_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) == 0 || strncmp(data2,"NODE_TO_NETWORK_DATA_NODES_GET_CURRENT_BLOCK_VERIFIERS_LIST",BUFFER_SIZE) == 0 || strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_SYNC_CHECK_UPDATE",BUFFER_SIZE) == 0 || strncmp(data2,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS",BUFFER_SIZE) == 0 || strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE",BUFFER_SIZE) == 0 || strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE",BUFFER_SIZE) == 0 || strncmp(data2,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE",BUFFER_SIZE) == 0 || strncmp(data2,"MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIERS_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0 || strncmp(data2,"MAIN_NODES_TO_NODES_PART_4_OF_ROUND_CREATE_NEW_BLOCK",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_VRF_DATA",BUFFER_SIZE) == 0 || strncmp(data2,"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE",BUFFER_SIZE) == 0 || strncmp(data2,"NODES_TO_NODES_VOTE_RESULTS",BUFFER_SIZE) == 0) && (strlen(buffer) >= MAXIMUM_BUFFER_SIZE))
     {
@@ -627,7 +633,6 @@ void socket_thread(const int CLIENT_SOCKET)
      pthread_mutex_lock(&update_current_block_height_lock);
      server_receive_data_socket_send_current_block_height((const char*)buffer);
      pthread_mutex_unlock(&update_current_block_height_lock);
-
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
@@ -848,7 +853,7 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }
- else if (strstr(buffer,"GET /") != NULL && (delegates_website == 1 || shared_delegates_website == 1))
+ else if (strstr(buffer,"GET /") != NULL && strstr(&buffer[5]," HTTP/") != NULL && (delegates_website == 1 || shared_delegates_website == 1))
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
