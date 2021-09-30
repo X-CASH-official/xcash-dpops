@@ -33,7 +33,7 @@ XCASH_DPOPS_BLOCK_HEIGHT=800000
 MONGODB_LATEST_VERSION="mongodb-linux-x86_64-ubuntu1804-5.0.3"
 MONGODB_TOOLS_LATEST_VERSION="mongodb-database-tools-ubuntu1804-x86_64-100.5.0"
 MONGOC_DRIVER_LATEST_VERSION="mongo-c-driver-1.19.0"
-NODEJS_LATEST_VERSION="node-v14.10.1-linux-x64"
+NODEJS_LATEST_VERSION="node-v16.10.0-linux-x64"
 
 # Settings
 XCASH_URL="https://github.com/X-CASH-official/xcash-core.git"
