@@ -290,8 +290,6 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   memcpy(data_hash,"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",96);
   memcpy(data_hash+96,&message2[9],32);
 
-  color_print(data_hash,"green");
-
   database_reset_all;  
   return 1;
 
