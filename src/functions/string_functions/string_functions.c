@@ -40,15 +40,20 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
   char* message = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char)); 
   char* str1;
   char* str2;
-  size_t start; 
+  size_t start;
+
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+
 
   // define macros
-  #define PARSE_JSON_DATA_ERROR \
+  #define PARSE_JSON_DATA_ERROR(info) \
   if (debug_settings == 1) \
   { \
   memcpy(error_message.function[error_message.total],"parse_json_data",15); \
-  memcpy(error_message.data[error_message.total],"Could not parse the message",27); \
+  snprintf(error_message.data[error_message.total],sizeof(error_message.data),"Could not parse the message: %s", info); \
   error_message.total++; \
+  print_error_message(current_date_and_time,current_UTC_date_and_time,str);\
   } \
   pointer_reset(message); \
   return 0;
@@ -82,21 +87,21 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
        start = 11;
        if (str1 == NULL)
        {
-         PARSE_JSON_DATA_ERROR;
+         PARSE_JSON_DATA_ERROR("No 'message' tag");
        }
     }
 
     // get the end location of the data
     if ((str2 = strstr(str1,"\r\n")) == NULL)
     {
-      PARSE_JSON_DATA_ERROR;
+      PARSE_JSON_DATA_ERROR("no \\r\\n at the end");
     }
     
     // get the length of the field's data
     const size_t LENGTH = str2 - str1 - start;
     if (LENGTH <= 0)
     {
-      PARSE_JSON_DATA_ERROR;
+      PARSE_JSON_DATA_ERROR("empty field");
     }
 
     // copy the field's data
@@ -120,7 +125,9 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
   }
   else
   {
-    PARSE_JSON_DATA_ERROR;
+    char err_str[1000];
+    snprintf(err_str,1000,"Field %s not in the message", FIELD_NAME);
+    PARSE_JSON_DATA_ERROR(err_str);
   }
   pointer_reset(message);
   return 1;

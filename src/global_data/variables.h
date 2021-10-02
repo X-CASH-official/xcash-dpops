@@ -65,6 +65,7 @@ extern int network_data_node_valid_amount; // The amount of network data nodes t
 extern int log_file_settings; // 0 to use the terminal, 1 to use a log file, 2 to use a log file with color output
 extern char log_file[BUFFER_SIZE_NETWORK_BLOCK_DATA]; // The log file
 extern char XCASH_DPOPS_delegates_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH]; // The  block verifiers IP address to run the server on
+extern char XCASH_DPOPS_daemon_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH]; // The  daemon  IP address to connect
 extern int xcash_wallet_port; // The xcash wallet port
 extern char database_name[BUFFER_SIZE_NETWORK_BLOCK_DATA];
 extern char shared_delegates_database_name[BUFFER_SIZE_NETWORK_BLOCK_DATA];

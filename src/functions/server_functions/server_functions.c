@@ -474,6 +474,21 @@ void socket_thread(const int CLIENT_SOCKET)
   // validate the message
   if (validate_data(buffer) == 0)
   {
+    // char str_ip[INET_ADDRSTRLEN];
+    // struct sockaddr_in err_addr;
+    // struct sockaddr_in* pV4Addr;
+    // struct in_addr ipAddr;
+    // socklen_t len = sizeof(err_addr);
+
+    // bzero(&err_addr, sizeof(err_addr));
+    // getsockname(CLIENT_SOCKET, (struct sockaddr *) &err_addr, &len);
+
+    // pV4Addr = (struct sockaddr_in*)&err_addr;
+    // ipAddr = pV4Addr->sin_addr; 
+
+    // inet_ntop( AF_INET, &ipAddr, str_ip, INET_ADDRSTRLEN );
+    // fprintf(stderr,"IP: %s : Invalid message. Need to ban sucker!\n", str_ip);
+
     pointer_reset(buffer);
     return;
   }
@@ -666,6 +681,8 @@ void socket_thread(const int CLIENT_SOCKET)
    {
      server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash(CLIENT_SOCKET,(const char*)buffer);
      strstr(buffer,"|") != NULL ? server_limit_public_addresses(4,(const char*)buffer) : server_limit_IP_addresses(0,(const char*)client_IP_address);
+   }else {
+      fprintf(stderr,"IP: %s : Possible Invalid message. Need to ban sucker!\n", client_IP_address);
    }
  }
  else if (strstr(buffer,"\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_CHECK_IF_CURRENT_BLOCK_VERIFIER\"") != NULL)
