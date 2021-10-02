@@ -48,7 +48,7 @@ CFLAGS ?= $(INC_FLAGS) $(MongoDB_INC_DIRS) -MMD -MP
 LDFLAGS ?= -lmongoc-1.0 -lbson-1.0 -lresolv -lpthread -lcrypto
 
 # Set the compiler flags
-COMPILERFLAGS ?= -Wall -Wextra -Wstrict-prototypes -Wcast-qual -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wstrict-overflow -Wdouble-promotion -fexceptions -pie -fPIE -Wl,dynamicbase -Wl,nxcompat
+COMPILERFLAGS ?= -Wall -Wextra -Wstrict-prototypes -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wstrict-overflow -Wdouble-promotion -fexceptions -pie -fPIE -Wl,dynamicbase -Wl,nxcompat
 
 # Set the compiler and linker flags for the different options
 debug: COMPILERFLAGS += -g -fno-stack-protector
