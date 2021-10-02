@@ -320,10 +320,8 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
   if (debug_settings == 1) \
   { \
     memcpy(error_message.function[error_message.total],"send_and_receive_data_socket",28); \
-    snprintf(str, sizeof(str),"%s : %s", data_settings, HOST); \
-    strncpy(error_message.data[error_message.total], str, sizeof(error_message.data)); \
+    memcpy(error_message.data[error_message.total],data_settings,sizeof(data_settings)-1); \
     error_message.total++; \
-    print_error_message(current_date_and_time,current_UTC_date_and_time,str); \
   } \
   freeaddrinfo(settings); \
   pointer_reset(message); \
@@ -428,22 +426,7 @@ int send_and_receive_data_socket(char *result, const size_t RESULT_LENGTH, const
     
   // get the result
   memset(result,0,strlen(result));
-  int receive_result = receive_data(network_socket, result, RESULT_LENGTH, 1, DATA_TIMEOUT_SETTINGS);
-  switch (receive_result)
-  {
-  case 0:
-    SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error receiving data from host: Buffer overwlow", 1);
-    break;
-  case 1:
-    SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error receiving data from host: Timeout", 1);
-    break;
-
-  default:
-    break;
-  }
-
-
-  if (strncmp(result,ERROR_DATA,BUFFER_SIZE) == 0)
+  if (receive_data(network_socket,result,RESULT_LENGTH,1,DATA_TIMEOUT_SETTINGS) < 2 || strncmp(result,ERROR_DATA,BUFFER_SIZE) == 0)
   {
     SEND_AND_RECEIVE_DATA_SOCKET_ERROR("Error receiving data from host",1);
   }
@@ -494,10 +477,6 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
   struct addrinfo* settings = NULL;
   socklen_t socket_option_settings = sizeof(int);
   int network_socket;
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
-
-  
 
   // define macros
   // define macros
@@ -505,10 +484,8 @@ int send_data_socket(const char* HOST, const int PORT, const char* DATA, const i
   if (debug_settings == 1) \
   { \
     memcpy(error_message.function[error_message.total],"send_data_socket",16); \
-    snprintf(str, sizeof(str),"%s : %s", data_settings, HOST); \
-    strncpy(error_message.data[error_message.total], str, sizeof(error_message.data)); \
+    memcpy(error_message.data[error_message.total],data_settings,sizeof(data_settings)-1); \
     error_message.total++; \
-    print_error_message(current_date_and_time,current_UTC_date_and_time,str); \
   } \
   freeaddrinfo(settings); \
   if ((socket_settings) == 1) \
@@ -763,3 +740,4 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
     }
   }
 }
+

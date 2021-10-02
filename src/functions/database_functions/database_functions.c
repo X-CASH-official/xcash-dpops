@@ -203,9 +203,11 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
 
   // // get cached result, of recalculate only needed 
   int cach_request_result = get_multi_hash(database_client_thread, COLLECTION, data_hash);
-  mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
+  color_print("data_hash","yellow");
+  memset(data_hash,0,strlen(data_hash));
+  //mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
 
-  return cach_request_result < 0? 0:1;
+  //return cach_request_result < 0? 0:1;
   // end caching replace 
 
   // set the collection
@@ -290,16 +292,7 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
   memcpy(data_hash,"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",96);
   memcpy(data_hash+96,&message2[9],32);
 
-
-  // char my_hash[129];
-  // int cach_request_result = get_multi_hash(database_client_thread, COLLECTION, my_hash);
-  // if (cach_request_result <0 ){
-  //   fprintf(stderr, "My cache error occured");
-  // }else{
-  //   if (strcmp(data_hash, my_hash)!=0)
-  //     fprintf(stderr, "dbHash result difference found for DB %s max index %d:\n 00: %s\n MY: %s\n",COLLECTION, count2, data_hash, my_hash);
-  // }
-
+  color_print("data_hash","green");
 
   database_reset_all;  
   return 1;

@@ -94,7 +94,6 @@ int network_data_node_valid_amount; // The amount of network data nodes that wer
 int log_file_settings; // 0 to use the terminal, 1 to use a log file, 2 to use a log file with color output
 char log_file[BUFFER_SIZE_NETWORK_BLOCK_DATA]; // The log file
 char XCASH_DPOPS_delegates_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH]; // The  block verifiers IP address to run the server on
-char XCASH_DPOPS_daemon_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH]; // The  daemon IP address to connect
 int xcash_wallet_port; // The xcash wallet port
 char database_name[BUFFER_SIZE_NETWORK_BLOCK_DATA];
 char shared_delegates_database_name[BUFFER_SIZE_NETWORK_BLOCK_DATA];
@@ -178,7 +177,6 @@ void initialize_data(int parameters_count, char* parameters[])
   memset(log_file,0,sizeof(log_file));
   memset(XCASH_DPOPS_delegates_IP_address,0,sizeof(XCASH_DPOPS_delegates_IP_address));
   memcpy(XCASH_DPOPS_delegates_IP_address,"127.0.0.1",9);
-  strcpy(XCASH_DPOPS_daemon_IP_address, "127.0.0.1");
   memset(database_name,0,sizeof(database_name));
   memset(shared_delegates_database_name,0,sizeof(shared_delegates_database_name));
   memset(database_path_write,0,sizeof(database_path_write));
@@ -691,10 +689,6 @@ int set_parameters(int parameters_count, char* parameters[])
     {
       memset(XCASH_DPOPS_delegates_IP_address,0,strlen(XCASH_DPOPS_delegates_IP_address));
       memcpy(XCASH_DPOPS_delegates_IP_address,parameters[count+1],strnlen(parameters[count+1],sizeof(XCASH_DPOPS_delegates_IP_address)));
-    }
-    if (strncmp(parameters[count], "--daemon-ip-address", BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
-    {
-      strcpy(XCASH_DPOPS_daemon_IP_address, parameters[count + 1]);
     }
     if (strncmp(parameters[count],"--xcash-wallet-port",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
@@ -1305,3 +1299,4 @@ int main(int parameters_count, char* parameters[])
   #undef database_reset
   #undef MAIN_ERROR
 }
+
