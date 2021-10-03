@@ -754,9 +754,9 @@ int send_invalid_reserve_proof_to_block_verifiers(const struct reserve_proof* re
   // send the reserve proof to all block verifiers
   // create the message
   memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_INVALID_RESERVE_PROOFS\",\r\n \"public_address_that_created_the_reserve_proof\": \"",137);
-  memcpy(data+strlen(data),reserve_proof->public_address_created_reserve_proof,strnlen(reserve_proof->public_address_created_reserve_proof,sizeof(data)));
+  memcpy(data+strlen(data),reserve_proof->public_address_created_reserve_proof,strnlen(reserve_proof->public_address_created_reserve_proof,sizeof(reserve_proof->public_address_created_reserve_proof)));
   memcpy(data+strlen(data),"\",\r\n \"reserve_proof\": \"",23);
-  memcpy(data+strlen(data),reserve_proof->reserve_proof,strnlen(reserve_proof->reserve_proof,sizeof(data)));
+  memcpy(data+strlen(data),reserve_proof->reserve_proof,strnlen(reserve_proof->reserve_proof,sizeof(reserve_proof->reserve_proof)));
   memcpy(data+strlen(data),"\",\r\n}",5);
 
   // sign_data

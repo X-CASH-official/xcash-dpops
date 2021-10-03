@@ -601,9 +601,9 @@ int server_receive_data_socket_check_vote_status(const int CLIENT_SOCKET, const 
   }
 
   memcpy(message,"{\"delegate_name\":\"",18);
-  memcpy(message+strlen(message),data2,strnlen(data2,sizeof(message)));
+  memcpy(message+strlen(message),data2,strnlen(data2,sizeof(data2)));
   memcpy(message+strlen(message),"\",\"total\":\"",11);
-  memcpy(message+strlen(message),total_vote_count,strnlen(total_vote_count,sizeof(message)));
+  memcpy(message+strlen(message),total_vote_count,strnlen(total_vote_count,sizeof(total_vote_count)));
   memcpy(message+strlen(message),"\"}",2);
 
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");

@@ -1010,7 +1010,7 @@ void check_for_updates(void)
     gmtime_r(&current_date_and_time,&current_UTC_date_and_time); \
   } while (current_UTC_date_and_time.tm_hour != hour+1 || current_UTC_date_and_time.tm_min != minute); \
   sync_block_verifiers_minutes_and_seconds(0,5); \
-  strncmp(xcash_wallet_public_address,network_data_nodes_list.network_data_nodes_public_address[0],BUFFER_SIZE) == 0 ? sync_block_verifiers_minutes_and_seconds(0,10) : network_data_node_settings == 1 ? sync_block_verifiers_minutes_and_seconds(0,40) : sync_block_verifiers_minutes_and_seconds(1,30);
+  strncmp(xcash_wallet_public_address,network_data_nodes_list.network_data_nodes_public_address[0],sizeof(xcash_wallet_public_address)) == 0 ? sync_block_verifiers_minutes_and_seconds(0,10) : network_data_node_settings == 1 ? sync_block_verifiers_minutes_and_seconds(0,40) : sync_block_verifiers_minutes_and_seconds(1,30);
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
@@ -1128,7 +1128,7 @@ int get_delegates_online_status(void)
   // create the message
   memcpy(data,MESSAGE,sizeof(MESSAGE)-1);
   memcpy(data+strlen(data),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
-  total = strnlen(data,BUFFER_SIZE);
+  total = strnlen(data,SMALL_BUFFER_SIZE);
   
   // create the epoll file descriptor
   if ((epoll_fd_copy = epoll_create1(0)) == -1)

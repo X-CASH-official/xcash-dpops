@@ -174,7 +174,7 @@ int block_verifiers_add_reserve_proof_check_if_data_is_valid(const char* MESSAGE
   // check if the same reserve proof is already in the database
   memset(data,0,sizeof(data));
   memcpy(data,"{\"reserve_proof\":\"",18);
-  memcpy(data+18,reserve_proof->reserve_proof,strnlen(reserve_proof->reserve_proof,sizeof(data)));
+  memcpy(data+18,reserve_proof->reserve_proof,strnlen(reserve_proof->reserve_proof,sizeof(eserve_proof->reserve_proof)));
   memcpy(data+strlen(data),"\"}",2);
 
   for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
@@ -389,7 +389,7 @@ void server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const 
   // dont allow votes for network data nodes
   for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
   {
-    if (strncmp(network_data_nodes_list.network_data_nodes_public_address[count],reserve_proof.public_address_voted_for,BUFFER_SIZE) == 0)
+    if (strncmp(network_data_nodes_list.network_data_nodes_public_address[count],reserve_proof.public_address_voted_for,sizeof(reserve_proof.public_address_voted_for)) == 0)
     {
       SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF_ERROR("Can not vote for a network data node}");
     }
@@ -413,9 +413,9 @@ void server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const 
   memcpy(data+strlen(data),"\",\"public_address_voted_for\":\"",30);
   memcpy(data+strlen(data),reserve_proof.public_address_voted_for,XCASH_WALLET_LENGTH);
   memcpy(data+strlen(data),"\",\"total\":\"",11);
-  memcpy(data+strlen(data),reserve_proof.reserve_proof_amount,strnlen(reserve_proof.reserve_proof_amount,sizeof(data)));
+  memcpy(data+strlen(data),reserve_proof.reserve_proof_amount,strnlen(reserve_proof.reserve_proof_amount,sizeof(reserve_proof.reserve_proof_amount)));
   memcpy(data+strlen(data),"\",\"reserve_proof\":\"",19);
-  memcpy(data+strlen(data),reserve_proof.reserve_proof,strnlen(reserve_proof.reserve_proof,sizeof(data)));
+  memcpy(data+strlen(data),reserve_proof.reserve_proof,strnlen(reserve_proof.reserve_proof,sizeof(reserve_proof.reserve_proof)));
   memcpy(data+strlen(data),"\"}",2);
 
   // add the reserve proof to the database
@@ -773,7 +773,7 @@ void server_receive_data_socket_nodes_to_block_verifiers_register_delegates(cons
   // create the message
   memset(data,0,sizeof(data));
   memcpy(data,"{\"IP_address\":\"",15);
-  memcpy(data+15,delegates_IP_address,strnlen(delegates_IP_address,sizeof(data)));
+  memcpy(data+15,delegates_IP_address,strnlen(delegates_IP_address,sizeof(delegates_IP_address)));
   memcpy(data+strlen(data),"\"}",2); 
 
   // check if the IP address is already registered
@@ -811,9 +811,9 @@ void server_receive_data_socket_nodes_to_block_verifiers_register_delegates(cons
   memcpy(data,"{\"public_address\":\"",19);
   memcpy(data+strlen(data),delegate_public_address,XCASH_WALLET_LENGTH);
   memcpy(data+strlen(data),"\",\"total_vote_count\":\"0\",\"IP_address\":\"",39);
-  memcpy(data+strlen(data),delegates_IP_address,strnlen(delegates_IP_address,sizeof(data)));
+  memcpy(data+strlen(data),delegates_IP_address,strnlen(delegates_IP_address,sizeof(delegates_IP_address)));
   memcpy(data+strlen(data),"\",\"delegate_name\":\"",19);
-  memcpy(data+strlen(data),delegate_name,strnlen(delegate_name,sizeof(data)));
+  memcpy(data+strlen(data),delegate_name,strnlen(delegate_name,sizeof(delegate_name)));
   memcpy(data+strlen(data),"\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"shared_delegate_status\":\"solo\",\"delegate_fee\":\"\",\"server_specs\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"",350);
   memcpy(data+strlen(data),delegate_public_key,VRF_PUBLIC_KEY_LENGTH);
   memcpy(data+strlen(data),"\"}",2);
@@ -1000,9 +1000,9 @@ void server_receive_data_socket_nodes_to_block_verifiers_update_delegates(const 
   memcpy(data+strlen(data),"\"}",2);
 
   memcpy(data2,"{\"",2);
-  memcpy(data2+2,item,strnlen(item,sizeof(data2)));
+  memcpy(data2+2,item,strnlen(item,sizeof(item)));
   memcpy(data2+strlen(data2),"\":\"",3);
-  memcpy(data2+strlen(data2),value,strnlen(value,sizeof(data2)));
+  memcpy(data2+strlen(data2),value,strnlen(value,sizeof(value)));
   memcpy(data2+strlen(data2),"\"}",2);
 
   // update the delegate in the database
@@ -1113,7 +1113,7 @@ void server_receive_data_socket_nodes_to_block_verifiers_recover_delegates(const
 
   // make sure the domain is already registered in the database
   memcpy(data,"{\"IP_address\":\"",15);
-  memcpy(data+strlen(data),host,strnlen(host,sizeof(data)));
+  memcpy(data+strlen(data),host,strnlen(host,sizeof(host)));
   memcpy(data+strlen(data),"\"}",2);
 
   if (count_documents_in_collection(database_name,DATABASE_COLLECTION,data) != 1)
@@ -1392,7 +1392,7 @@ void server_receive_data_socket_nodes_to_network_data_nodes_check_vote_status(co
   memcpy(message,"delegate_name: ",15);
   memcpy(message+strlen(message),data2,strnlen(data2,sizeof(message)));
   memcpy(message+strlen(message),", total: ",9);
-  memcpy(message+strlen(message),total_vote_count,strnlen(total_vote_count,sizeof(message)));
+  memcpy(message+strlen(message),total_vote_count,strnlen(total_vote_count,sizeof(total_vote_count)));
   memcpy(message+strlen(message),"}",1);
 
   send_data(CLIENT_SOCKET,(unsigned char*)message,0,0,"");

@@ -125,7 +125,7 @@ int create_server(const int MESSAGE_SETTINGS)
   {    
     memcpy(error_message.function[error_message.total],"create_server",13);
     memcpy(error_message.data[error_message.total],"Error connecting to port ",25);
-    memcpy(error_message.data[error_message.total]+25,buffer,strnlen(buffer,BUFFER_SIZE));
+    memcpy(error_message.data[error_message.total]+25,buffer,strnlen(buffer,sizeof(buffer)));
     error_message.total++;
     print_error_message(current_date_and_time,current_UTC_date_and_time,data);
     exit(0);
@@ -140,7 +140,7 @@ int create_server(const int MESSAGE_SETTINGS)
   if (MESSAGE_SETTINGS == 1)
   {
     memcpy(data,"Connected to port ",18);
-    memcpy(data+18,buffer,strnlen(buffer,sizeof(data)));
+    memcpy(data+18,buffer,strnlen(buffer,sizeof(buffer)));
     memcpy(data+strlen(data),"\nWaiting for a connection...\n",29);
     color_print(data,"green");
     memset(data,0,sizeof(data));
@@ -322,7 +322,7 @@ int server_limit_public_addresses(const int SETTINGS, const char* MESSAGE)
     {
       
     }
-    else if (strncmp(network_data_nodes_list.network_data_nodes_public_address[0],data2,BUFFER_SIZE) == 0 || strncmp(network_data_nodes_list.network_data_nodes_public_address[1],data2,BUFFER_SIZE) == 0 || strncmp(network_data_nodes_list.network_data_nodes_public_address[2],data2,BUFFER_SIZE) == 0 || strncmp(network_data_nodes_list.network_data_nodes_public_address[3],data2,BUFFER_SIZE) == 0 || strncmp(network_data_nodes_list.network_data_nodes_public_address[4],data2,BUFFER_SIZE) == 0)
+    else if (strncmp(network_data_nodes_list.network_data_nodes_public_address[0],data2,sizeof(network_data_nodes_list.network_data_nodes_public_address[0])) == 0 || strncmp(network_data_nodes_list.network_data_nodes_public_address[1],data2,sizeof(network_data_nodes_list.network_data_nodes_public_address[1])) == 0 || strncmp(network_data_nodes_list.network_data_nodes_public_address[2],data2,sizeof(network_data_nodes_list.network_data_nodes_public_address[2])) == 0 || strncmp(network_data_nodes_list.network_data_nodes_public_address[3],data2,sizeof(network_data_nodes_list.network_data_nodes_public_address[3])) == 0 || strncmp(network_data_nodes_list.network_data_nodes_public_address[4],data2,sizeof(network_data_nodes_list.network_data_nodes_public_address[4])) == 0)
     {
       
     }
@@ -973,13 +973,13 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   // remove any invalid request from the url
   string_replace(buffer,sizeof(buffer),"../","");
   string_replace(buffer,sizeof(buffer),"%",""); 
-  memcpy(data2,website_path,strnlen(website_path,sizeof(data2)));
+  memcpy(data2,website_path,strnlen(website_path,sizeof(website_path)));
   memcpy(data2+strlen(data2),buffer,strnlen(buffer,sizeof(data2)));
 
   if (strstr(data2,".") == NULL)
   {
     memset(data2,0,sizeof(data2));
-    memcpy(data2,website_path,strnlen(website_path,sizeof(data2)));
+    memcpy(data2,website_path,strnlen(website_path,sizeof(website_path)));
     memcpy(data2+strlen(data2),"index.html",10);
   }
 
@@ -987,7 +987,7 @@ int server_receive_data_socket_get_files(const int CLIENT_SOCKET, const char* ME
   if ((file_size = get_file_size(data2)) == 0)
   {
     memset(data2,0,sizeof(data2));
-    memcpy(data2,website_path,strnlen(website_path,sizeof(data2)));
+    memcpy(data2,website_path,strnlen(website_path,sizeof(website_path)));
     memcpy(data2+strlen(data2),"index.html",10);
     if ((file_size = get_file_size(data2)) == 0)
     {

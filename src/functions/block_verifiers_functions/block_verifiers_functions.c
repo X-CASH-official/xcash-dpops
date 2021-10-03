@@ -128,7 +128,7 @@ int start_new_round(void)
   if (registration_settings == 0)
   {
     memcpy(data,"A new round is starting for block ",34);
-    memcpy(data+34,current_block_height,strnlen(current_block_height,BUFFER_SIZE));
+    memcpy(data+34,current_block_height,strnlen(current_block_height,sizeof(current_block_height)));
     print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2); 
   }
 
@@ -493,7 +493,7 @@ int start_blocks_create_data(char* message, char* network_block_string)
   // update the reserve bytes database
   memset(data2,0,sizeof(data2));
   memcpy(data2,"{\"block_height\":\"",17);
-  memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
+  memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(current_block_height)));
   memcpy(data2+strlen(data2),"\",\"reserve_bytes_data_hash\":\"",29);
   memcpy(data2+strlen(data2),VRF_data.reserve_bytes_data_hash,DATA_HASH_LENGTH);
   memcpy(data2+strlen(data2),"\",\"reserve_bytes\":\"",19);
@@ -834,9 +834,9 @@ int block_verifiers_create_block_signature(char* message)
   {
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,BUFFER_SIZE) == 0)
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_public_address,sizeof(main_nodes_list.block_producer_public_address)) == 0)
       {
-        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],BUFFER_SIZE)); 
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],sizeof(current_block_verifiers_list.block_verifiers_name[count]))); 
         memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
         break;
       }
@@ -846,9 +846,9 @@ int block_verifiers_create_block_signature(char* message)
   {
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,BUFFER_SIZE) == 0)
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_1_public_address,sizeof(current_block_verifiers_list.block_verifiers_public_address[count])) == 0)
       {
-        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],BUFFER_SIZE)); 
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],sizeof(current_block_verifiers_list.block_verifiers_name[count]))); 
         memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
         break;
       }
@@ -858,9 +858,9 @@ int block_verifiers_create_block_signature(char* message)
   {
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,BUFFER_SIZE) == 0)
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_2_public_address,sizeof(current_block_verifiers_list.block_verifiers_public_address[count])) == 0)
       {
-        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],BUFFER_SIZE)); 
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],sizeof(current_block_verifiers_list.block_verifiers_name[count]))); 
         memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
         break;
       }
@@ -870,9 +870,9 @@ int block_verifiers_create_block_signature(char* message)
   {
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,BUFFER_SIZE) == 0)
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_3_public_address,sizeof(current_block_verifiers_list.block_verifiers_public_address[count])) == 0)
       {
-        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],BUFFER_SIZE)); 
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],sizeof(current_block_verifiers_list.block_verifiers_name[count]))); 
         memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
         break;
       }
@@ -882,9 +882,9 @@ int block_verifiers_create_block_signature(char* message)
   {
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,BUFFER_SIZE) == 0)
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_4_public_address,sizeof(current_block_verifiers_list.block_verifiers_public_address[count])) == 0)
       {
-        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],BUFFER_SIZE)); 
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],sizeof(current_block_verifiers_list.block_verifiers_name[count])));
         memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
         break;
       }
@@ -894,9 +894,9 @@ int block_verifiers_create_block_signature(char* message)
   {
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,BUFFER_SIZE) == 0)
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],main_nodes_list.block_producer_backup_block_verifier_5_public_address,sizeof(current_block_verifiers_list.block_verifiers_public_address[count])) == 0)
       {
-        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],BUFFER_SIZE)); 
+        memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_delegates_name,current_block_verifiers_list.block_verifiers_name[count],strnlen(current_block_verifiers_list.block_verifiers_name[count],sizeof(current_block_verifiers_list.block_verifiers_name[count])));
         memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_public_address,current_block_verifiers_list.block_verifiers_public_address[count],XCASH_WALLET_LENGTH);
         break;
       }
@@ -930,15 +930,15 @@ int block_verifiers_create_block_signature(char* message)
 
   memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_node_backup_count,current_round_part_backup_node,sizeof(char));
     
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[0]],strnlen(current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[0]],BUFFER_SIZE));
+  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[0]],strnlen(current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[0]],sizeof(current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[0]])));
   memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),",",sizeof(char));
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[1]],strnlen(current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[1]],BUFFER_SIZE));
+  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[1]],strnlen(current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[1]],sizeof(current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[1]])));
   memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),",",sizeof(char));
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[2]],strnlen(current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[2]],BUFFER_SIZE));
+  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[2]],strnlen(current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[2]],sizeof(current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[2]])));
   memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),",",sizeof(char));
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[3]],strnlen(current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[3]],BUFFER_SIZE));
+  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[3]],strnlen(current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[3]],sizeof(current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[3]])));
   memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),",",sizeof(char));
-  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[4]],strnlen(current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[4]],BUFFER_SIZE));
+  memcpy(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names+strlen(blockchain_data.blockchain_reserve_bytes.block_producer_backup_nodes_names),current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[4]],strnlen(current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[4]],sizeof(current_block_verifiers_list.block_verifiers_name[block_producer_backup_settings[4]])));
 
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_secret_key,VRF_data.vrf_secret_key,crypto_vrf_SECRETKEYBYTES);
   memcpy(blockchain_data.blockchain_reserve_bytes.vrf_secret_key_data,VRF_data.vrf_secret_key_data,VRF_SECRET_KEY_LENGTH);
@@ -1373,7 +1373,7 @@ int block_verifiers_create_block_and_update_database(void)
   memcpy(data,"reserve_bytes_",14);
   snprintf(data+14,MAXIMUM_NUMBER_SIZE,"%zu",count);  
   memcpy(data2,"{\"block_height\":\"",17);
-  memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
+  memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(current_block_height)));
   memcpy(data2+strlen(data2),"\"}",2);
   if (count_documents_in_collection(database_name,data,data2) >= 1)
   { 
@@ -1466,7 +1466,7 @@ int block_verifiers_create_block_and_update_database(void)
   // update the reserve bytes database
   memset(data2,0,sizeof(data2));
   memcpy(data2,"{\"block_height\":\"",17);
-  memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(data2)));
+  memcpy(data2+17,current_block_height,strnlen(current_block_height,sizeof(current_block_height)));
   memcpy(data2+strlen(data2),"\",\"reserve_bytes_data_hash\":\"",29);
   memcpy(data2+strlen(data2),VRF_data.reserve_bytes_data_hash,DATA_HASH_LENGTH);
   memcpy(data2+strlen(data2),"\",\"reserve_bytes\":\"",19);
@@ -1669,7 +1669,7 @@ int block_verifiers_create_block(void)
     memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node)); \
     memcpy(current_round_part_backup_node,"1",sizeof(char)); \
     memcpy(data,"Restarting the round with backup block producer 1 for block ",60); \
-    memcpy(data+60,current_block_height,strnlen(current_block_height,BUFFER_SIZE)); \
+    memcpy(data+60,current_block_height,strnlen(current_block_height,sizeof(current_block_height))); \
     print_start_message(current_date_and_time,current_UTC_date_and_time,data,data2); \
     color_print("\n","white"); \
   } \
@@ -1695,8 +1695,8 @@ int block_verifiers_create_block(void)
   {
     color_print("Saving a copy of the database, waiting until the next round","yellow");
     memset(data,0,sizeof(data));
-    memcpy(data,database_path_write,strnlen(database_path_write,sizeof(data)));
-    memcpy(data+strlen(data),current_block_height,strnlen(current_block_height,sizeof(data)));
+    memcpy(data,database_path_write,strnlen(database_path_write,sizeof(database_path_write)));
+    memcpy(data+strlen(data),current_block_height,strnlen(current_block_height,sizeof(current_block_height)));
     memcpy(data+strlen(data),"/",1);
     count3 = system(data);
     count3 = 1;

@@ -192,7 +192,7 @@ int server_receive_data_socket_shared_delegates_website_get_statistics(const int
   memcpy(message,"{\"public_address\":\"",19);
   memcpy(message+strlen(message),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(message+strlen(message),"\",\"delegate_name\":\"",19);
-  memcpy(message+strlen(message),data3,strnlen(data3,sizeof(message)));
+  memcpy(message+strlen(message),data3,strnlen(data3,sizeof(data3)));
   memcpy(message+strlen(message),"\",\"current_delegate_rank\":\"",27);
   snprintf(message+strlen(message),sizeof(message),"%d",current_delegate_rank);
   memcpy(message+strlen(message),"\",\"total_votes\":\"",17);
@@ -364,7 +364,7 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
   memcpy(data2,&DATA[48],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-48);
 
   // error check
-  if (strncmp(data2,"",BUFFER_SIZE) == 0 || strncmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strnlen(data2,BUFFER_SIZE) != XCASH_WALLET_LENGTH)
+  if (strncmp(data2,"",sizeof(data2)) == 0 || strncmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strnlen(data2,sizeof(data2)) != XCASH_WALLET_LENGTH)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(1,"Invalid parameters");
   } 
