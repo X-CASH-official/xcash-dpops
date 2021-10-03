@@ -854,7 +854,7 @@ void print_settings(void)
   memcpy(data+strlen(data),"\nBlock Verifiers Secret Key: ",29);
   memcpy(data+strlen(data),secret_key,VRF_SECRET_KEY_LENGTH);
   memcpy(data+strlen(data),"\nDatabase Name: ",16);
-  memcpy(data+strlen(data),database_name,strnlen(database_name,sizeof(data)));
+  memcpy(data+strlen(data),database_name,strnlen(database_name,sizeof(database_name)));
   if (shared_delegates_website == 1)
   {
     memcpy(data+strlen(data),"\nShared Delegate Settings: YES\nFee: ",36);
@@ -862,7 +862,7 @@ void print_settings(void)
     memcpy(data+strlen(data),"\nMinimum Amount: ",17);
     snprintf(data+strlen(data),sizeof(data)-1,"%lld",minimum_amount);
     memcpy(data+strlen(data),"\nShared Delegates Database Name: ",33);
-    memcpy(data+strlen(data),shared_delegates_database_name,strnlen(shared_delegates_database_name,sizeof(data)));
+    memcpy(data+strlen(data),shared_delegates_database_name,strnlen(shared_delegates_database_name,sizeof(shared_delegates_database_name)));
   }
   else
   {
@@ -879,7 +879,7 @@ void print_settings(void)
   }
   debug_settings == 1 ? memcpy(data+strlen(data),"\nDebug Settings: YES",20) : memcpy(data+strlen(data),"\nDebug Settings: NO",19);
   memcpy(data+strlen(data),"\nDelegates Server IP Address: ",30);
-  strncmp(XCASH_DPOPS_delegates_IP_address,"127.0.0.1",9) == 0 ? memcpy(data+strlen(data),"0.0.0.0",7) : memcpy(data+strlen(data),XCASH_DPOPS_delegates_IP_address,strnlen(XCASH_DPOPS_delegates_IP_address,sizeof(data)));
+  strncmp(XCASH_DPOPS_delegates_IP_address,"127.0.0.1",9) == 0 ? memcpy(data+strlen(data),"0.0.0.0",7) : memcpy(data+strlen(data),XCASH_DPOPS_delegates_IP_address,strnlen(XCASH_DPOPS_delegates_IP_address,sizeof(XCASH_DPOPS_delegates_IP_address)));
   memcpy(data+strlen(data),"\nDelegates Server Port: 18283\nXCASH Wallet Port: ",49);
   snprintf(data+strlen(data),sizeof(data)-1,"%d",xcash_wallet_port);
   memcpy(data+strlen(data),"\nTotal Threads: ",16);
@@ -952,7 +952,7 @@ void database_sync_check(void)
     goto new_start_times;
   }
 
-  if (((count <= XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || strncmp(network_data_nodes_list.network_data_nodes_public_address[0],xcash_wallet_public_address,BUFFER_SIZE) == 0) && check_if_databases_are_synced(2,0) == 0) || (count > XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT && check_if_databases_are_synced(1,0) == 0))
+  if (((count <= XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT || strncmp(network_data_nodes_list.network_data_nodes_public_address[0],xcash_wallet_public_address,sizeof(xcash_wallet_public_address)) == 0) && check_if_databases_are_synced(2,0) == 0) || (count > XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT && check_if_databases_are_synced(1,0) == 0))
   {
     DATABASE_SYNC_CHECK_ERROR("Could not check if the databases are synced");
   }

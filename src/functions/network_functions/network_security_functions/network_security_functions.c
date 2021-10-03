@@ -99,7 +99,7 @@ int sign_data(char *message)
   memcpy(result+strlen(result),"\"public_address\": \"",19);
   memcpy(result+strlen(result),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(result+strlen(result),"\",\r\n \"previous_block_hash\": \"",29);
-  memcpy(result+strlen(result),previous_block_hash,strnlen(previous_block_hash,BUFFER_SIZE));  
+  memcpy(result+strlen(result),previous_block_hash,strnlen(previous_block_hash,sizeof(previous_block_hash)));  
   memcpy(result+strlen(result),"\",\r\n \"current_round_part\": \"",28);
   memcpy(result+strlen(result),current_round_part,sizeof(char));
   memcpy(result+strlen(result),"\",\r\n \"current_round_part_backup_node\": \"",40);
@@ -125,7 +125,7 @@ int sign_data(char *message)
     memcpy(message+strlen(message)-1,"\"public_address\": \"",19);
     memcpy(message+strlen(message),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
     memcpy(message+strlen(message),"\",\r\n \"previous_block_hash\": \"",29);
-    memcpy(message+strlen(message),previous_block_hash,strnlen(previous_block_hash,BUFFER_SIZE));  
+    memcpy(message+strlen(message),previous_block_hash,strnlen(previous_block_hash,sizeof(previous_block_hash)));  
     memcpy(message+strlen(message),"\",\r\n \"current_round_part\": \"",28);
     memcpy(message+strlen(message),current_round_part,sizeof(char));
     memcpy(message+strlen(message),"\",\r\n \"current_round_part_backup_node\": \"",40);
@@ -167,7 +167,7 @@ int sign_data(char *message)
     memcpy(message+strlen(message)-1,"\"public_address\": \"",19);
     memcpy(message+strlen(message),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
     memcpy(message+strlen(message),"\",\r\n \"previous_block_hash\": \"",29);
-    memcpy(message+strlen(message),previous_block_hash,strnlen(previous_block_hash,BUFFER_SIZE));  
+    memcpy(message+strlen(message),previous_block_hash,strnlen(previous_block_hash,sizeof(previous_block_hash)));  
     memcpy(message+strlen(message),"\",\r\n \"current_round_part\": \"",28);
     memcpy(message+strlen(message),current_round_part,sizeof(char));
     memcpy(message+strlen(message),"\",\r\n \"current_round_part_backup_node\": \"",40);

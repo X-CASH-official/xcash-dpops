@@ -65,7 +65,7 @@ void server_receive_data_socket_get_current_block_height(const char* CLIENT_IP_A
 
   // create the message
   memcpy(data,"{\r\n \"message_settings\": \"SEND_CURRENT_BLOCK_HEIGHT\",\r\n \"block_height\": \"",72);
-  memcpy(data+strlen(data),current_block_height,strnlen(current_block_height,sizeof(data)));
+  memcpy(data+strlen(data),current_block_height,strnlen(current_block_height,sizeof(current_block_height)));
   memcpy(data+strlen(data),"\",\r\n}",5);
   
   // sign_data
@@ -343,7 +343,7 @@ void server_receive_data_socket_network_data_nodes_to_network_data_nodes_databas
   {
     for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
     {
-      if (strncmp(block_verifiers_sync_database_list.block_verifiers_public_address[count],public_address,BUFFER_SIZE) == 0)
+      if (strncmp(block_verifiers_sync_database_list.block_verifiers_public_address[count],public_address,sizeof(public_address)) == 0)
       {
         for (count2 = 0; count2 < DATABASE_TOTAL; count2++)
         {
@@ -358,7 +358,7 @@ void server_receive_data_socket_network_data_nodes_to_network_data_nodes_databas
   {
     for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
     {
-      if (strncmp(network_data_nodes_sync_database_list.network_data_node_public_address[count],public_address,BUFFER_SIZE) == 0)
+      if (strncmp(network_data_nodes_sync_database_list.network_data_node_public_address[count],public_address,sizeof(public_address)) == 0)
       {
         memset(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count],0,sizeof(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count]));
         memcpy(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count],data_hash[0],DATA_HASH_LENGTH);
