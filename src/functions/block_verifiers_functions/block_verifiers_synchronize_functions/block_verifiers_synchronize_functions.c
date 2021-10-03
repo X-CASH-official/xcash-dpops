@@ -1490,7 +1490,7 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
   {
     memset(data3,0,strlen(data3));
     memcpy(data3,"Getting the database data from ",31);
-    memcpy(data3+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BUFFER_SIZE));
+    memcpy(data3+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,sizeof(block_verifiers_ip_address)));
     memcpy(data3+strlen(data3),"\n",sizeof(char));
     color_print(data3,"white");
   }

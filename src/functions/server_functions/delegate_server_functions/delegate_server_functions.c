@@ -174,7 +174,7 @@ int block_verifiers_add_reserve_proof_check_if_data_is_valid(const char* MESSAGE
   // check if the same reserve proof is already in the database
   memset(data,0,sizeof(data));
   memcpy(data,"{\"reserve_proof\":\"",18);
-  memcpy(data+18,reserve_proof->reserve_proof,strnlen(reserve_proof->reserve_proof,sizeof(eserve_proof->reserve_proof)));
+  memcpy(data+18,reserve_proof->reserve_proof,strnlen(reserve_proof->reserve_proof,sizeof(reserve_proof->reserve_proof)));
   memcpy(data+strlen(data),"\"}",2);
 
   for (count = 1; count <= TOTAL_RESERVE_PROOFS_DATABASES; count++)
