@@ -626,7 +626,7 @@ memcpy(blockchain_data.transactions[4],"0000000000000000000000000000000000000000
 #define ORGANIZE_DELEGATES_TEST_DATA_3 "{\"public_address\":\"" TEST_WALLET "\",\"total_vote_count\":\"10\",\"IP_address\":\"delegates.xcash.foundation\",\"delegate_name\":\"delegates_xcash_foundation\",\"about\":\"Official X-Network node\",\"website\":\"delegates.xcash.foundation\",\"team\":\"X-Network Team\",\"shared_delegate_status\":\"solo\",\"delegate_fee\":\"\",\"server_specs\":\"Operating System = Ubuntu 18.04 CPU = 32 threads (Intel 2xE5 - 2660 - 2.2GHz RAM = 256GB DDR3 Hard drive = 2x240 GB SSD + 4x2TB SATA Bandwidth Transfer = Unlimited Bandwidth Speed = 500 Mbps upload and 500 Mbps download\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"0\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"public_key\":\"ad98cadb3b13229c78709876955247cbef40d5b15c4842be605b0e8b30c97a7a\"}"
 #define RESERVE_BYTES_TEST_DATA "{\"block_height\":\"521850\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}"
 
-#define XCASH_DPOPS_TOTAL_TEST 466
+#define XCASH_DPOPS_TOTAL_TEST 465
 #define BLOCKCHAIN_TOTAL_TEST 32
 #define DATABASE_FUNCTIONS_TEST 10
 #define INSERT_DATABASE_FUNCTIONS_TEST 6
@@ -643,7 +643,7 @@ memcpy(blockchain_data.transactions[4],"0000000000000000000000000000000000000000
 #define ORGANIZE_FUNCTIONS_TOTAL_TEST 3
 #define STRING_FUNCTIONS_TOTAL_TEST 10
 #define VRF_TOTAL_TEST 8
-#define BLOCK_VERIFIERS_SERVER_FUNCTIONS_TOTAL_TEST 18
+#define BLOCK_VERIFIERS_SERVER_FUNCTIONS_TOTAL_TEST 17
 #define BLOCK_VERIFIERS_SYNCHRONIZE_CHECK_FUNCTIONS_TOTAL_TEST 12
 #define BLOCK_VERIFIERS_SYNCHRONIZE_SERVER_FUNCTIONS_TOTAL_TEST 21
 #define BLOCK_VERIFIERS_SYNCHRONIZE_FUNCTIONS_TOTAL_TEST 8
