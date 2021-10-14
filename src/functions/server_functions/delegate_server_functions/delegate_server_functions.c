@@ -551,6 +551,13 @@ Return: 0 if the IP address is not valid, 1 if the IP address is valid
 
 int check_for_valid_ip_address(const char* HOST)
 {
+
+  // if the test is running say its valid, since we only use local IP addresses for the test
+  if (test_settings == 1)
+  {
+    return 1;
+  }
+
   // define macros
   #define IP_ADDRESS_RANGE_AMOUNT 15
   #define IP_ADDRESS_SEGMENTS_TOTAL 4
@@ -688,7 +695,7 @@ void server_receive_data_socket_nodes_to_block_verifiers_register_delegates(cons
   // get the current time
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
-  // check if it is valid to add a reserve proof to the invalid_reserve_proofs struct
+  // check if it is valid to register a delegate
   if (test_settings == 0 && current_UTC_date_and_time.tm_min % BLOCK_TIME != 2 && current_UTC_date_and_time.tm_min % BLOCK_TIME != 3)
   {
     SERVER_RECEIVE_DATA_SOCKET_NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE_ERROR("Invalid vote time\nValid times are after the first two minutes of each round}");

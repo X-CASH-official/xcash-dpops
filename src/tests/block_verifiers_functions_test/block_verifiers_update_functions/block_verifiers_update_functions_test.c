@@ -138,7 +138,7 @@ int block_verifiers_update_functions_test(void)
   memcpy(current_round_part_backup_node,"0",sizeof(char));
   memset(main_nodes_list.block_producer_public_address,0,sizeof(main_nodes_list.block_producer_public_address));
   memcpy(main_nodes_list.block_producer_public_address,TEST_WALLET_1,XCASH_WALLET_LENGTH);
-  if (add_block_verifiers_round_statistics(XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST) == 1 && read_document_field_from_collection(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_1 "\"}","block_producer_total_rounds",data_test) == 1 && strncmp(data_test,"1",sizeof(data_test)) == 0 && read_document_field_from_collection(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_1 "\"}","block_producer_block_heights",result_test) == 1 && strncmp(result_test,"|" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "|" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST,sizeof(result_test)) == 0)
+  if (add_block_verifiers_round_statistics(XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST) == 1 && read_document_field_from_collection(database_name,"delegates","{\"public_address\":\"" TEST_WALLET_1 "\"}","block_producer_total_rounds",data_test) == 1 && strncmp(data_test,"1",sizeof(data_test)) == 0)
   {
     color_print("PASSED! Test for add_block_verifiers_round_statistics for the block producer","green");
     count_test++;
@@ -171,42 +171,6 @@ int block_verifiers_update_functions_test(void)
   else
   {
     color_print("FAILED! Test for add_round_statistics","red");
-  }
-
-  // calculate_main_nodes_roles
-  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
-  {
-    memset(previous_block_verifiers_list.block_verifiers_name[count],0,sizeof(previous_block_verifiers_list.block_verifiers_name[count]));
-    memset(previous_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_public_address[count]));
-    memset(previous_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(previous_block_verifiers_list.block_verifiers_public_key[count]));
-    memset(previous_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_IP_address[count]));
-    memset(current_block_verifiers_list.block_verifiers_name[count],0,sizeof(current_block_verifiers_list.block_verifiers_name[count]));
-    memset(current_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(current_block_verifiers_list.block_verifiers_public_address[count]));
-    memset(current_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(current_block_verifiers_list.block_verifiers_public_key[count]));
-    memset(current_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(current_block_verifiers_list.block_verifiers_IP_address[count]));
-    memset(next_block_verifiers_list.block_verifiers_name[count],0,sizeof(next_block_verifiers_list.block_verifiers_name[count]));
-    memset(next_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_address[count]));
-    memset(next_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_key[count]));
-    memset(next_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count]));
-  }
-  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
-  {
-    memset(data,0,strlen(data));
-    memcpy(data,"public_address_",15);  
-    snprintf(data+15,BUFFER_SIZE-16,"%d",count);
-    memcpy(current_block_verifiers_list.block_verifiers_name[count],"delegate_name_1",15);
-    memcpy(current_block_verifiers_list.block_verifiers_public_address[count],data,strnlen(data,sizeof(current_block_verifiers_list.block_verifiers_name[count])));
-    memcpy(current_block_verifiers_list.block_verifiers_IP_address[count],XCASH_DPOPS_delegates_IP_address,9);
-    memcpy(current_block_verifiers_list.block_verifiers_public_key[count],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
-  }
-  if (calculate_main_nodes_roles() == 1 && strncmp(main_nodes_list.block_producer_public_address,"public_address_92",sizeof(main_nodes_list.block_producer_public_address)) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_1_public_address,"public_address_0",sizeof(main_nodes_list.block_producer_backup_block_verifier_1_public_address)) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_2_public_address,"public_address_27",sizeof(main_nodes_list.block_producer_backup_block_verifier_2_public_address)) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_3_public_address,"public_address_97",sizeof(main_nodes_list.block_producer_backup_block_verifier_3_public_address)) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_4_public_address,"public_address_49",sizeof(main_nodes_list.block_producer_backup_block_verifier_4_public_address)) == 0 && strncmp(main_nodes_list.block_producer_backup_block_verifier_5_public_address,"public_address_61",sizeof(main_nodes_list.block_producer_backup_block_verifier_5_public_address)) == 0)
-  {
-    color_print("PASSED! Test for calculate_main_nodes_roles","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for calculate_main_nodes_roles","red");
   }
 
   // write the end test message

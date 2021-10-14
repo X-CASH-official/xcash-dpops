@@ -455,7 +455,7 @@ void server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databa
   }
   else
   {
-    count2 = 521855;
+    count2 = 760005;
   }
   sscanf(data,"%zu",&current_block_height_reserve_bytes);
   current_block_height_reserve_bytes_copy = current_block_height_reserve_bytes;

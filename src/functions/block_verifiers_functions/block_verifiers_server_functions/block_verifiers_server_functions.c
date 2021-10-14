@@ -245,7 +245,7 @@ void server_receive_data_socket_main_network_data_node_to_block_verifier_start_b
   }
 
   // make sure the message is coming from the main network data node
-  if (strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[backup_network_data_node_settings],XCASH_WALLET_LENGTH) != 0)
+  if (test_settings == 0 && strncmp(data2,network_data_nodes_list.network_data_nodes_public_address[backup_network_data_node_settings],XCASH_WALLET_LENGTH) != 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_MAIN_NETWORK_DATA_NODE_TO_BLOCK_VERIFIER_START_BLOCK("Invalid message");
   }

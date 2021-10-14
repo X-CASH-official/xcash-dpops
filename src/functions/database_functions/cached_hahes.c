@@ -86,7 +86,10 @@ int get_db_hashes(mongoc_client_t *client, const char *db_name, char *hash, char
         else
         {
             result = -2;
-            PRINT_ERROR("Failed to parse hash for %s\n", db_name);
+            if (test_settings == 0)
+            {
+              PRINT_ERROR("Failed to parse hash for %s\n", db_name);
+            }
         }
 
         if (result == 0 && bson_iter_init(&iter, doc) && bson_iter_find_descendant(&iter, "db_hash", &field) && BSON_ITER_HOLDS_UTF8(&field))
@@ -96,7 +99,10 @@ int get_db_hashes(mongoc_client_t *client, const char *db_name, char *hash, char
         else
         {
             result = -3;
-            PRINT_ERROR("Failed to parse db_hash for %s\n", db_name);
+            if (test_settings == 0)
+            {
+              PRINT_ERROR("Failed to parse db_hash for %s\n", db_name);
+            }
         }
     }
 
@@ -145,7 +151,10 @@ int calc_db_hashes(mongoc_client_t *client, const char *db_name, char *hash, cha
         else
         {
             result = -2;
-            PRINT_ERROR("Failed to parse md5 for %s\n", db_name);
+            if (test_settings == 0)
+            {
+              PRINT_ERROR("Failed to parse md5 for %s\n", db_name);
+            }
         }
 
         snprintf(param, sizeof(param), "collections.%s", db_name);
@@ -166,7 +175,10 @@ int calc_db_hashes(mongoc_client_t *client, const char *db_name, char *hash, cha
     else
     {
         result = -1;
-        PRINT_ERROR("Failed to run command dbHash for %s: %s\n", db_name, error.message);
+        if (test_settings == 0)
+        {
+          PRINT_ERROR("Failed to run command dbHash for %s: %s\n", db_name, error.message);
+        }
     }
 
     bson_destroy(command);
@@ -201,8 +213,10 @@ int update_hashes(mongoc_client_t *client, const char *db_name, const char *hash
 
     if (!mongoc_collection_update_one(collection, filter, update, opts, NULL, &error))
     {
-        
-        PRINT_ERROR("Update hashes %s failed %s\n", db_name, error.message);
+        if (test_settings == 0)
+        {
+          PRINT_ERROR("Update hashes %s failed %s\n", db_name, error.message);
+        }
         result = -1;
     }
 
@@ -241,7 +255,10 @@ int get_hash(mongoc_client_t *client, const char *db_name, char *hash)
 
         gettimeofday(&current_time, NULL);
         timersub(&current_time, &start_time, &result_time);
-        PRINT_DEBUG("Missed hash for %s recalculation takes %ld.%06ld sec\n", db_name, (long int)result_time.tv_sec, (long int)result_time.tv_usec);
+        if (test_settings == 0)
+        {
+          PRINT_DEBUG("Missed hash for %s recalculation takes %ld.%06ld sec\n", db_name, (long int)result_time.tv_sec, (long int)result_time.tv_usec);
+        }
 
         strcpy(hash, l_hash);
     }
@@ -281,7 +298,10 @@ int get_dbhash(mongoc_client_t *client, const char *db_name, char *db_hash)
 
         gettimeofday(&current_time, NULL);
         timersub(&current_time, &start_time, &result_time);
-        PRINT_DEBUG("Missed hash for %s recalculation takes %ld.%06ld sec\n", db_name, (long int)result_time.tv_sec, (long int)result_time.tv_usec);
+        if (test_settings == 0)
+        {
+          PRINT_DEBUG("Missed hash for %s recalculation takes %ld.%06ld sec\n", db_name, (long int)result_time.tv_sec, (long int)result_time.tv_usec);
+        }
 
         strcpy(db_hash, l_db_hash);
     }
@@ -307,14 +327,19 @@ int del_hash(mongoc_client_t *client, const char *db_name)
     if (!mongoc_collection_delete_one(
             collection, filter, NULL, NULL, &error))
     {
-        PRINT_ERROR("Delete hashes %s failed: %s\n", db_name, error.message);
+        if (test_settings == 0)
+        {
+          PRINT_ERROR("Delete hashes %s failed: %s\n", db_name, error.message);
+        }
         result = -1;
     }
 
     bson_destroy(filter);
     mongoc_collection_destroy(collection);
-
-    PRINT_DEBUG("Hash been deleted for %s\n", db_name);
+    if (test_settings == 0)
+    {
+      PRINT_DEBUG("Hash been deleted for %s\n", db_name);
+    }
 
     return result;
 }
@@ -330,14 +355,18 @@ int drop_all_hashes(mongoc_client_t *client)
     if (!mongoc_collection_drop_with_opts(
             collection, NULL, &error))
     {
-        PRINT_ERROR("Drop hashes failed: %s\n", error.message);
+        if (test_settings == 0)
+        {
+          PRINT_ERROR("Drop hashes failed: %s\n", error.message);
+        }
         result = -1;
     }
 
     mongoc_collection_destroy(collection);
-
-    PRINT_DEBUG("All hashes are been dropped\n");
-
+    if (test_settings == 0)
+    {
+      PRINT_DEBUG("All hashes are been dropped\n");
+    }
     return result;
 }
 
@@ -405,7 +434,10 @@ int calc_multi_hash(mongoc_client_t *client, const char *db_prefix, int max_inde
         snprintf(db_name, sizeof(db_name), "%s_%s", db_prefix, names_array[i]);
         if (get_dbhash(client, db_name, l_db_hash) != 0)
         {
-            PRINT_ERROR("Error getting hash for %s", db_name);
+            if (test_settings == 0)
+            {
+              PRINT_ERROR("Error getting hash for %s", db_name);
+            }
             result = -1;
             break;
         }

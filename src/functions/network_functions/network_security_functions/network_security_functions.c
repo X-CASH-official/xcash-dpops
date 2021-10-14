@@ -658,7 +658,7 @@ int validate_data(const char* MESSAGE)
 
   // define macros  
   #define VALIDATE_DATA_ERROR(settings) \
-  if (debug_settings == 1) \
+  if (debug_settings == 1 && test_settings == 0) \
   { \
   memcpy(error_message.function[error_message.total],"validate_data",13); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -985,7 +985,11 @@ int validate_data(const char* MESSAGE)
         }
       }
     }
-    else
+    else if (strncmp(MESSAGE,"GET /delegateswebsitegetstatistics HTTP/",40) == 0 || strncmp(MESSAGE,"GET /getdelegates HTTP/",23) == 0)
+    {
+
+    }
+    else 
     {
       VALIDATE_DATA_ERROR("Invalid message");
     }
@@ -1012,6 +1016,10 @@ int validate_data(const char* MESSAGE)
       {
         VALIDATE_DATA_ERROR("Invalid message");
       } 
+    }
+    else if (strncmp(MESSAGE,"GET /shareddelegateswebsitegetstatistics HTTP/",46) == 0 || strncmp(MESSAGE,"GET /getblocksfound HTTP/",25) == 0)
+    {
+
     }
     else
     {
