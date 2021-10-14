@@ -89,18 +89,18 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   If the database collection is statistics than the id is 0
   */
 
-  if (strstr(COLLECTION,"reserve_proofs") != NULL)
+  if (strstr(COLLECTION,"reserve_proofs") != NULL && strstr(data2,"\"public_address_created_reserve_proof\":\"") != NULL)
   {
     message = strstr(data2,"\"public_address_created_reserve_proof\":\"") + 40;
     memcpy(data_hash,"000000000000000000000000000000",DATA_HASH_LENGTH-XCASH_WALLET_LENGTH);
     memcpy(data_hash+strlen(data_hash),message,XCASH_WALLET_LENGTH);
   }
-  else if (strstr(COLLECTION,"reserve_bytes") != NULL)
+  else if (strstr(COLLECTION,"reserve_bytes") != NULL && strstr(data2,"\"reserve_bytes_data_hash\":\"") != NULL)
   {
     message = strstr(data2,"\"reserve_bytes_data_hash\":\"") + 27;
     memcpy(data_hash,message,DATA_HASH_LENGTH);
   }
-  else if (strstr(COLLECTION,"delegates") != NULL)
+  else if (strstr(COLLECTION,"delegates") != NULL && strstr(data2,"\"public_key\":\"") != NULL)
   {
     message = strstr(data2,"\"public_key\":\"") + 14;
     memcpy(data_hash,"0000000000000000000000000000000000000000000000000000000000000000",DATA_HASH_LENGTH-VRF_PUBLIC_KEY_LENGTH);
@@ -286,18 +286,18 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     If the database collection is statistics than the id is 0
     */
 
-    if (strstr(COLLECTION,"reserve_proofs") != NULL)
+    if (strstr(COLLECTION,"reserve_proofs") != NULL && strstr(data3,"\"public_address_created_reserve_proof\":\"") != NULL)
     {
       message = strstr(data3,"\"public_address_created_reserve_proof\":\"") + 40;
       memcpy(data_hash,"000000000000000000000000000000",DATA_HASH_LENGTH-XCASH_WALLET_LENGTH);
       memcpy(data_hash+strlen(data_hash),message,XCASH_WALLET_LENGTH);
     }
-    else if (strstr(COLLECTION,"reserve_bytes") != NULL)
+    else if (strstr(COLLECTION,"reserve_bytes") != NULL && strstr(data3,"\"reserve_bytes_data_hash\":\"") != NULL)
     {
       message = strstr(data3,"\"reserve_bytes_data_hash\":\"") + 27;
       memcpy(data_hash,message,DATA_HASH_LENGTH);
     }
-    else if (strstr(COLLECTION,"delegates") != NULL)
+    else if (strstr(COLLECTION,"delegates") != NULL && strstr(data3,"\"public_key\":\"") != NULL)
     {
       message = strstr(data3,"\"public_key\":\"") + 14;
       memcpy(data_hash,"0000000000000000000000000000000000000000000000000000000000000000",DATA_HASH_LENGTH-VRF_PUBLIC_KEY_LENGTH);
