@@ -853,7 +853,7 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }
- else if (strstr(buffer,"GET /") != NULL && strstr(&buffer[5]," HTTP/") != NULL && (delegates_website == 1 || shared_delegates_website == 1))
+ else if (strstr(buffer,"GET /") != NULL && (delegates_website == 1 || shared_delegates_website == 1))
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
