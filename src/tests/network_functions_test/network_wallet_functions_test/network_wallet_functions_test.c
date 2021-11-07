@@ -53,7 +53,7 @@ int network_wallet_functions_test(void)
   }
   
   // test the get_public_address function
-  memset(xcash_wallet_public_address,0,strnlen(xcash_wallet_public_address,BUFFER_SIZE));
+  memset(xcash_wallet_public_address,0,sizeof(xcash_wallet_public_address));
   if (get_public_address() == 1)
   {   
     color_print("PASSED! Test for get_public_address","green");

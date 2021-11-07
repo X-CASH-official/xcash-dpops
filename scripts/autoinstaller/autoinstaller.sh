@@ -30,10 +30,10 @@ DPOPS_MINIMUM_AMOUNT=0
 XCASH_DPOPS_BLOCK_HEIGHT=800000
 
 # Latest versions
-MONGODB_LATEST_VERSION="mongodb-linux-x86_64-ubuntu1804-4.4.1"
-MONGODB_TOOLS_LATEST_VERSION="mongodb-database-tools-ubuntu1804-x86_64-100.2.1"
-MONGOC_DRIVER_LATEST_VERSION="mongo-c-driver-1.17.0"
-NODEJS_LATEST_VERSION="node-v14.10.1-linux-x64"
+MONGODB_LATEST_VERSION="mongodb-linux-x86_64-ubuntu1804-5.0.3"
+MONGODB_TOOLS_LATEST_VERSION="mongodb-database-tools-ubuntu1804-x86_64-100.5.0"
+MONGOC_DRIVER_LATEST_VERSION="mongo-c-driver-1.19.0"
+NODEJS_LATEST_VERSION="node-v16.10.0-linux-x64"
 
 # Settings
 XCASH_URL="https://github.com/X-CASH-official/xcash-core.git"
@@ -710,9 +710,9 @@ function check_ubuntu_version()
     fi
 }
 
-function update_packages_list()
+function wait_for_package_manager()
 {
-    i=0
+  i=0
     while fuser /var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock >/dev/null 2>&1; do
         case $((i % 4)) in
             0 ) j="-" ;;
@@ -724,6 +724,11 @@ function update_packages_list()
         sleep 0.25
         ((i=i+1))
     done
+}
+
+function update_packages_list()
+{
+    wait_for_package_manager
     echo -ne "${COLOR_PRINT_YELLOW}Updating Packages List${END_COLOR_PRINT}"
     sudo apt update -y &>/dev/null
     echo -ne "\r${COLOR_PRINT_GREEN}Updating Packages List${END_COLOR_PRINT}"
@@ -732,20 +737,9 @@ function update_packages_list()
 
 function install_packages()
 {
-    i=0
-    while fuser /var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock >/dev/null 2>&1; do
-        case $((i % 4)) in
-            0 ) j="-" ;;
-            1 ) j="\\" ;;
-            2 ) j="|" ;;
-            3 ) j="/" ;;
-        esac
-        echo && echo -en "\r${COLOR_PRINT_RED}[$j] Waiting for other package manager to finish...${END_COLOR_PRINT}" 
-        sleep 0.25
-        ((i=i+1))
-    done
+    wait_for_package_manager
     echo -ne "${COLOR_PRINT_YELLOW}Installing Packages (This Might Take A While)${END_COLOR_PRINT}"
-    sudo apt install ${XCASH_DPOPS_PACKAGES} -y &>/dev/null
+    sudo apt install ${XCASH_DPOPS_PACKAGES} -y
     build_libgtest
     echo -ne "\r${COLOR_PRINT_GREEN}Installing Packages (This Might Take A While)${END_COLOR_PRINT}"
     echo
@@ -962,7 +956,8 @@ function install_firewall()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
   # Reinstall iptables (solves some issues with some VPS)
-  sudo apt-get install --reinstall iptables &>/dev/null
+  wait_for_package_manager
+  sudo apt install --reinstall iptables &>/dev/null
   if [ "${SHARED_DELEGATE^^}" == "YES" ]; then
     echo "$FIREWALL_SHARED_DELEGATES" > ${HOME}/firewall_script.sh
   else
@@ -1254,18 +1249,7 @@ function get_dependencies_current_version()
 
 function update_packages()
 {
-    i=0
-    while fuser /var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock >/dev/null 2>&1; do
-        case $((i % 4)) in
-            0 ) j="-" ;;
-            1 ) j="\\" ;;
-            2 ) j="|" ;;
-            3 ) j="/" ;;
-        esac
-        echo && echo -en "\r${COLOR_PRINT_RED}[$j] Waiting for other package manager to finish...${END_COLOR_PRINT}" 
-        sleep 0.25
-        ((i=i+1))
-    done
+    wait_for_package_manager
     echo -ne "${COLOR_PRINT_YELLOW}Updating Packages${END_COLOR_PRINT}"
     sudo apt install --only-upgrade ${XCASH_DPOPS_PACKAGES} -y &>/dev/null
     echo -ne "\r${COLOR_PRINT_GREEN}Updating Packages${END_COLOR_PRINT}"
@@ -1436,18 +1420,7 @@ function update_nodejs()
 
 function uninstall_packages()
 {
-    i=0
-    while fuser /var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock >/dev/null 2>&1; do
-        case $((i % 4)) in
-            0 ) j="-" ;;
-            1 ) j="\\" ;;
-            2 ) j="|" ;;
-            3 ) j="/" ;;
-        esac
-        echo && echo -en "\r${COLOR_PRINT_RED}[$j] Waiting for other package manager to finish...${END_COLOR_PRINT}" 
-        sleep 0.25
-        ((i=i+1))
-    done
+    wait_for_package_manager
     echo -ne "${COLOR_PRINT_YELLOW}Uninstalling Packages${END_COLOR_PRINT}"
     sudo apt --purge remove ${XCASH_DPOPS_PACKAGES} -y &>/dev/null
     echo -ne "\r${COLOR_PRINT_GREEN}Uninstalling Packages${END_COLOR_PRINT}"
@@ -1707,6 +1680,7 @@ function update()
   # Update all dependencies
   if [ ! "$MONGODB_CURRENT_VERSION" == "$MONGODB_LATEST_VERSION" ]; then
     update_mongodb
+    install_mongodb_tools
   else
     echo -e "${COLOR_PRINT_GREEN}MongoDB Is Already Up To Date${END_COLOR_PRINT}"
   fi
@@ -1938,7 +1912,8 @@ function install_node()
   # Install the firewall
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
   # Reinstall iptables (solves some issues with some VPS)
-  sudo apt-get install --reinstall iptables &>/dev/null
+  wait_for_package_manager
+  sudo apt install --reinstall iptables &>/dev/null
   echo "$FIREWALL" > ${HOME}/firewall_script.sh
   sudo sed -i 's/\r$//g' ${HOME}/firewall_script.sh
   sudo chmod +x ${HOME}/firewall_script.sh
@@ -2128,7 +2103,8 @@ function install_firewall_script()
   get_ssh_port
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
   # Reinstall iptables (solves some issues with some VPS)
-  sudo apt-get install --reinstall iptables &>/dev/null
+  wait_for_package_manager
+  sudo apt install --reinstall iptables &>/dev/null
   update_systemd_service_files
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
   sed_services 's/\r$//g' /lib/systemd/system/firewall.service
@@ -2147,7 +2123,8 @@ function install_firewall_script_shared_delegates()
   get_ssh_port
   echo -ne "${COLOR_PRINT_YELLOW}Installing The Firewall${END_COLOR_PRINT}"
   # Reinstall iptables (solves some issues with some VPS)
-  sudo apt-get install --reinstall iptables &>/dev/null
+  wait_for_package_manager
+  sudo apt install --reinstall iptables &>/dev/null
   update_systemd_service_files
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_FIREWALL}' > /lib/systemd/system/firewall.service"
   sed_services 's/\r$//g' /lib/systemd/system/firewall.service
@@ -2181,6 +2158,7 @@ function install_or_update_blockchain()
     XCASH_BLOCKCHAIN_INSTALLATION_DIR="${HOME}/.X-CASH/"
   fi
   # Install 7z and wget if not already installed
+  wait_for_package_manager
   sudo apt install -y p7zip-full wget &>/dev/null
   cd && test -f xcash-blockchain.7z && sudo rm -rf xcash-blockchain.7z*
   echo -e "${COLOR_PRINT_GREEN}Starting the Download${END_COLOR_PRINT}"

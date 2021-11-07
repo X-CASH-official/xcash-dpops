@@ -1134,7 +1134,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   CHECK_RESET_VARIABLES_ON_THE_HEAP("sign_network_block_string",SIGN_NETWORK_BLOCK_STRING_CODE);
 
   insert_document_into_collection_json(database_name,"reserve_proofs_1",RESERVE_PROOFS_TEST_DATA);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\"block_height\": \"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1",RESERVE_BYTES_TEST_DATA);
   insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA);
   insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA);
   INITIALIZE_NETWORK_DATA_NODES_TEST
@@ -1168,7 +1168,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   delete_collection_from_database(database_name,DATABASE_COLLECTION_TEST);
 
   insert_document_into_collection_json(database_name,"reserve_proofs_1",RESERVE_PROOFS_TEST_DATA);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\"block_height\": \"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1",RESERVE_BYTES_TEST_DATA);
   insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA);
   insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("sync_reserve_proofs_database",SYNC_RESERVE_PROOFS_DATABASE_CODE);
@@ -1209,7 +1209,7 @@ int reset_variables_allocated_on_the_heap_test(void)
   INITIALIZE_NETWORK_DATA_NODES_TEST;
   INITIALIZE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_TEST;
   insert_document_into_collection_json(database_name,"reserve_proofs_1",RESERVE_PROOFS_TEST_DATA);
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\"block_height\": \"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_TEST "\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1",RESERVE_BYTES_TEST_DATA);
   insert_document_into_collection_json(database_name,"delegates",DELEGATES_TEST_DATA);
   insert_document_into_collection_json(database_name,"statistics",DATABASE_COLLECTION_STATISTICS_DATA);
   RESET_INVALID_RESERVE_PROOFS_DATA;
@@ -1301,7 +1301,6 @@ int reset_variables_allocated_on_the_heap_test(void)
   memcpy(reserve_proof.public_address_voted_for,TEST_WALLET_1,XCASH_WALLET_LENGTH);
   memcpy(reserve_proof.reserve_proof_amount,"120000000",9);
   memcpy(reserve_proof.reserve_proof,"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5j1ey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed41JUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti",537);
-  CHECK_RESET_VARIABLES_ON_THE_HEAP("send_invalid_reserve_proof_to_block_verifiers",SEND_INVALID_RESERVE_PROOF_TO_BLOCK_VERIFIERS_CODE);
   
   delete_database(database_name);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("block_verifiers_add_reserve_proof_check_if_data_is_valid",BLOCK_VERIFIERS_ADD_RESERVE_PROOF_CHECK_IF_DATA_IS_VALID_CODE);
@@ -1313,7 +1312,6 @@ int reset_variables_allocated_on_the_heap_test(void)
   CHECK_RESET_VARIABLES_ON_THE_HEAP("add_round_statistics",ADD_ROUND_STATISTICS_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("calculate_main_nodes_roles",CALCULATE_MAIN_NODES_ROLES_CODE);
   CHECK_RESET_VARIABLES_ON_THE_HEAP("get_delegates_online_status",GET_DELEGATES_ONLINE_STATUS_CODE);
-
 
 
 

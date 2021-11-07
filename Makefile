@@ -45,7 +45,7 @@ MongoDB_INC_DIRS := -I/usr/local/include/libbson-1.0 -I/usr/local/include/libmon
 CFLAGS ?= $(INC_FLAGS) $(MongoDB_INC_DIRS) -MMD -MP
 
 # Linker flags
-LDFLAGS ?= -lmongoc-1.0 -lbson-1.0 -lresolv -lpthread
+LDFLAGS ?= -lmongoc-1.0 -lbson-1.0 -lresolv -lpthread -lcrypto
 
 # Set the compiler flags
 COMPILERFLAGS ?= -Wall -Wextra -Wstrict-prototypes -Wcast-qual -Wfloat-equal -Wundef -Wshadow -Wcast-align -Wstrict-overflow -Wdouble-promotion -fexceptions -pie -fPIE -Wl,dynamicbase -Wl,nxcompat

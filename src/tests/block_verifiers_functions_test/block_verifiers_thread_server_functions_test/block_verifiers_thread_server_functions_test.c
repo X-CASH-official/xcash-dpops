@@ -217,59 +217,6 @@ int block_verifiers_thread_server_functions_test(void)
     color_print("FAILED! Test for select_random_unique_reserve_proof","red");
   }
 
-  // send_invalid_reserve_proof_to_block_verifiers
-  delete_database(database_name);
-  INITIALIZE_DATABASE_DATA(3);
-  RESET_INVALID_RESERVE_PROOFS_DATA;
-  // initalize the previous current and next block verifiers list
-  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
-  {
-    memset(previous_block_verifiers_list.block_verifiers_name[count],0,sizeof(previous_block_verifiers_list.block_verifiers_name[count]));
-    memset(previous_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_public_address[count]));
-    memset(previous_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(previous_block_verifiers_list.block_verifiers_public_key[count]));
-    memset(previous_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(previous_block_verifiers_list.block_verifiers_IP_address[count]));
-    memset(current_block_verifiers_list.block_verifiers_name[count],0,sizeof(current_block_verifiers_list.block_verifiers_name[count]));
-    memset(current_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(current_block_verifiers_list.block_verifiers_public_address[count]));
-    memset(current_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(current_block_verifiers_list.block_verifiers_public_key[count]));
-    memset(current_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(current_block_verifiers_list.block_verifiers_IP_address[count]));
-    memset(next_block_verifiers_list.block_verifiers_name[count],0,sizeof(next_block_verifiers_list.block_verifiers_name[count]));
-    memset(next_block_verifiers_list.block_verifiers_public_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_address[count]));
-    memset(next_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_key[count]));
-    memset(next_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count]));
-  }
-  memcpy(previous_block_verifiers_list.block_verifiers_name[0],"delegate_1",10);
-  memcpy(previous_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH);
-  memcpy(previous_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9);
-  memcpy(previous_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
-  memcpy(current_block_verifiers_list.block_verifiers_name[0],"delegate_1",10);
-  memcpy(current_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH);
-  memcpy(current_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9);
-  memcpy(current_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
-  memcpy(next_block_verifiers_list.block_verifiers_name[0],"delegate_1",10);
-  memcpy(next_block_verifiers_list.block_verifiers_public_address[0],TEST_WALLET,XCASH_WALLET_LENGTH);
-  memcpy(next_block_verifiers_list.block_verifiers_IP_address[0],XCASH_DPOPS_delegates_IP_address,9);
-  memcpy(next_block_verifiers_list.block_verifiers_public_key[0],NEXT_BLOCK_VERIFIERS_PUBLIC_KEY,VRF_PUBLIC_KEY_LENGTH);
-  // initialize the reserve_proof struct
-  memset(reserve_proof.block_verifier_public_address,0,sizeof(reserve_proof.block_verifier_public_address));
-  memset(reserve_proof.public_address_created_reserve_proof,0,sizeof(reserve_proof.public_address_created_reserve_proof));
-  memset(reserve_proof.public_address_voted_for,0,sizeof(reserve_proof.public_address_voted_for));
-  memset(reserve_proof.reserve_proof_amount,0,sizeof(reserve_proof.reserve_proof_amount));
-  memset(reserve_proof.reserve_proof,0,sizeof(reserve_proof.reserve_proof));
-  memcpy(reserve_proof.block_verifier_public_address,RESERVE_PROOF_PUBLIC_ADDRESS_TEST,XCASH_WALLET_LENGTH);
-  memcpy(reserve_proof.public_address_created_reserve_proof,RESERVE_PROOF_PUBLIC_ADDRESS_TEST,XCASH_WALLET_LENGTH);
-  memcpy(reserve_proof.public_address_voted_for,RESERVE_PROOF_PUBLIC_ADDRESS_TEST,XCASH_WALLET_LENGTH);
-  memcpy(reserve_proof.reserve_proof_amount,"120000000",9);
-  memcpy(reserve_proof.reserve_proof,"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5j1ey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed41JUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti",537);
-  if (send_invalid_reserve_proof_to_block_verifiers(&reserve_proof) == 1 && strncmp(invalid_reserve_proofs.reserve_proof[0],"ReserveProofV11BZ23sBt9sZJeGccf84mzyAmNCP3KzYbE1111112VKmH111118NDPqYHviiubTHpa5j1ey2PF2RPr7p92nUY5PYcCqPwkM3Vezb1BvSAu2zX5kKMuJYo2q837KH4HAXkXbdgF6wa13pkkpuMxv74keNZLAeeM9wmSuJvSHmMvVjfo6u6iCWMDRESRouQ359NvpAZN71D9fSivgK7K7WkbNzftkUZ6V7Uza6K9eihTgu7hSB3AqaTm7cK9uTb5Fzg9LyJbC4phfGYM7bazM2UrVfitZtbEkKuhPxnzFzKkWtdYBB59zUo1uS4UUR8faS25sjfc2cPjZUfbEZsiJVo7EDNs3d1KdhTN5TdNxZK6MZgVB77jE9ed41JUrNSrqfWg1BwigbN9smQicoi9yYwujuGaHEzEnLBwQeLFxJJQj31qRQb4ZijEBGrMxvcmybhPKiHA3LBARnBREJxkQ39dp2HRfEfR1G7z6RGhS9o1KQCF3MAwomCMCuj69SpeovPEYwQb5uVXti",537) == 0)
-  {
-    color_print("PASSED! Test for send_invalid_reserve_proof_to_block_verifiers","green");
-    count_test++;
-  }
-  else
-  {
-    color_print("FAILED! Test for send_invalid_reserve_proof_to_block_verifiers","red");
-  }
-
 
   // check all errors for each test
   // check_reserve_proofs_timer_get_database_data

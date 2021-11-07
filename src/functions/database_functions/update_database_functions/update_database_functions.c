@@ -16,6 +16,7 @@
 #include "crypto_vrf.h"
 #include "VRF_functions.h"
 #include "sha512EL.h"
+#include "cached_hashes.h"
 
 /*
 -----------------------------------------------------------------------------------------------------------
@@ -73,6 +74,9 @@ int update_document_from_collection(const char* DATABASE, const char* COLLECTION
   {
     return 0;
   }
+
+  // we need to rehash this db next time
+  del_hash(database_client_thread, COLLECTION);
 
   // set the collection
   collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
@@ -162,6 +166,10 @@ int update_multiple_documents_from_collection(const char* DATABASE, const char* 
     return 0;
   }
 
+  // we need to rehash this db next time
+  del_hash(database_client_thread, COLLECTION);
+
+
   // set the collection
   collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
 
@@ -248,6 +256,9 @@ int update_all_documents_from_collection(const char* DATABASE, const char* COLLE
   {
     return 0;
   }
+
+  // we need to rehash this db next time
+  del_hash(database_client_thread, COLLECTION);
 
   // set the collection
   collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);

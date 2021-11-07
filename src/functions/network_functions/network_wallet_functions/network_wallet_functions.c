@@ -60,7 +60,7 @@ int get_public_address(void)
   }
 
   // check if the returned data is valid
-  if (strnlen(xcash_wallet_public_address,BUFFER_SIZE) != XCASH_WALLET_LENGTH && strncmp(xcash_wallet_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+  if (strnlen(xcash_wallet_public_address,sizeof(xcash_wallet_public_address)) != XCASH_WALLET_LENGTH && strncmp(xcash_wallet_public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
   {
      GET_PUBLIC_ADDRESS_ERROR("Could not get the public address");
   }

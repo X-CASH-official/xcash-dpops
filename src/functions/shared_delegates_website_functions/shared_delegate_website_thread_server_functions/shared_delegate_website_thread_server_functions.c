@@ -123,7 +123,7 @@ int check_if_previous_block_producer(void)
   }
 
   // check if the delegate is the previous block producer
-  return strncmp(previous_block_producer,xcash_wallet_public_address,BUFFER_SIZE) == 0 ? 1 : 0;
+  return strncmp(previous_block_producer,xcash_wallet_public_address,sizeof(xcash_wallet_public_address)) == 0 ? 1 : 0;
 }
 
 
@@ -179,7 +179,7 @@ long long int add_block_to_blocks_found(void)
   // check if the block is already in the database
   memset(data,0,sizeof(data));
   memcpy(data,"{\"block_height\":\"",17);
-  memcpy(data+strlen(data),block_height,strnlen(block_height,sizeof(data)));
+  memcpy(data+strlen(data),block_height,strnlen(block_height,sizeof(block_height)));
   memcpy(data+strlen(data),"\"}",2);
 
   if (count_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION,data) >= 1)
@@ -190,13 +190,13 @@ long long int add_block_to_blocks_found(void)
   // add the blocks data
   memset(data,0,sizeof(data));
   memcpy(data,"{\"block_height\":\"",17);
-  memcpy(data+strlen(data),block_height,strnlen(block_height,sizeof(data)));
+  memcpy(data+strlen(data),block_height,strnlen(block_height,sizeof(block_height)));
   memcpy(data+strlen(data),"\",\"block_hash\":\"",16);
   memcpy(data+strlen(data),block_hash,BLOCK_HASH_LENGTH);
   memcpy(data+strlen(data),"\",\"block_date_and_time\":\"",25);
-  memcpy(data+strlen(data),block_date_and_time,strnlen(block_date_and_time,sizeof(data)));
+  memcpy(data+strlen(data),block_date_and_time,strnlen(block_date_and_time,sizeof(block_date_and_time)));
   memcpy(data+strlen(data),"\",\"block_reward\":\"",18);
-  memcpy(data+strlen(data),block_reward,strnlen(block_reward,sizeof(data)));
+  memcpy(data+strlen(data),block_reward,strnlen(block_reward,sizeof(block_reward)));
   memcpy(data+strlen(data),"\"}",2);
 
   if (insert_document_into_collection_json(shared_delegates_database_name,DATABASE_COLLECTION,data) == 0)

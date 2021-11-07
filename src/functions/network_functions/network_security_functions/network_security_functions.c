@@ -99,7 +99,7 @@ int sign_data(char *message)
   memcpy(result+strlen(result),"\"public_address\": \"",19);
   memcpy(result+strlen(result),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
   memcpy(result+strlen(result),"\",\r\n \"previous_block_hash\": \"",29);
-  memcpy(result+strlen(result),previous_block_hash,strnlen(previous_block_hash,BUFFER_SIZE));  
+  memcpy(result+strlen(result),previous_block_hash,strnlen(previous_block_hash,sizeof(previous_block_hash)));  
   memcpy(result+strlen(result),"\",\r\n \"current_round_part\": \"",28);
   memcpy(result+strlen(result),current_round_part,sizeof(char));
   memcpy(result+strlen(result),"\",\r\n \"current_round_part_backup_node\": \"",40);
@@ -125,7 +125,7 @@ int sign_data(char *message)
     memcpy(message+strlen(message)-1,"\"public_address\": \"",19);
     memcpy(message+strlen(message),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
     memcpy(message+strlen(message),"\",\r\n \"previous_block_hash\": \"",29);
-    memcpy(message+strlen(message),previous_block_hash,strnlen(previous_block_hash,BUFFER_SIZE));  
+    memcpy(message+strlen(message),previous_block_hash,strnlen(previous_block_hash,sizeof(previous_block_hash)));  
     memcpy(message+strlen(message),"\",\r\n \"current_round_part\": \"",28);
     memcpy(message+strlen(message),current_round_part,sizeof(char));
     memcpy(message+strlen(message),"\",\r\n \"current_round_part_backup_node\": \"",40);
@@ -167,7 +167,7 @@ int sign_data(char *message)
     memcpy(message+strlen(message)-1,"\"public_address\": \"",19);
     memcpy(message+strlen(message),xcash_wallet_public_address,XCASH_WALLET_LENGTH);
     memcpy(message+strlen(message),"\",\r\n \"previous_block_hash\": \"",29);
-    memcpy(message+strlen(message),previous_block_hash,strnlen(previous_block_hash,BUFFER_SIZE));  
+    memcpy(message+strlen(message),previous_block_hash,strnlen(previous_block_hash,sizeof(previous_block_hash)));  
     memcpy(message+strlen(message),"\",\r\n \"current_round_part\": \"",28);
     memcpy(message+strlen(message),current_round_part,sizeof(char));
     memcpy(message+strlen(message),"\",\r\n \"current_round_part_backup_node\": \"",40);
@@ -658,7 +658,7 @@ int validate_data(const char* MESSAGE)
 
   // define macros  
   #define VALIDATE_DATA_ERROR(settings) \
-  if (debug_settings == 1) \
+  if (debug_settings == 1 && test_settings == 0) \
   { \
   memcpy(error_message.function[error_message.total],"validate_data",13); \
   memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
@@ -960,7 +960,7 @@ int validate_data(const char* MESSAGE)
         VALIDATE_DATA_ERROR("Invalid message");
       } 
     }
-    if (strncmp(MESSAGE,"GET /checkvotestatus?parameter1=",32) == 0)
+    else if (strncmp(MESSAGE,"GET /checkvotestatus?parameter1=",32) == 0)
     {
       if (strlen(&MESSAGE[32]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[32]," HTTP/") == NULL)
       {
@@ -984,6 +984,14 @@ int validate_data(const char* MESSAGE)
           VALIDATE_DATA_ERROR("Invalid message");
         }
       }
+    }
+    else if (strncmp(MESSAGE,"GET /delegateswebsitegetstatistics HTTP/",40) == 0 || strncmp(MESSAGE,"GET /getdelegates HTTP/",23) == 0)
+    {
+
+    }
+    else 
+    {
+      VALIDATE_DATA_ERROR("Invalid message");
     }
   }
   else if (shared_delegates_website == 1)
@@ -1009,6 +1017,14 @@ int validate_data(const char* MESSAGE)
         VALIDATE_DATA_ERROR("Invalid message");
       } 
     }
+    else if (strncmp(MESSAGE,"GET /shareddelegateswebsitegetstatistics HTTP/",46) == 0 || strncmp(MESSAGE,"GET /getblocksfound HTTP/",25) == 0)
+    {
+
+    }
+    else
+    {
+      VALIDATE_DATA_ERROR("Invalid message");
+    }
   }
   else
   {
@@ -1018,3 +1034,4 @@ int validate_data(const char* MESSAGE)
   
   #undef VALIDATE_DATA_ERROR
 }
+

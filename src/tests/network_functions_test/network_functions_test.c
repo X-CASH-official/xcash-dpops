@@ -89,8 +89,8 @@ int network_functions_test(void)
   // run the test
 
   // set the current_round_part and current_round_part_backup_node
-  memset(current_round_part,0,strnlen(current_round_part,BUFFER_SIZE));
-  memset(current_round_part_backup_node,0,strnlen(current_round_part_backup_node,BUFFER_SIZE));
+  memset(current_round_part,0,sizeof(current_round_part));
+  memset(current_round_part_backup_node,0,sizeof(current_round_part_backup_node));
   memcpy(current_round_part,"1",sizeof(char));
   memcpy(current_round_part_backup_node,"0",sizeof(char)); 
   pthread_rwlock_unlock(&rwlock);

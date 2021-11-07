@@ -432,7 +432,7 @@ int server_receive_data_socket_get_delegates_information(const int CLIENT_SOCKET
 
   // define macros
   #define DATABASE_COLLECTION "delegates"
-  #define DATABASE_FIELDS "total_vote_count|IP_address|delegate_name|public_key|block_verifier_score|online_status|block_verifier_total_rounds|block_verifier_online_total_rounds|block_verifier_online_percentage|block_producer_total_rounds|VRF_node_public_and_secret_key_total_rounds|VRF_node_random_data_total_rounds|VRF_node_next_main_nodes_total_rounds|VRF_node_public_and_secret_key_block_heights|VRF_node_random_data_block_heights|VRF_node_next_main_nodes_block_heights|"
+  #define DATABASE_FIELDS "total_vote_count|IP_address|delegate_name|public_key|block_verifier_score|online_status|block_verifier_total_rounds|block_verifier_online_total_rounds|block_verifier_online_percentage|block_producer_total_rounds|block_producer_block_heights|VRF_node_public_and_secret_key_total_rounds|VRF_node_random_data_total_rounds|VRF_node_next_main_nodes_total_rounds|VRF_node_public_and_secret_key_block_heights|VRF_node_random_data_block_heights|VRF_node_next_main_nodes_block_heights|"
 
   #define SERVER_RECEIVE_DATA_SOCKET_GET_DELEGATES_INFORMATION_ERROR(settings) \
   if (debug_settings == 1) \
@@ -601,9 +601,9 @@ int server_receive_data_socket_check_vote_status(const int CLIENT_SOCKET, const 
   }
 
   memcpy(message,"{\"delegate_name\":\"",18);
-  memcpy(message+strlen(message),data2,strnlen(data2,sizeof(message)));
+  memcpy(message+strlen(message),data2,strnlen(data2,sizeof(data2)));
   memcpy(message+strlen(message),"\",\"total\":\"",11);
-  memcpy(message+strlen(message),total_vote_count,strnlen(total_vote_count,sizeof(message)));
+  memcpy(message+strlen(message),total_vote_count,strnlen(total_vote_count,sizeof(total_vote_count)));
   memcpy(message+strlen(message),"\"}",2);
 
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");

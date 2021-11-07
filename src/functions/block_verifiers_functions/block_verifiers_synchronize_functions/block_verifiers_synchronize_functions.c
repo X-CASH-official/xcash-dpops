@@ -139,7 +139,7 @@ void sync_network_data_nodes_database(void)
       // send the data to the other network data nodes
       for (count3 = 0; count3 < NETWORK_DATA_NODES_AMOUNT; count3++)
       {
-        if (strncmp(network_data_nodes_sync_database_list.network_data_node_public_address[count3],xcash_wallet_public_address,BUFFER_SIZE) != 0)
+        if (strncmp(network_data_nodes_sync_database_list.network_data_node_public_address[count3],xcash_wallet_public_address,sizeof(xcash_wallet_public_address)) != 0)
         {
           send_data_socket(network_data_nodes_sync_database_list.network_data_nodes_IP_address[count3],SEND_DATA_PORT,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
         }
@@ -208,7 +208,7 @@ void sync_network_data_nodes_database(void)
   // check if the network data node is in the majority
   for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
   {
-    if (strncmp(network_data_nodes_sync_database_list.network_data_node_public_address[count],xcash_wallet_public_address,BUFFER_SIZE) == 0 && strncmp(database_data_hash_majority,network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count],DATA_HASH_LENGTH) == 0)
+    if (strncmp(network_data_nodes_sync_database_list.network_data_node_public_address[count],xcash_wallet_public_address,sizeof(xcash_wallet_public_address)) == 0 && strncmp(database_data_hash_majority,network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count],DATA_HASH_LENGTH) == 0)
     {
       // the network data node is in the majority
       color_print("A majority has been reached and the network data node is already synced with the majority\n","yellow");
@@ -424,8 +424,8 @@ void sync_block_verifiers_database(void)
   {
     color_print("Saving a copy of the database before the majority check","yellow");
     memset(data3,0,sizeof(data3));
-    memcpy(data3,database_path_write_before_majority,strnlen(database_path_write_before_majority,sizeof(data3)));
-    memcpy(data3+strlen(data3),current_block_height,strnlen(current_block_height,sizeof(data3)));
+    memcpy(data3,database_path_write_before_majority,strnlen(database_path_write_before_majority,sizeof(database_path_write_before_majority)));
+    memcpy(data3+strlen(data3),current_block_height,strnlen(current_block_height,sizeof(current_block_height)));
     memcpy(data3+strlen(data3),"/",1);
     count = system(data3);
   }
@@ -440,7 +440,7 @@ void sync_block_verifiers_database(void)
     {
       for (count = 0, count3 = 0; count3 < BLOCK_VERIFIERS_AMOUNT; count3++)
       {
-        if (strncmp(block_verifiers_sync_database_list.block_verifiers_database_data_hash[database_count][count2],block_verifiers_sync_database_list.block_verifiers_database_data_hash[database_count][count3],BUFFER_SIZE) == 0)
+        if (strncmp(block_verifiers_sync_database_list.block_verifiers_database_data_hash[database_count][count2],block_verifiers_sync_database_list.block_verifiers_database_data_hash[database_count][count3],sizeof(block_verifiers_sync_database_list.block_verifiers_database_data_hash[database_count][count3])) == 0)
         {
           count++;
         }
@@ -518,7 +518,7 @@ void sync_block_verifiers_database(void)
             goto start2;
           }
           reset_count++;
-        } while ((database_count == 0 && (get_database_data_hash(data,database_name,"reserve_proofs") == 0 || strncmp(data,database_data_hash_majority[database_count],BUFFER_SIZE) != 0)) || (database_count == 1 && (get_database_data_hash(data,database_name,"reserve_bytes") == 0 || strncmp(data,database_data_hash_majority[database_count],BUFFER_SIZE) != 0)) || (database_count == 2 && (get_database_data_hash(data,database_name,"delegates") == 0 || strncmp(data,database_data_hash_majority[database_count],BUFFER_SIZE) != 0)) || (database_count == 3 && (get_database_data_hash(data,database_name,"statistics") == 0 || strncmp(data,database_data_hash_majority[database_count],BUFFER_SIZE) != 0)));      
+        } while ((database_count == 0 && (get_database_data_hash(data,database_name,"reserve_proofs") == 0 || strncmp(data,database_data_hash_majority[database_count],sizeof(database_data_hash_majority[database_count])) != 0)) || (database_count == 1 && (get_database_data_hash(data,database_name,"reserve_bytes") == 0 || strncmp(data,database_data_hash_majority[database_count],sizeof(database_data_hash_majority[database_count])) != 0)) || (database_count == 2 && (get_database_data_hash(data,database_name,"delegates") == 0 || strncmp(data,database_data_hash_majority[database_count],sizeof(database_data_hash_majority[database_count])) != 0)) || (database_count == 3 && (get_database_data_hash(data,database_name,"statistics") == 0 || strncmp(data,database_data_hash_majority[database_count],sizeof(database_data_hash_majority[database_count])) != 0)));      
       
         color_print("Successfully synced the database\n","yellow");
 
@@ -953,16 +953,16 @@ void get_block_verifier_for_syncing_database(int settings, const char* DELEGATES
       {
         count = (rand() % BLOCK_VERIFIERS_AMOUNT);
       } while (strncmp(synced_block_verifiers.vote_settings[count],"true",4) == 0 || strncmp(synced_block_verifiers.synced_block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0);
-      memcpy(block_verifiers_ip_address,synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],BUFFER_SIZE));
+      memcpy(block_verifiers_ip_address,synced_block_verifiers.synced_block_verifiers_IP_address[count],strnlen(synced_block_verifiers.synced_block_verifiers_IP_address[count],sizeof(synced_block_verifiers.synced_block_verifiers_IP_address[count])));
     }
     else if (settings == 2)
     {
       get_random_network_data_node(count);
-      memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],BUFFER_SIZE));
+      memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[count],strnlen(network_data_nodes_list.network_data_nodes_IP_address[count],sizeof(network_data_nodes_list.network_data_nodes_IP_address[count])));
     }
     else
     {     
-      memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[settings-3],strnlen(network_data_nodes_list.network_data_nodes_IP_address[settings-3],BUFFER_SIZE));
+      memcpy(block_verifiers_ip_address,network_data_nodes_list.network_data_nodes_IP_address[settings-3],strnlen(network_data_nodes_list.network_data_nodes_IP_address[settings-3],sizeof(network_data_nodes_list.network_data_nodes_IP_address[settings-3])));
     }
   }
   else
@@ -1365,7 +1365,7 @@ int sync_reserve_proofs_database(int settings, const char* DELEGATES_IP_ADDRESS)
   {
     memset(data3,0,strlen(data3));
     memcpy(data3,"Getting the database data from ",31);
-    memcpy(data3+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BUFFER_SIZE));
+    memcpy(data3+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,sizeof(block_verifiers_ip_address)));
     memcpy(data3+strlen(data3),"\n",sizeof(char));
     color_print(data3,"white");
   }
@@ -1490,7 +1490,7 @@ int sync_reserve_bytes_database(int settings, const int RESERVE_BYTES_START_SETT
   {
     memset(data3,0,strlen(data3));
     memcpy(data3,"Getting the database data from ",31);
-    memcpy(data3+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BUFFER_SIZE));
+    memcpy(data3+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,sizeof(block_verifiers_ip_address)));
     memcpy(data3+strlen(data3),"\n",sizeof(char));
     color_print(data3,"white");
   }
@@ -1646,7 +1646,7 @@ int sync_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
   {
     memset(data2,0,sizeof(data2));
     memcpy(data2,"Getting the database data from ",31);
-    memcpy(data2+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,sizeof(data2)));
+    memcpy(data2+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,sizeof(block_verifiers_ip_address)));
     memcpy(data2+strlen(data2),"\n",sizeof(char));
     color_print(data2,"white");
   }
@@ -1775,7 +1775,7 @@ int sync_statistics_database(int settings, const char* DELEGATES_IP_ADDRESS)
   {
     memset(data2,0,sizeof(data2));
     memcpy(data2,"Getting the database data from ",31);
-    memcpy(data2+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,sizeof(data2)));
+    memcpy(data2+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,sizeof(block_verifiers_ip_address)));
     memcpy(data2+strlen(data2),"\n",sizeof(char));
     color_print(data2,"white");
   }

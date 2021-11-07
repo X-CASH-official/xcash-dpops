@@ -36,8 +36,8 @@ int delegate_website_functions_test(void)
   int count;
 
   // define macros
-  #define DELEGATE_WEBSITE_GET_STATISTICS_TEST_DATA "{\"most_total_rounds_delegate_name\":\"delegate_name_5\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"delegate_name_2\",\"best_block_verifier_online_percentage\":\"100\",\"most_block_producer_total_rounds_delegate_name\":\"delegate_name_4\",\"most_block_producer_total_rounds\":\"2\",\"current_block_height\":\"521850\",\"XCASH_DPOPS_round_number\":\"0\",\"total_votes\":\"10000000\",\"XCASH_DPOPS_circulating_percentage\":\"0\"}"
-  #define DELEGATE_WEBSITE_GET_DELEGATES_TEST_DATA "[{\"total_vote_count\":\"10000000\",\"delegate_name\":\"delegate_name_1\",\"shared_delegate_status\":\"solo\",\"delegate_fee\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"1\",\"block_verifier_online_percentage\":\"0\"}]"
+  #define DELEGATE_WEBSITE_GET_STATISTICS_TEST_DATA "{\"most_total_rounds_delegate_name\":\"delegate_name_5\",\"most_total_rounds\":\"5\",\"best_block_verifier_online_percentage_delegate_name\":\"delegate_name_2\",\"best_block_verifier_online_percentage\":\"100\",\"most_block_producer_total_rounds_delegate_name\":\"delegate_name_4\",\"most_block_producer_total_rounds\":\"2\",\"current_block_height\":\"" XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_DATA "\",\"XCASH_DPOPS_round_number\":\"0\",\"total_votes\":\"10000000\",\"XCASH_DPOPS_circulating_percentage\":\"0\"}"
+  #define DELEGATE_WEBSITE_GET_DELEGATES_TEST_DATA "[{\"total_vote_count\":\"10000000\",\"delegate_name\":\"delegate_name_1\",\"shared_delegate_status\":\"solo\",\"delegate_fee\":\"\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"1\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\"}]"
   #define DELEGATE_WEBSITE_GET_DELEGATES_STATISTICS_TEST_DATA "{\"public_address\":\"" TEST_WALLET_1 "\",\"total_vote_count\":\"10000000\",\"delegate_name\":\"delegate_name_1\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"shared_delegate_status\":\"solo\",\"delegate_fee\":\"\",\"server_specs\":\"\",\"block_verifier_score\":\"0\",\"online_status\":\"true\",\"block_verifier_total_rounds\":\"1\",\"block_verifier_online_total_rounds\":\"0\",\"block_verifier_online_percentage\":\"0\",\"block_producer_total_rounds\":\"0\",\"block_producer_block_heights\":\"\",\"current_delegate_rank\":\"1\"}"
   #define DELEGATE_WEBSITE_GET_DELEGATES_INFORMATION_TEST_DATA "{\"public_address\":\"" TEST_WALLET_1 "\",\"about\":\"\",\"website\":\"\",\"team\":\"\",\"shared_delegate_status\":\"solo\",\"delegate_fee\":\"\",\"server_specs\":\"\"}"
   #define DELEGATE_WEBSITE_CHECK_VOTE_STATUS_TEST_DATA "{\"delegate_name\":\"delegate_name_1\",\"total\":\"120000000\"}"
@@ -72,7 +72,6 @@ int delegate_website_functions_test(void)
   // run the test
   memset(data_test,0,sizeof(data_test));
   send_and_receive_data_socket(data_test,sizeof(data_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,SERVER_RECEIVE_DATA_SOCKET_DELEGATES_WEBSITE_GET_STATISTICS_TEST_DATA,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
-  color_print(data_test,"yellow");
   if (parse_http_response(data_test) == 1 && strncmp(data_test,DELEGATE_WEBSITE_GET_STATISTICS_TEST_DATA,sizeof(data_test)) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_delegates_website_get_statistics","green");

@@ -97,20 +97,21 @@ int block_verifiers_synchronize_server_functions_test(void)
   }
   RESET_ERROR_MESSAGES;
 
+  registration_settings = 1;
   CHECK_SERVER_FUNCTIONS("server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check",SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_TEST_DATA);
 
   memset(result_test,0,sizeof(result_test));
   memset(data_test,0,sizeof(data_test));
   delete_database(database_name);
   network_functions_test_error_settings = 0;
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521850\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}");
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521851\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001\",\"reserve_bytes\":\"DATA\"}");
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521852\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002\",\"reserve_bytes\":\"DATA\"}");
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521853\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003\",\"reserve_bytes\":\"DATA\"}");
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521854\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004\",\"reserve_bytes\":\"DATA\"}");
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521855\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"760000\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"760001\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"760002\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"760003\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"760004\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"760005\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005\",\"reserve_bytes\":\"DATA\"}");
   RESET_ERROR_MESSAGES;
-  memcpy(data_test,"{\r\n \"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\r\n \"block_height\": \"521850\",\r\n}",113);
+  memcpy(data_test,"{\r\n \"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\r\n \"block_height\": \"760000\",\r\n}",113);
   if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && strncmp(result_test,GET_RESERVE_BYTES_DATABASE_HASH_TEST_DATA,sizeof(GET_RESERVE_BYTES_DATABASE_HASH_TEST_DATA)-1) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash checking for receiving multiple blocks","green");
@@ -126,14 +127,14 @@ int block_verifiers_synchronize_server_functions_test(void)
   memset(data_test,0,sizeof(data_test));
   delete_database(database_name);
   network_functions_test_error_settings = 0;
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521850\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}");
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521851\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001\",\"reserve_bytes\":\"DATA\"}");
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521852\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002\",\"reserve_bytes\":\"DATA\"}");
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521853\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003\",\"reserve_bytes\":\"DATA\"}");
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521854\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004\",\"reserve_bytes\":\"DATA\"}");
-  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"521855\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"760000\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"760001\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"760002\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"760003\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"760004\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004\",\"reserve_bytes\":\"DATA\"}");
+  insert_document_into_collection_json(database_name,"reserve_bytes_1","{\"block_height\":\"760005\",\"reserve_bytes_data_hash\":\"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005\",\"reserve_bytes\":\"DATA\"}");
   RESET_ERROR_MESSAGES;
-  memcpy(data_test,"{\r\n \"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\r\n \"block_height\": \"521855\",\r\n}",113);
+  memcpy(data_test,"{\r\n \"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\r\n \"block_height\": \"760005\",\r\n}",113);
   if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && strncmp(result_test,GET_RESERVE_BYTES_DATABASE_HASH_LIVE_SYNCING_TEST_DATA,sizeof(GET_RESERVE_BYTES_DATABASE_HASH_LIVE_SYNCING_TEST_DATA)-1) == 0)
   {
     color_print("PASSED! Test for server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash checking for live syncing","green");
@@ -297,19 +298,6 @@ int block_verifiers_synchronize_server_functions_test(void)
   }
   RESET_ERROR_MESSAGES;
   delete_database(database_name);
-
-  // check all errors for each test
-  network_functions_test_error_settings = 2;
-  RESET_ERROR_MESSAGES;
-  CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check",SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_TEST_DATA,1,xcash_wallet_public_address,TEST_WALLET,"Could not verify the message");
-  test_settings = 0;
-  CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash","{\r\n \"message_settings\": \"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH\",\r\n \"block_height\": \"100\",\r\n}",1,xcash_wallet_public_address,TEST_WALLET,"Invalid block height");
-  test_settings = 1;
-  CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_database_hash",SERVER_RECEIVE_DATA_SOCKET_NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH_TEST_DATA,0,"","","Could not get the previous blocks reserve bytes");
-  CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_proofs_database_download_file_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_PROOFS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,0,"","","Could not get the database data hash for the reserve proofs database");
-  CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_block_verifiers_to_block_verifiers_reserve_bytes_database_download_file_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_RESERVE_BYTES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,0,"","","Could not get the database data hash for the reserve bytes database");
-  CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_block_verifiers_to_block_verifiers_delegates_database_download_file_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,0,"","","Could not get the database data hash for the delegates database");
-  CHECK_SERVER_FUNCTIONS_ERROR("server_receive_data_socket_block_verifiers_to_block_verifiers_statistics_database_download_file_update",SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_UPDATE_TEST_DATA,0,"","","Could not get the database data hash for the statistics database");
 
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nblock verifiers synchronize server functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,BLOCK_VERIFIERS_SYNCHRONIZE_SERVER_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
