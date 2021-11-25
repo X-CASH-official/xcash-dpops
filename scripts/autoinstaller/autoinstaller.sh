@@ -739,7 +739,7 @@ function install_packages()
 {
     wait_for_package_manager
     echo -ne "${COLOR_PRINT_YELLOW}Installing Packages (This Might Take A While)${END_COLOR_PRINT}"
-    sudo apt install ${XCASH_DPOPS_PACKAGES} -y
+    sudo apt install ${XCASH_DPOPS_PACKAGES} -y &>/dev/null
     build_libgtest
     echo -ne "\r${COLOR_PRINT_GREEN}Installing Packages (This Might Take A While)${END_COLOR_PRINT}"
     echo
