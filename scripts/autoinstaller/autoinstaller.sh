@@ -37,7 +37,7 @@ NODEJS_LATEST_VERSION="node-v14.10.1-linux-x64"
 
 # Settings
 XCASH_URL="https://github.com/X-CASH-official/xcash-core.git"
-XCASH_CORE_BRANCH="master"
+XCASH_CORE_BRANCH="dpops-test"
 XCASH_BLOCKCHAIN_BOOTSTRAP_URL="http://94.130.59.172/xcash-blockchain.7z"
 XCASH_DIR=""
 XCASH_WALLET_DIR=""
