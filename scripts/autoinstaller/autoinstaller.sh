@@ -44,6 +44,7 @@ XCASH_WALLET_DIR=""
 XCASH_SYSTEMPID_DIR=""
 XCASH_LOGS_DIR=""
 XCASH_DPOPS_URL="https://github.com/X-CASH-official/xcash-dpops.git"
+XCASH_DPOPS_BRANCH="dpops-test"
 XCASH_DPOPS_DIR=""
 XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR=""
 SHARED_DELEGATES_WEBSITE_URL="https://github.com/X-CASH-official/delegates-pool-website.git"
@@ -925,6 +926,7 @@ function build_xcash_dpops()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Building xcash-dpops${END_COLOR_PRINT}"
   cd "${XCASH_DPOPS_DIR}"
+  git checkout --quiet ${XCASH_DPOPS_BRANCH}
   if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
     echo "y" | make clean &>/dev/null
     make release -j "${CPU_THREADS}" &>/dev/null
