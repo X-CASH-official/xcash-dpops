@@ -27,24 +27,23 @@ BLOCK_VERIFIERS_SECRET_KEY_LENGTH=128
 BLOCK_VERIFIERS_PUBLIC_KEY_LENGTH=64
 DPOPS_FEE=0
 DPOPS_MINIMUM_AMOUNT=0
-XCASH_DPOPS_BLOCK_HEIGHT=880000
+XCASH_DPOPS_BLOCK_HEIGHT=800000
 
 # Latest versions
-MONGODB_LATEST_VERSION="mongodb-linux-x86_64-ubuntu1804-4.4.1"
-MONGODB_TOOLS_LATEST_VERSION="mongodb-database-tools-ubuntu1804-x86_64-100.2.1"
-MONGOC_DRIVER_LATEST_VERSION="mongo-c-driver-1.17.0"
-NODEJS_LATEST_VERSION="node-v14.10.1-linux-x64"
+MONGODB_LATEST_VERSION="mongodb-linux-x86_64-ubuntu1804-5.0.5"
+MONGODB_TOOLS_LATEST_VERSION="mongodb-database-tools-ubuntu1804-x86_64-100.5.1"
+MONGOC_DRIVER_LATEST_VERSION="mongo-c-driver-1.20.1"
+NODEJS_LATEST_VERSION="node-v16.10.0-linux-x64"
 
 # Settings
 XCASH_URL="https://github.com/X-CASH-official/xcash-core.git"
-XCASH_CORE_BRANCH="dpops-test"
+XCASH_CORE_BRANCH="master"
 XCASH_BLOCKCHAIN_BOOTSTRAP_URL="http://94.130.59.172/xcash-blockchain.7z"
 XCASH_DIR=""
 XCASH_WALLET_DIR=""
 XCASH_SYSTEMPID_DIR=""
 XCASH_LOGS_DIR=""
 XCASH_DPOPS_URL="https://github.com/X-CASH-official/xcash-dpops.git"
-XCASH_DPOPS_BRANCH="dpops-test"
 XCASH_DPOPS_DIR=""
 XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR=""
 SHARED_DELEGATES_WEBSITE_URL="https://github.com/X-CASH-official/delegates-pool-website.git"
@@ -926,7 +925,6 @@ function build_xcash_dpops()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Building xcash-dpops${END_COLOR_PRINT}"
   cd "${XCASH_DPOPS_DIR}"
-  git checkout --quiet ${XCASH_DPOPS_BRANCH}
   if [ "$RAM_CPU_RATIO" -ge "$RAM_CPU_RATIO_ALL_CPU_THREADS" ]; then
     echo "y" | make clean &>/dev/null
     make release -j "${CPU_THREADS}" &>/dev/null
@@ -1121,7 +1119,7 @@ function update_npm()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Updating NPM${END_COLOR_PRINT}"
   source ~/.profile || true
-  npm install -g npm &>/dev/null
+  # npm install -g npm &>/dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Updating NPM${END_COLOR_PRINT}"
   echo
 }
