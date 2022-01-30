@@ -35,6 +35,16 @@ MONGODB_TOOLS_LATEST_VERSION="mongodb-database-tools-ubuntu1804-x86_64-100.5.1"
 MONGOC_DRIVER_LATEST_VERSION="mongo-c-driver-1.20.1"
 NODEJS_LATEST_VERSION="node-v16.10.0-linux-x64"
 
+# Restore versions
+MONGODB_RESTORE_VERSION="mongodb-linux-x86_64-ubuntu1804-4.4.1"
+MONGODB_TOOLS_RESTORE_VERSION="mongodb-database-tools-ubuntu1804-x86_64-100.2.1"
+MONGOC_DRIVER_RESTORE_VERSION="mongo-c-driver-1.17.0"
+NODEJS_RESTORE_VERSION="node-v14.10.1-linux-x64"
+NODEJS_RESTORE_URL="https://nodejs.org/dist/${NODEJS_RESTORE_VERSION:5:8}/${NODEJS_RESTORE_VERSION}.tar.xz"
+MONGODB_RESTORE_URL="https://fastdl.mongodb.org/linux/${MONGODB_RESTORE_VERSION}.tgz"
+MONGODB_TOOLS_RESTORE_URL="https://fastdl.mongodb.org/tools/db/${MONGODB_TOOLS_RESTORE_VERSION}.tgz"
+MONGOC_DRIVER_RESTORE_URL="https://github.com/mongodb/mongo-c-driver/releases/download/${MONGOC_DRIVER_RESTORE_VERSION:15}/${MONGOC_DRIVER_RESTORE_VERSION}.tar.gz"
+
 # Settings
 XCASH_URL="https://github.com/X-CASH-official/xcash-core.git"
 XCASH_CORE_BRANCH="dpops-test"
@@ -142,24 +152,24 @@ function sed_services()
 function get_installation_settings()
 {
   echo -ne "${COLOR_PRINT_GREEN}X-Cash DPoPS Installation Settings\n${END_COLOR_PRINT}"
-  echo -ne "${COLOR_PRINT_YELLOW}1 = Install\n2 = Update\n3 = Quick Update (only xcash-dpops)\n4 = Uninstall\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}1 = Install\n2 = Update\n3 = Quick Update (only xcash-dpops)\n4 = Uninstall\n5 = Restore Tools\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}X-Cash Node (Daemon Only) Installation Settings\n${END_COLOR_PRINT}"
-  echo -ne "${COLOR_PRINT_YELLOW}5 = Install\n6 = Update\n7 = Uninstall\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}6 = Install\n7 = Update\n8 = Uninstall\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}X-Cash Blockchain Management\n${END_COLOR_PRINT}"
-  echo -ne "${COLOR_PRINT_YELLOW}8 = Install / Update Blockchain\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}9 = Install / Update Blockchain\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}X-Cash DPoPS Delegate Configuration\n${END_COLOR_PRINT}"
-  echo -ne "${COLOR_PRINT_YELLOW}9 = Change Solo Delegate or Shared Delegate\n10 = Edit Shared Delegate Settings\n11 = Register / Update Delegate\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}10 = Change Solo Delegate or Shared Delegate\n11 = Edit Shared Delegate Settings\n12 = Register / Update Delegate\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}X-Cash DPoPS Delegate Management\n${END_COLOR_PRINT}"
-  echo -ne "${COLOR_PRINT_YELLOW}12 = Restart Programs\n13 = Stop Programs\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}13 = Restart Programs\n14 = Stop Programs\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}X-Cash DPoPS Testing\n${END_COLOR_PRINT}"
-  echo -ne "${COLOR_PRINT_YELLOW}14 = Mainnet Reset\n15 = Beta/Alpha Test Reset\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}15 = Mainnet Reset\n16 = Beta/Alpha Test Reset\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}Miscellaneous\n${END_COLOR_PRINT}"
-  echo -ne "${COLOR_PRINT_YELLOW}16 = Configure Installation\n17 = Firewall\n18 = Shared Delegates Firewall\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}17 = Configure Installation\n18 = Firewall\n19 = Shared Delegates Firewall\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}Backup\n${END_COLOR_PRINT}"
-  echo -ne "${COLOR_PRINT_YELLOW}19 = Display wallet and xcash-dpops data, and backup shared delegates database\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}20 = Display wallet and xcash-dpops data, and backup shared delegates database\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}Enter the number of the chosen option (default 1): ${END_COLOR_PRINT}"
   read -r data
-  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] || [ "$data" == "11" ] || [ "$data" == "12" ] || [ "$data" == "13" ] || [ "$data" == "14" ] || [ "$data" == "15" ] || [ "$data" == "16" ] || [ "$data" == "17" ] || [ "$data" == "18" ] || [ "$data" == "19" ] && echo "$data" || echo "1")
+  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] || [ "$data" == "11" ] || [ "$data" == "12" ] || [ "$data" == "13" ] || [ "$data" == "14" ] || [ "$data" == "15" ] || [ "$data" == "16" ] || [ "$data" == "17" ] || [ "$data" == "18" ] || [ "$data" == "19" ] || [ "$data" == "20" ] && echo "$data" || echo "1")
   echo -ne "\r"
   # Check if xcash-dpops is already installed, if the user choose to install
   if [ "$INSTALLATION_TYPE_SETTINGS" -eq "1" ]; then
@@ -174,7 +184,7 @@ function get_installation_settings()
   fi
 
   # Check if xcash-dpops is not installed, and if the user choose an option where xcash-dpops needed to be installed
-  if [ "$INSTALLATION_TYPE_SETTINGS" -eq "2" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "3" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "4" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "9" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "10" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "14" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "15" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "16" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "19" ]; then
+  if [ "$INSTALLATION_TYPE_SETTINGS" -eq "2" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "3" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "4" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "5" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "10" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "13" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "14" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "15" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "16" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "17" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "20" ]; then
     data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "xcash-dpops" -print | wc -l)
     if [ "$data" -eq "0" ]; then
       echo -e "\n${COLOR_PRINT_RED}This is an invalid option since xcash-dpops is not installed${END_COLOR_PRINT}"
@@ -1121,7 +1131,6 @@ function update_npm()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Updating NPM${END_COLOR_PRINT}"
   source ~/.profile || true
-  npm install -g npm &>/dev/null
   # npm install -g npm &>/dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Updating NPM${END_COLOR_PRINT}"
   echo
@@ -2423,6 +2432,131 @@ function create_swap_file()
   echo
 }
 
+function restore_mongodb()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Restoring MongoDB${END_COLOR_PRINT}"
+  sudo rm -r "${MONGODB_DIR}"  
+  cd "${XCASH_DPOPS_INSTALLATION_DIR}"
+  wget -q ${MONGODB_RESTORE_URL}
+  tar -xf mongodb-linux-x86_64-*.tgz &>/dev/null
+  sudo rm mongodb-linux-x86_64-*.tgz &>/dev/null
+  MONGODB_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "mongodb-linux-x86_64-ubuntu1804-*" -print)/
+  sudo chown -R "$USER":"$USER" ${MONGODB_DIR}
+  update_systemd_service_files
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_MONGODB}' > /lib/systemd/system/mongodb.service"
+  sed_services 's/\r$//g' /lib/systemd/system/mongodb.service
+  sudo systemctl daemon-reload
+  sudo sed '/mongodb-linux-x86_64-ubuntu1804-/d' -i "${HOME}"/.profile
+  sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
+  echo -ne "\nexport PATH=${MONGODB_DIR}bin:" >> "${HOME}"/.profile 
+  echo -ne '$PATH' >> "${HOME}"/.profile
+  sudo sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' -i "${HOME}"/.profile
+  source ~/.profile || true
+  echo -ne "\r${COLOR_PRINT_GREEN}Restoring MongoDB${END_COLOR_PRINT}"
+  echo
+}
+
+function restore_mongodb_tools()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Restoring MongoDB Tools${END_COLOR_PRINT}"
+  cd "${XCASH_DPOPS_INSTALLATION_DIR}"mongodb-linux-x86_64-*/bin/
+  wget -q ${MONGODB_TOOLS_RESTORE_URL}
+  tar -xf mongodb-database-tools-*.tgz &>/dev/null
+  sudo rm mongodb-database-tools-*.tgz &>/dev/null
+  cp -a mongodb-database-tools-*/bin/* ./
+  sudo rm -rf mongodb-database-tools-*
+  echo -ne "\r${COLOR_PRINT_GREEN}Restoring MongoDB Tools${END_COLOR_PRINT}"
+  echo
+}
+
+function restore_mongoc_driver()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Restoring Mongo C Driver${END_COLOR_PRINT}"
+  cd "${XCASH_DPOPS_INSTALLATION_DIR}"
+  sudo rm -r "${MONGOC_DRIVER_DIR}"
+  wget -q ${MONGOC_DRIVER_RESTORE_URL}
+  tar -xf mongo-c-driver-*.tar.gz &>/dev/null
+  sudo rm mongo-c-driver-*.tar.gz &>/dev/null
+  sudo chown -R "$USER":"$USER" mongo-c-driver-*
+  cd mongo-c-driver-*
+  mkdir cmake-build
+  cd cmake-build
+  cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF -DCMAKE_BUILD_TYPE=Release .. &>/dev/null
+  sudo make -j "${CPU_THREADS}" &>/dev/null
+  sudo make install &>/dev/null
+  sudo ldconfig
+  MONGOC_DRIVER_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "mongo-c-driver-*" -print)/
+  echo -ne "\r${COLOR_PRINT_GREEN}Restoring Mongo C Driver${END_COLOR_PRINT}"
+  echo
+}
+
+function restore_nodejs()
+{
+  echo -ne "${COLOR_PRINT_YELLOW}Restoring NodeJS${END_COLOR_PRINT}"
+  sudo rm -r "${NODEJS_DIR}"  
+  cd "${XCASH_DPOPS_INSTALLATION_DIR}"
+  wget -q ${NODEJS_RESTORE_URL}
+  tar -xf node*.tar.xz &>/dev/null
+  sudo rm node*.tar.xz &>/dev/null
+  NODEJS_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "node-*-linux-x64" -print)/
+  sudo chown -R "$USER":"$USER" ${NODEJS_DIR}
+  sudo sed '/node-v/d' -i "${HOME}"/.profile
+  sudo sed '/PATH=\/bin:/d' -i "${HOME}"/.profile
+  sudo sed '/^[[:space:]]*$/d' -i "${HOME}"/.profile
+  echo -ne "\nexport PATH=${NODEJS_DIR}bin:" >> "${HOME}"/.profile 
+  echo -ne '$PATH' >> "${HOME}"/.profile
+  sudo sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' -i "${HOME}"/.profile
+  source ~/.profile || true
+  echo -ne "\r${COLOR_PRINT_GREEN}Restoring NodeJS${END_COLOR_PRINT}"
+  echo
+}
+
+function restore_tools()
+{
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                  Restoring Tools${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo
+  echo
+
+  # Check if solo node
+  check_if_solo_node
+
+  # Get the installation directory
+  get_installation_directory
+
+  # Stop the systemd service files
+  stop_systemd_service_files
+
+  # Re-set the owner of the install directory (can fix some "edge" issues for some users)
+  set_installation_dir_owner
+
+  # Restore all dependencies
+  restore_mongodb
+  restore_mongodb_tools
+  restore_mongoc_driver
+  if [ "${SHARED_DELEGATE^^}" == "YES" ]; then
+    restore_nodejs
+    install_npm_global_packages
+    configure_npm
+    update_npm
+  fi
+  
+  # Create xcash wallet log symlink to old location
+  touch "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" && sudo rm -f "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log" && ln -s "${XCASH_LOGS_DIR}xcash-wallet-rpc.log" "${XCASH_DIR}build/release/bin/xcash-wallet-rpc.log"
+
+  # Start the systemd service files
+  start_systemd_service_files
+
+  cd ~
+
+  echo
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}          Restoring Tools Has Completed Successfully  ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+}
+
 # Check for a compatible OS
 check_ubuntu_version
 
@@ -2441,36 +2575,36 @@ elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "3" ]; then
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "4" ]; then
   uninstall
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "5" ]; then
+  restore_tools
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "5" ]; then
   install_node
-elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "6" ]; then
-  update_node
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "7" ]; then
-  uninstall_node
+  update_node
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "8" ]; then
-  install_or_update_blockchain
+  uninstall_node
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "9" ]; then
-  change_solo_or_shared_delegate
+  install_or_update_blockchain
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "10" ]; then
-  edit_shared_delegate_settings
+  change_solo_or_shared_delegate
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ]; then
-  register_update_delegate
+  edit_shared_delegate_settings
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ]; then
-  stop_systemd_service_files
-  start_systemd_service_files
+  register_update_delegate
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "13" ]; then
   stop_systemd_service_files
+  start_systemd_service_files
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "14" ]; then
-  test_update
+  stop_systemd_service_files
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "15" ]; then
-  test_update_reset_delegates
+  test_update
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "16" ]; then
-  configure
+  test_update_reset_delegates
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "17" ]; then
-  install_firewall_script
+  configure
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "18" ]; then
-  install_firewall_script_shared_delegates
+  install_firewall_script
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "19" ]; then
+  install_firewall_script_shared_delegates
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "20" ]; then
   backup
 fi
-
-
