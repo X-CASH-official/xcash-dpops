@@ -740,6 +740,7 @@ sleep(BLOCK_VERIFIERS_SETTINGS);
 "--quick-test - Run a quick test to validate the system compatibility. Can take up to around 10 min. Parameter needs to be passed last.\n" \
 "--optimization-test - Run an optimization test to check system performance. Can take up to around 2 min. Parameter needs to be passed last.\n" \
 "--debug - Show all incoming and outgoing messages from the server.\n" \
+"--debug-delegates-error - Show all delegates who did not send any message for parts of the round.\n" \
 "--test-mode <setting> - Use the test network data nodes, with the specific setting (1-9).\n" \
 "--log-file <log_file> - Write all output to a log file with no colors.\n" \
 "--log-file-color <log_file> - Write all output to a log file with colors.\n" \

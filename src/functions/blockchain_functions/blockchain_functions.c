@@ -1365,6 +1365,8 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid previous block hash");
   }  
 
+  RESET_DELEGATE_ERROR_MESSAGE;
+
   // block_validation_node_signature
   if (BLOCK_VALIDATION_SIGNATURES_SETTINGS == 1)
   {
@@ -1409,7 +1411,17 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
         {
           vrf_data_verify_count++;
         }
+        else
+        {
+          memcpy(delegates_error_list+strlen(delegates_error_list),current_block_verifiers_list.block_verifiers_name[count],strlen(current_block_verifiers_list.block_verifiers_name[count]));
+          memcpy(delegates_error_list+strlen(delegates_error_list),"|",1);
+        }
       }
+    }
+    // check for what delegates did not send any response for this round
+    if (delegates_error_list_settings == 1 && vrf_data_verify_count != BLOCK_VERIFIERS_AMOUNT)
+    {
+      color_print(delegates_error_list,"red");   
     }
     if (vrf_data_verify_count < BLOCK_VERIFIERS_VALID_AMOUNT)
     {

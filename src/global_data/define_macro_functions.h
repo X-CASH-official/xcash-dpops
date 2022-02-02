@@ -322,4 +322,18 @@ Return: Writes the correct code
 #define pointer_reset(pointer) \
 free(pointer); \
 pointer = NULL;
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: RESET_DELEGATE_ERROR_MESSAGE
+Description: Resets the error message for showing what delegates did not complete what part of the round
+Return: Writes the correct code
+-----------------------------------------------------------------------------------------------------------
+*/
+
+#define RESET_DELEGATE_ERROR_MESSAGE \
+memset(delegates_error_list,0,sizeof(delegates_error_list)); \
+memcpy(delegates_error_list,"The following delegates are reported as not working for this part:",66);
 #endif
