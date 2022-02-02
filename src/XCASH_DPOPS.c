@@ -741,6 +741,7 @@ int set_parameters(int parameters_count, char* parameters[])
     }
     if (strncmp(parameters[count],"--synchronize-database-from-specific-delegate",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
+      get_delegates_data();
       color_print("Syncing the block verifiers list","yellow");
       sync_all_block_verifiers_list(1,1);
       color_print("Syncing the reserve bytes database","yellow");
