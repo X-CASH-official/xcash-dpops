@@ -48,6 +48,77 @@ Functions
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: check_for_valid_start_and_amount_parameters
+Description: Checks for a valid start and end parameters
+Parameters:
+  START - The start parameter
+  AMOUNT - The amount parameter
+Return: 0 if any of the parameters are invalid, 1 if all of the parameters are valid
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int check_for_valid_start_and_amount_parameters(const char* START, const char* AMOUNT)
+{
+  // Constants
+  const size_t START_LENGTH = strlen(START);
+  const size_t AMOUNT_LENGTH = strlen(AMOUNT);
+
+  // define macros
+  #define VALID_DATA "0123456789"
+
+  // Variables
+  char data[sizeof(VALID_DATA)];
+  size_t count;
+  size_t count2;
+
+  memset(data,0,sizeof(data));
+  memcpy(data,VALID_DATA,sizeof(VALID_DATA)-1);
+
+  // check if the parameters are a valid length
+  if (START_LENGTH > MAXIMUM_NUMBER_SIZE || AMOUNT_LENGTH > MAXIMUM_NUMBER_SIZE || START_LENGTH == 0 || AMOUNT_LENGTH == 0)
+  {
+    return 0;
+  }
+
+  // check if the parameters have any invalid characters
+  for (count = 0; count < START_LENGTH; count++)
+  {
+    for (count2 = 0; count2 < (sizeof(VALID_DATA)-1); count2++)
+    {
+      if (strncmp(&START[count],&data[count2],sizeof(char)) == 0)
+      {
+        break;
+      }
+    }
+    if (count2 == (sizeof(VALID_DATA)-1))
+    {
+      return 0;
+    }
+  }
+
+  for (count = 0; count < AMOUNT_LENGTH; count++)
+  {
+    for (count2 = 0; count2 < (sizeof(VALID_DATA)-1); count2++)
+    {
+      if (strncmp(&AMOUNT[count],&data[count2],sizeof(char)) == 0)
+      {
+        break;
+      }
+    }
+    if (count2 == (sizeof(VALID_DATA)-1))
+    {
+      return 0;
+    }
+  }
+  return 1;
+
+  #undef VALID_DATA
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_shared_delegates_website_get_statistics
 Description: Runs the code when the server receives /shareddelegateswebsitegetstatistics
 Parameters:
@@ -234,18 +305,23 @@ Name: server_receive_data_socket_get_blocks_found
 Description: Runs the code when the server receives /getblocksfound
 Parameters:
   CLIENT_SOCKET - The socket to send data to
+  DATA - The data
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
+int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET,const char* DATA)
 {
   // Variables
   char buffer[1024];
+  char start[MAXIMUM_NUMBER_SIZE+1];
+  char amount[MAXIMUM_NUMBER_SIZE+1];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count = 0;
   size_t counter = 0;
+  size_t start_number;
+  size_t amount_number;
   struct database_multiple_documents_fields database_multiple_documents_fields;
   int document_count = 0;
 
@@ -268,18 +344,55 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET)
   } \
   return 0;
 
+  memset(start,0,sizeof(start));
+  memset(amount,0,sizeof(amount));
+
   // get the total blocks found
   if ((document_count = count_all_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION)) <= 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(1,"The delegate has not found any blocks");
   }
 
+  // make sure their is a start and amount in the parameters
+  if (strstr(DATA,"&start=") == NULL || strstr(DATA,"&amount=") == NULL)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(1,"Invalid parameters");
+  }
+
+  // get the start and amount
+  memcpy(start,&DATA[strlen(DATA) - strlen(strstr(DATA,"&start="))+7],strlen(DATA) - (strlen(strstr(DATA,"&amount=")) + 160));
+  strcpy(amount,&DATA[strlen(DATA) - strlen(strstr(DATA,"&amount="))+8]);
+
+  // if the start is 0 change it to 1
+  if (strncmp(start,"0",1) == 0)
+  {
+    memset(start,0,sizeof(start));
+    memcpy(start,"1",1);
+  }  
+
+  // if the amount says all change it to the total number it has
+  if (strncmp(amount,"all",3) == 0)
+  {
+    memset(amount,0,sizeof(amount));
+    snprintf(amount,MAXIMUM_NUMBER_SIZE,"%d",document_count);
+  }  
+
+  // check if the start and amount string is valid
+  if (check_for_valid_start_and_amount_parameters(start,amount) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(1,"Invalid parameters");
+  }
+
+  // convert the start and amount to a number
+  sscanf(start,"%zu", &start_number);
+  sscanf(amount,"%zu", &amount_number);  
+
   memset(buffer,0,sizeof(buffer));
 
   // initialize the database_multiple_documents_fields struct
   INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS,"server_receive_data_socket_get_blocks_found",buffer,current_date_and_time,current_UTC_date_and_time);
 
-  if (read_multiple_documents_all_fields_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,1,document_count,0,"") == 0)
+  if (read_multiple_documents_all_fields_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,start_number,amount_number,0,"") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(0,"Could not get the delegates blocks found data");
   }
@@ -367,7 +480,7 @@ int server_receive_data_socket_get_public_address_information(const int CLIENT_S
   if (strncmp(data2,"",sizeof(data2)) == 0 || strncmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strnlen(data2,sizeof(data2)) != XCASH_WALLET_LENGTH)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_INFORMATION_ERROR(1,"Invalid parameters");
-  } 
+  }
   
   // check if the data is a public address or a delegate name
   memcpy(message,"{\"",2);
@@ -423,10 +536,14 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   // Variables
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
+  char start[MAXIMUM_NUMBER_SIZE+1];
+  char amount[MAXIMUM_NUMBER_SIZE+1];
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count = 0;
   size_t counter = 0;
+  size_t start_number;
+  size_t amount_number;
   struct database_multiple_documents_fields database_multiple_documents_fields;
   int document_count = 0;
 
@@ -451,6 +568,8 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
 
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
+  memset(start,0,sizeof(start));
+  memset(amount,0,sizeof(amount));
 
   // get the parameter1
   memcpy(data2,&DATA[55],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-55);
@@ -460,7 +579,7 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(1,"Invalid parameters");
   }
-  
+
   // check if there is any data in the database that matches the message
   memcpy(data3,"{\"",2);
   memcpy(data3+2,"public_address\":\"",17);
@@ -471,11 +590,45 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(1,"There is no payment data for the public address");
   }
+
+  // make sure their is a start and amount in the parameters
+  if (strstr(DATA,"&start=") == NULL || strstr(DATA,"&amount=") == NULL)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(1,"Invalid parameters");
+  }
+
+  // get the start and amount
+  memcpy(start,&DATA[strlen(DATA) - strlen(strstr(DATA,"&start="))+7],strlen(DATA) - (strlen(strstr(DATA,"&amount=")) + 160));
+  strcpy(amount,&DATA[strlen(DATA) - strlen(strstr(DATA,"&amount="))+8]);
+
+  // if the start is 0 change it to 1
+  if (strncmp(start,"0",1) == 0)
+  {
+    memset(start,0,sizeof(start));
+    memcpy(start,"1",1);
+  }  
+
+  // if the amount says all change it to the total number it has
+  if (strncmp(amount,"all",3) == 0)
+  {
+    memset(amount,0,sizeof(amount));
+    snprintf(amount,MAXIMUM_NUMBER_SIZE,"%d",document_count);
+  }  
+
+  // check if the start and amount string is valid
+  if (check_for_valid_start_and_amount_parameters(start,amount) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(1,"Invalid parameters");
+  }
+
+  // convert the start and amount to a number
+  sscanf(start,"%zu", &start_number);
+  sscanf(amount,"%zu", &amount_number);  
   
   // initialize the database_multiple_documents_fields struct
   INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_PUBLIC_ADDRESSES_PAYMENTS_DATABASE_FIELDS,"server_receive_data_socket_get_public_address_payment_information",data2,current_date_and_time,current_UTC_date_and_time);
   
-  if (read_multiple_documents_all_fields_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,data3,&database_multiple_documents_fields,1,document_count,0,"") == 0)
+  if (read_multiple_documents_all_fields_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,data3,&database_multiple_documents_fields,start_number,amount_number,0,"") == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(0,"Could not get the payment data for the public address");
   }

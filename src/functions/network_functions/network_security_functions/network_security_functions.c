@@ -960,7 +960,7 @@ int validate_data(const char* MESSAGE)
         VALIDATE_DATA_ERROR("Invalid message");
       } 
     }
-    if (strncmp(MESSAGE,"GET /checkvotestatus?parameter1=",32) == 0)
+    else if (strncmp(MESSAGE,"GET /checkvotestatus?parameter1=",32) == 0)
     {
       if (strlen(&MESSAGE[32]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[32]," HTTP/") == NULL)
       {
@@ -985,6 +985,14 @@ int validate_data(const char* MESSAGE)
         }
       }
     }
+    else if (strncmp(MESSAGE,"GET /delegateswebsitegetstatistics HTTP/",40) == 0 || strncmp(MESSAGE,"GET /getdelegates HTTP/",23) == 0)
+    {
+
+    }
+    else 
+    {
+      VALIDATE_DATA_ERROR("Invalid message");
+    }
   }
   else if (shared_delegates_website == 1)
   {
@@ -1008,6 +1016,14 @@ int validate_data(const char* MESSAGE)
       {
         VALIDATE_DATA_ERROR("Invalid message");
       } 
+    }
+    else if (strncmp(MESSAGE,"GET /shareddelegateswebsitegetstatistics HTTP/",46) == 0 || strncmp(MESSAGE,"GET /getblocksfound?start=",26) == 0)
+    {
+
+    }
+    else
+    {
+      VALIDATE_DATA_ERROR("Invalid message");
     }
   }
   else
