@@ -735,7 +735,18 @@ int set_parameters(int parameters_count, char* parameters[])
     }
     if (strncmp(parameters[count],"--synchronize-database-from-network-data-node",BUFFER_SIZE) == 0)
     {
-      check_if_databases_are_synced(2,0);
+      get_delegates_data();
+      color_print("Syncing the block verifiers list","yellow");
+      sync_all_block_verifiers_list(1,1);
+      color_print("Syncing the reserve bytes database","yellow");
+      sync_reserve_bytes_database(2,0,"");
+      color_print("Syncing the reserve proofs database","yellow");
+      sync_reserve_proofs_database(2,"");
+      color_print("Syncing the delegates database","yellow");
+      sync_delegates_database(2,"");
+      color_print("Syncing the statistics database","yellow");
+      sync_statistics_database(2,"");
+      color_print("Successfully synced all databases","yellow");
       database_reset;
       exit(0);
     }
