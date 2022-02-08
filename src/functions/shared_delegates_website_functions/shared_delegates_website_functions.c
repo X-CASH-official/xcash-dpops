@@ -354,14 +354,14 @@ int server_receive_data_socket_get_blocks_found(const int CLIENT_SOCKET,const ch
   }
 
   // make sure their is a start and amount in the parameters
-  if (strstr(DATA,"&start=") == NULL || strstr(DATA,"&amount=") == NULL)
+  if (strstr(DATA,"start=") == NULL || strstr(DATA,"&amount=") == NULL)
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_BLOCKS_FOUND_ERROR(1,"Invalid parameters");
   }
 
   // get the start and amount
-  memcpy(start,&DATA[strlen(DATA) - strlen(strstr(DATA,"&start="))+7],strlen(DATA) - (strlen(strstr(DATA,"&amount=")) + 160));
-  strcpy(amount,&DATA[strlen(DATA) - strlen(strstr(DATA,"&amount="))+8]);
+  memcpy(start,&DATA[26],(strlen(DATA) - strlen(strstr(DATA,"&amount")))-26);
+  memcpy(amount,&DATA[strlen(DATA) - strlen(strstr(DATA,"&amount="))+8],(strlen(DATA) - strlen(strstr(DATA," HTTP/")))-(((strlen(DATA) - strlen(strstr(DATA,"&amount="))))+8));
 
   // if the start is 0 change it to 1
   if (strncmp(start,"0",1) == 0)
@@ -598,8 +598,8 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   }
 
   // get the start and amount
-  memcpy(start,&DATA[strlen(DATA) - strlen(strstr(DATA,"&start="))+7],strlen(DATA) - (strlen(strstr(DATA,"&amount=")) + 160));
-  strcpy(amount,&DATA[strlen(DATA) - strlen(strstr(DATA,"&amount="))+8]);
+  memcpy(start,&DATA[156],(strlen(DATA) - strlen(strstr(DATA,"&amount")))-156);
+memcpy(amount,&DATA[strlen(DATA) - strlen(strstr(DATA,"&amount="))+8],(strlen(DATA) - strlen(strstr(DATA," HTTP/")))-(((strlen(DATA) - strlen(strstr(DATA,"&amount="))))+8));
 
   // if the start is 0 change it to 1
   if (strncmp(start,"0",1) == 0)
