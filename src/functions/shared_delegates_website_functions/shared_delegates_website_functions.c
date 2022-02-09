@@ -571,8 +571,13 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   memset(start,0,sizeof(start));
   memset(amount,0,sizeof(amount));
 
+  if (strstr(DATA,"public_address=") == NULL || (strlen(strstr(DATA,"public_address="))-15) < (XCASH_WALLET_LENGTH+10))
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(1,"Invalid parameters");
+  }
+
   // get the parameter1
-  memcpy(data2,&DATA[55],(strnlen(DATA,sizeof(data2)) - strnlen(strstr(DATA," HTTP/"),sizeof(data2)))-55);
+  memcpy(data2,&DATA[55],XCASH_WALLET_LENGTH);
 
   // error check
   if (strncmp(data2,"",BUFFER_SIZE) == 0 || strncmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strnlen(data2,BUFFER_SIZE) != XCASH_WALLET_LENGTH)
@@ -598,8 +603,8 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   }
 
   // get the start and amount
-  memcpy(start,&DATA[156],(strlen(DATA) - strlen(strstr(DATA,"&amount")))-156);
-memcpy(amount,&DATA[strlen(DATA) - strlen(strstr(DATA,"&amount="))+8],(strlen(DATA) - strlen(strstr(DATA," HTTP/")))-(((strlen(DATA) - strlen(strstr(DATA,"&amount="))))+8));
+  memcpy(start,&DATA[160],(strlen(DATA) - strlen(strstr(DATA,"&amount")))-160);
+  memcpy(amount,&DATA[strlen(DATA) - strlen(strstr(DATA,"&amount="))+8],(strlen(DATA) - strlen(strstr(DATA," HTTP/")))-(((strlen(DATA) - strlen(strstr(DATA,"&amount="))))+8));
 
   // if the start is 0 change it to 1
   if (strncmp(start,"0",1) == 0)
