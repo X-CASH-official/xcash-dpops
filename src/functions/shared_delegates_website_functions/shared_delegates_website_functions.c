@@ -571,7 +571,7 @@ int server_receive_data_socket_get_public_address_payment_information(const int 
   memset(start,0,sizeof(start));
   memset(amount,0,sizeof(amount));
 
-  if (strstr(DATA,"public_address=") == NULL || (strlen(strstr(DATA,"public_address="))-15) < (XCASH_WALLET_LENGTH+10))
+  if (strstr(DATA,"public_address=") == NULL || (strlen(strstr(DATA,"public_address="))+15) < (XCASH_WALLET_LENGTH+10))
   {
     SERVER_RECEIVE_DATA_SOCKET_GET_PUBLIC_ADDRESS_PAYMENT_INFORMATION_ERROR(1,"Invalid parameters");
   }
