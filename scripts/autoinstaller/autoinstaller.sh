@@ -2577,7 +2577,7 @@ elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "4" ]; then
   uninstall
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "5" ]; then
   restore_tools
-elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "5" ]; then
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "6" ]; then
   install_node
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "7" ]; then
   update_node
