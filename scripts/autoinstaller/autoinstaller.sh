@@ -1206,7 +1206,7 @@ function install_shared_delegates_website()
 function get_installation_directory()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Getting Installation Directories${END_COLOR_PRINT}"
-  XCASH_DPOPS_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -path "*/$MAIN_INSTALL_DIRECTORY/*" -type d -name "xcash-dpops" -exec dirname {} \;)/
+  XCASH_DPOPS_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "$MAIN_INSTALL_DIRECTORY" -print)/
   XCASH_BLOCKCHAIN_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name ".X-CASH" -print)/
   WALLET_PASSWORD=$(cat /lib/systemd/system/xcash-rpc-wallet.service | awk '/password/ {print $5}')
   XCASH_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-core/
@@ -1736,7 +1736,7 @@ function quick_update()
   echo
   echo
 
-  XCASH_DPOPS_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -path "*/$MAIN_INSTALL_DIRECTORY/*" -type d -name "xcash-dpops" -exec dirname {} \;)/
+  XCASH_DPOPS_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "$MAIN_INSTALL_DIRECTORY" -print)/
   XCASH_DPOPS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-dpops/
 
   update_xcash_dpops
