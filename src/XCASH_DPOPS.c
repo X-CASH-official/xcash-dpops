@@ -119,6 +119,8 @@ char* server_limit_public_address_list; // holds all of the public addresses tha
 int invalid_block_verifiers_count; // counts how many times your node did not receive the block from the main network backup node, to indicate if your node is not syncing
 int backup_network_data_node_settings; // The network data node that will attempt to create the block if the block producer and backup block producer fail
 int replayed_round_settings; // 1 if the round is a replayed round, 0 if not
+char delegates_error_list[(MAXIMUM_BUFFER_SIZE_DELEGATES_NAME * 100) + 5000]; // Holds the list of delegates that did not complete a part of the round
+int delegates_error_list_settings; // 1 if showing the delegates that error, 0 if not
 
 int delegates_website; // 1 if the running the delegates websites, 0 if not
 int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not
@@ -197,6 +199,7 @@ void initialize_data(int parameters_count, char* parameters[])
   database_data_socket_settings = 0;
   invalid_block_verifiers_count = 0;
   replayed_round_settings = 0;
+  delegates_error_list_settings = 0;
 
   pthread_rwlock_init(&rwlock,NULL);
   pthread_rwlock_init(&rwlock_reserve_proofs,NULL);
@@ -685,6 +688,10 @@ int set_parameters(int parameters_count, char* parameters[])
     {
       debug_settings = 1;
     }
+    if (strncmp(parameters[count],"--debug-delegates-error",BUFFER_SIZE) == 0)
+    {
+      delegates_error_list_settings = 1;
+    }
     if (strncmp(parameters[count],"--delegates-ip-address",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
       memset(XCASH_DPOPS_delegates_IP_address,0,strlen(XCASH_DPOPS_delegates_IP_address));
@@ -728,7 +735,18 @@ int set_parameters(int parameters_count, char* parameters[])
     }
     if (strncmp(parameters[count],"--synchronize-database-from-network-data-node",BUFFER_SIZE) == 0)
     {
-      check_if_databases_are_synced(2,0);
+      get_delegates_data();
+      color_print("Syncing the block verifiers list","yellow");
+      sync_all_block_verifiers_list(1,1);
+      color_print("Syncing the reserve bytes database","yellow");
+      sync_reserve_bytes_database(2,0,"");
+      color_print("Syncing the reserve proofs database","yellow");
+      sync_reserve_proofs_database(2,"");
+      color_print("Syncing the delegates database","yellow");
+      sync_delegates_database(2,"");
+      color_print("Syncing the statistics database","yellow");
+      sync_statistics_database(2,"");
+      color_print("Successfully synced all databases","yellow");
       database_reset;
       exit(0);
     }

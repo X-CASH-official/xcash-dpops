@@ -90,6 +90,8 @@ extern char* server_limit_public_address_list; // holds all of the public addres
 extern int invalid_block_verifiers_count; // counts how many times your node did not receive the block from the main network backup node, to indicate if your node is not syncing
 extern int backup_network_data_node_settings; // The network data node that will attempt to create the block if the block producer and backup block producer fail
 extern int replayed_round_settings; // 1 if the round is a replayed round, 0 if not
+extern char delegates_error_list[(MAXIMUM_BUFFER_SIZE_DELEGATES_NAME * 100) + 5000]; // Holds the list of delegates that did not complete a part of the round
+extern int delegates_error_list_settings; // 1 if showing the delegates that error, 0 if not
 
 extern int delegates_website; // 1 if the running the delegates websites, 0 if not
 extern int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not
@@ -99,4 +101,3 @@ extern long long int minimum_amount; // the minimum amount to send a payment
 extern char voter_inactivity_count[10]; // the number of days to wait to remove an inactive delegates information from the database
 
 #endif
-

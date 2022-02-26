@@ -1629,7 +1629,7 @@ int block_verifiers_create_block(void)
   size_t count2;
   int count3;
 
-  // define macros
+  // define macros  
   #define RESTART_ROUND(message) \
   color_print("\n","white"); \
   color_print(message,"red"); \
@@ -1845,6 +1845,7 @@ count = BLOCK_VERIFIERS_AMOUNT;
 
 
     color_print("Part 9 - Check if there was an overall majority for the VRF data","yellow");
+    RESET_DELEGATE_ERROR_MESSAGE;
 
     // process the data
     for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -1853,7 +1854,18 @@ count = BLOCK_VERIFIERS_AMOUNT;
       {
         count2++;
       }
+      else
+      {
+        memcpy(delegates_error_list+strlen(delegates_error_list),current_block_verifiers_list.block_verifiers_name[count],strlen(current_block_verifiers_list.block_verifiers_name[count]));
+        memcpy(delegates_error_list+strlen(delegates_error_list),"|",1);
+      }
     }
+
+    // check for what delegates did not send any response for this round
+    if (delegates_error_list_settings == 1 && count2 != BLOCK_VERIFIERS_AMOUNT)
+    {
+      color_print(delegates_error_list,"red");   
+    }    
 
     // check for an overall majority
     if (count2 >= BLOCK_VERIFIERS_VALID_AMOUNT)
@@ -2063,6 +2075,7 @@ count = BLOCK_VERIFIERS_AMOUNT;
     // at this point all block verifiers should have the same VRF data, network block string and all block verifiers signed data
 
     color_print("Part 20 - Check if there was an overall majority for the block template signature","yellow");
+    RESET_DELEGATE_ERROR_MESSAGE;
 
     // process the data and add the block verifiers signatures to the block
     for (count = 0, count2 = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -2071,6 +2084,17 @@ count = BLOCK_VERIFIERS_AMOUNT;
       {
         count2++;
       }
+      else
+      {
+        memcpy(delegates_error_list+strlen(delegates_error_list),current_block_verifiers_list.block_verifiers_name[count],strlen(current_block_verifiers_list.block_verifiers_name[count]));
+        memcpy(delegates_error_list+strlen(delegates_error_list),"|",1);
+      }
+    }
+
+    // check for what delegates did not send any response for this round
+    if (delegates_error_list_settings == 1 && count2 != BLOCK_VERIFIERS_AMOUNT)
+    {
+      color_print(delegates_error_list,"red");   
     }
 
     // check for an overall majority
