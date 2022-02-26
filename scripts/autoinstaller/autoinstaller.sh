@@ -28,7 +28,7 @@ BLOCK_VERIFIERS_SECRET_KEY_LENGTH=128
 BLOCK_VERIFIERS_PUBLIC_KEY_LENGTH=64
 DPOPS_FEE=0
 DPOPS_MINIMUM_AMOUNT=0
-XCASH_DPOPS_BLOCK_HEIGHT=880000
+XCASH_DPOPS_BLOCK_HEIGHT=800000
 
 # Latest versions
 MONGODB_LATEST_VERSION="mongodb-linux-x86_64-ubuntu1804-4.4.1"
@@ -48,14 +48,14 @@ MONGOC_DRIVER_RESTORE_URL="https://github.com/mongodb/mongo-c-driver/releases/do
 
 # Settings
 XCASH_URL="https://github.com/X-CASH-official/xcash-core.git"
-XCASH_CORE_BRANCH="dpops-test"
+XCASH_CORE_BRANCH="master"
 XCASH_BLOCKCHAIN_BOOTSTRAP_URL="http://94.130.59.172/xcash-blockchain.7z"
 XCASH_DIR=""
 XCASH_WALLET_DIR=""
 XCASH_SYSTEMPID_DIR=""
 XCASH_LOGS_DIR=""
 XCASH_DPOPS_URL="https://github.com/X-CASH-official/xcash-dpops.git"
-XCASH_DPOPS_BRANCH="dpops-test"
+XCASH_DPOPS_BRANCH="master"
 XCASH_DPOPS_DIR=""
 XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR=""
 SHARED_DELEGATES_WEBSITE_URL="https://github.com/X-CASH-official/delegates-pool-website.git"
