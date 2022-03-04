@@ -985,6 +985,25 @@ int validate_data(const char* MESSAGE)
         }
       }
     }
+
+
+
+
+    // remote data
+    else if (strncmp(MESSAGE,"GET /remotedatagetaddresssettings?parameter1=",45) == 0)
+    {
+      if (strlen(&MESSAGE[45]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[45]," HTTP/") == NULL)
+      {
+        VALIDATE_DATA_ERROR("Invalid message");
+      }      
+    }
+    else if (strncmp(MESSAGE,"GET /remotedatagetaddressfromname?parameter1=",45) == 0)
+    {
+      if (strlen(&MESSAGE[45]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[45]," HTTP/") == NULL)
+      {
+        VALIDATE_DATA_ERROR("Invalid message");
+      }      
+    }
   }
   else if (shared_delegates_website == 1)
   {

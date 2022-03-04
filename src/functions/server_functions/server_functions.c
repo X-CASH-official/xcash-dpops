@@ -854,6 +854,19 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }
+ else if (strstr(buffer,"GET /") != NULL && strstr(&buffer[5]," HTTP/") != NULL && (delegates_website == 1 || shared_delegates_website == 1))
+ {
+   if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
+   {
+     server_receive_data_socket_get_files(CLIENT_SOCKET,(const char*)buffer);
+     server_limit_IP_addresses(0,(const char*)client_IP_address);
+   }
+ }
+
+
+
+
+ // remote data
  else if (strstr(buffer,"NODE_TO_NETWORK_DATA_NODES_REMOTE_DATA_GET_ADDRESS_SETTINGS") != NULL)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
@@ -870,14 +883,23 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }
- else if (strstr(buffer,"GET /") != NULL && strstr(&buffer[5]," HTTP/") != NULL && (delegates_website == 1 || shared_delegates_website == 1))
+ else if (strstr(buffer,"GET /remotedatagetaddresssettings?parameter1=") != NULL && delegates_website == 1)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
-     server_receive_data_socket_get_files(CLIENT_SOCKET,(const char*)buffer);
+     server_receive_data_socket_remote_data_get_address_settings(CLIENT_SOCKET,(const char*)buffer);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
- }
+ } 
+ else if (strstr(buffer,"GET /remotedatagetaddressfromname?parameter1=") != NULL && delegates_website == 1)
+ {
+   if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
+   {
+     server_receive_data_socket_remote_data_get_address_from_name(CLIENT_SOCKET,(const char*)buffer);
+     server_limit_IP_addresses(0,(const char*)client_IP_address);
+   }
+ } 
+ 
 
 
  // print or reset the error messages
