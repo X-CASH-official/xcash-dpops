@@ -554,3 +554,289 @@ int server_receive_data_socket_remote_data_get_address_from_name(const int CLIEN
   #undef REMOTE_DATA_GET_ADDRESS_FROM_NAME_ERROR
   #undef REMOTE_DATA_GET_ADDRESS_FROM_NAME_STATUS
 }
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_nodes_to_network_data_nodes_remote_data_get_information_from_name
+Description: Runs the code when the server receives the NODE_TO_NETWORK_DATA_NODES_REMOTE_DATA_GET_INFORMATION_FROM_NAME message
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  MESSAGE - The message
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void server_receive_data_socket_nodes_to_network_data_nodes_remote_data_get_information_from_name(const int CLIENT_SOCKET, const char* MESSAGE)
+{
+  // Variables
+  char name[REMOTE_DATA_NAME_MAXIMUM_LENGTH+1];
+  char message[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
+  int count;
+  int count2;
+  int name_settings_length;
+  long int registration_length;
+  size_t data_size;
+
+  // define macros
+  #define DATABASE_COLLECTION "remote_data"
+  #define REMOTE_DATA_GET_INFORMATION_FROM_NAME_ERROR \
+  if (debug_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_network_data_nodes_remote_data_get_information_from_name",92); \
+    memcpy(error_message.data[error_message.total],"Error: Could not get the address settings",41); \
+    error_message.total++; \
+  } \
+  memset(message,0,strlen(message)); \
+  memcpy(message,"Error: Could not get the address settings}",42); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,0,0,""); \
+  return;
+
+  #define REMOTE_DATA_GET_INFORMATION_FROM_NAME_STATUS(settings) \
+  memset(message,0,strlen(message)); \
+  memcpy(message,settings,strlen(settings)); \
+  memcpy(message+strlen(message),"}",1); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,0,0,""); \
+  return;
+  
+  memset(name,0,sizeof(name));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+  memset(message,0,sizeof(message));
+
+  // parse the message
+  for (count = 0, count2 = 0; count < REMOTE_DATA_GET_ADDRESS_FROM_NAME_PARAMETER_AMOUNT; count++)
+  {
+    if (count == 1)
+    {
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) > REMOTE_DATA_NAME_MAXIMUM_LENGTH)
+      {
+        REMOTE_DATA_GET_INFORMATION_FROM_NAME_ERROR;
+      }
+      memcpy(name,&MESSAGE[count2],data_size);
+    }
+    count2 = (int)(strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1);
+  }
+
+  // validate the name settings
+  if (strstr(name,".xcash") != NULL)
+  {
+    name_settings_length = 6;
+  }
+  else if (strstr(name,".sxcash") != NULL)
+  {
+    name_settings_length = 7;
+  }
+  else if (strstr(name,".pxcash") != NULL)
+  {
+    name_settings_length = 7;
+  }
+  else if (strstr(name,".website") != NULL)
+  {
+    name_settings_length = 8;
+  }
+  else
+  {
+    REMOTE_DATA_GET_INFORMATION_FROM_NAME_ERROR;
+  }
+
+  // check if the tx_hash is empty or the name is expired
+
+  // create the message
+  memcpy(message,"{\"name\":\"",9);
+  memcpy(message+strlen(message),name,strlen(name)-name_settings_length);
+  memcpy(message+strlen(message),"\"}",2);
+
+  if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"timestamp",data2) == 1 && read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"tx_hash",data3) == 1)
+  {
+    // check if the name has a valid registration and a valid tx_hash
+    sscanf(data2,"%ld", &registration_length);
+    if ((registration_length + REMOTE_DATA_REGISTRATION_LENGTH) < time(NULL) || strlen(data3) != TRANSACTION_HASH_LENGTH)
+    {
+      REMOTE_DATA_GET_INFORMATION_FROM_NAME_ERROR;
+    }
+  }
+  else
+  {
+    REMOTE_DATA_GET_INFORMATION_FROM_NAME_ERROR;
+  }
+
+  // get the remote data
+  memset(data2,0,sizeof(data2));
+  if (strstr(name,".xcash") != NULL)
+  {
+    if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"address",data2) == 1)
+    {
+      REMOTE_DATA_GET_INFORMATION_FROM_NAME_STATUS(data2);
+    }
+  }
+  else if (strstr(name,".sxcash") != NULL)
+  {
+    if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"saddress",data2) == 1)
+    {
+      REMOTE_DATA_GET_INFORMATION_FROM_NAME_STATUS(data2);
+    }
+  }
+  else if (strstr(name,".pxcash") != NULL)
+  {
+    if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"paddress",data2) == 1)
+    {
+      REMOTE_DATA_GET_INFORMATION_FROM_NAME_STATUS(data2);
+    }
+  }
+  else if (strstr(name,".website") != NULL)
+  {
+    if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"website",data2) == 1)
+    {
+      REMOTE_DATA_GET_INFORMATION_FROM_NAME_STATUS(data2);
+    }
+  }
+  
+  REMOTE_DATA_GET_INFORMATION_FROM_NAME_ERROR;
+
+  #undef DATABASE_COLLECTION
+  #undef REMOTE_DATA_GET_INFORMATION_FROM_NAME_ERROR
+  #undef REMOTE_DATA_GET_INFORMATION_FROM_NAME_STATUS
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_remote_data_get_information_from_name
+Description: Runs the code when the server receives /remotedatagetinformationfromname
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  DATA - The data
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_remote_data_get_information_from_name(const int CLIENT_SOCKET, const char* DATA)
+{
+  // Variables
+  char name[REMOTE_DATA_NAME_MAXIMUM_LENGTH+1];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
+  char message[BUFFER_SIZE];
+  int name_settings_length;
+  long int registration_length;
+
+  // define macros
+  #define DATABASE_COLLECTION "remote_data"
+  #define REMOTE_DATA_GET_INFORMATION_FROM_NAME_ERROR \
+  if (debug_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_remote_data_get_information_from_name",64); \
+    memcpy(error_message.data[error_message.total],"Invalid parameters",18); \
+    error_message.total++; \
+  } \
+  memset(message,0,strlen(message)); \
+  memcpy(message,"{\"Error\":\"Could not get the remote_data\"}",41); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
+  return 0;
+
+  #define REMOTE_DATA_GET_INFORMATION_FROM_NAME_STATUS(settings) \
+  memset(message,0,strlen(message)); \
+  memcpy(message,"{\"remote_data\":\"",16); \
+  memcpy(message+strlen(message),settings,strlen(settings)); \
+  memcpy(message+strlen(message),"\"}",2); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json"); \
+  return 1;
+  
+  memset(name,0,sizeof(name));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+  memset(message,0,sizeof(message));
+
+  // get the parameter1
+  memcpy(name,&DATA[49],(strnlen(DATA,sizeof(name)) - strnlen(strstr(DATA," HTTP/"),sizeof(name)))-49);
+
+  // error check
+  if (strncmp(name,"",BUFFER_SIZE) == 0 || strlen(name) > REMOTE_DATA_NAME_MAXIMUM_LENGTH)
+  {
+    REMOTE_DATA_GET_INFORMATION_FROM_NAME_ERROR;
+  } 
+
+  // validate the name settings
+  if (strstr(name,".xcash") != NULL)
+  {
+    name_settings_length = 6;
+  }
+  else if (strstr(name,".sxcash") != NULL)
+  {
+    name_settings_length = 7;
+  }
+  else if (strstr(name,".pxcash") != NULL)
+  {
+    name_settings_length = 7;
+  }
+  else if (strstr(name,".website") != NULL)
+  {
+    name_settings_length = 8;
+  }
+  else
+  {
+    REMOTE_DATA_GET_INFORMATION_FROM_NAME_ERROR;
+  }
+
+  // check if the tx_hash is empty or the name is expired
+
+  // create the message
+  memcpy(message,"{\"name\":\"",9);
+  memcpy(message+strlen(message),name,strlen(name)-name_settings_length);
+  memcpy(message+strlen(message),"\"}",2);
+
+  if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"timestamp",data2) == 1 && read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"tx_hash",data3) == 1)
+  {
+    // check if the name has a valid registration and a valid tx_hash
+    sscanf(data2,"%ld", &registration_length);
+    if ((registration_length + REMOTE_DATA_REGISTRATION_LENGTH) < time(NULL) || strlen(data3) != TRANSACTION_HASH_LENGTH)
+    {
+      REMOTE_DATA_GET_INFORMATION_FROM_NAME_ERROR;
+    }
+  }
+  else
+  {
+    REMOTE_DATA_GET_INFORMATION_FROM_NAME_ERROR;
+  }
+
+  // get the remote data
+  memset(data2,0,sizeof(data2));
+  if (strstr(name,".xcash") != NULL)
+  {
+    if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"address",data2) == 1)
+    {
+      REMOTE_DATA_GET_INFORMATION_FROM_NAME_STATUS(data2);
+    }
+  }
+  else if (strstr(name,".sxcash") != NULL)
+  {
+    if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"saddress",data2) == 1)
+    {
+      REMOTE_DATA_GET_INFORMATION_FROM_NAME_STATUS(data2);
+    }
+  }
+  else if (strstr(name,".pxcash") != NULL)
+  {
+    if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"paddress",data2) == 1)
+    {
+      REMOTE_DATA_GET_INFORMATION_FROM_NAME_STATUS(data2);
+    }
+  }
+  else if (strstr(name,".website") != NULL)
+  {
+    if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"website",data2) == 1)
+    {
+      REMOTE_DATA_GET_INFORMATION_FROM_NAME_STATUS(data2);
+    }
+  }
+  
+  REMOTE_DATA_GET_INFORMATION_FROM_NAME_ERROR;
+
+  #undef DATABASE_COLLECTION
+  #undef REMOTE_DATA_GET_INFORMATION_FROM_NAME_ERROR
+  #undef REMOTE_DATA_GET_INFORMATION_FROM_NAME_STATUS
+}

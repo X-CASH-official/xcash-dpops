@@ -1829,6 +1829,11 @@ memset(data_test,0,sizeof(data_test));
 
 
 // Remote data
+#define REMOTE_DATA_FUNCTIONS_TOTAL_TEST 2
+#define TEST_REMOTE_DATA_NAME "test" // the remote data name used for test
+#define TEST_REMOTE_DATA_ADDRESS_NAME "test.xcash" // the remote data name used for test
+#define TEST_REMOTE_DATA_PRIVATE_TRANSACTIONS_NAME "test.sxcash" // the remote data name used for test
+#define TEST_REMOTE_DATA_PUBLIC_TRANSACTIONS_NAME "test.pxcash" // the remote data name used for test
 
 /*
   The purpose of this message is for a node to get an address remote data settings
@@ -1846,13 +1851,18 @@ memset(data_test,0,sizeof(data_test));
   message_settings - The type of the message
   name - the name to get the public address for.
   */
-  #define NODE_TO_NETWORK_DATA_NODES_GET_ADDRESS_FROM_NAME "NODE_TO_NETWORK_DATA_NODES_GET_ADDRESS_FROM_NAME|" TEST_REMOTE_DATA_NAME "|"
+  #define NODE_TO_NETWORK_DATA_NODES_GET_ADDRESS_FROM_NAME "NODE_TO_NETWORK_DATA_NODES_GET_ADDRESS_FROM_NAME|" TEST_REMOTE_DATA_ADDRESS_NAME "|"
 
 
 
-#define REMOTE_DATA_FUNCTIONS_TOTAL_TEST 2
-#define TEST_REMOTE_DATA_NAME "test.xcash" // the remote data name used for test
-#define TEST_REMOTE_DATA_PRIVATE_TRANSACTIONS_NAME "test.sxcash" // the remote data name used for test
-#define TEST_REMOTE_DATA_PUBLIC_TRANSACTIONS_NAME "test.pxcash" // the remote data name used for test
+  /*
+  The purpose of this message is for a node to get all information from a name
+ 
+  message_settings - The type of the message
+  name - the name to get the information for.
+  */
+  #define NODE_TO_NETWORK_DATA_NODES_GET_INFORMATION_FROM_NAME "NODE_TO_NETWORK_DATA_NODES_GET_INFORMATION_FROM_NAME|" TEST_REMOTE_DATA_NAME "|"
+
+
 
 #endif

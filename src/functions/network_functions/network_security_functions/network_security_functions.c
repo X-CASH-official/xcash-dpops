@@ -670,7 +670,7 @@ int validate_data(const char* MESSAGE)
   memset(data,0,sizeof(data));
 
   // check if the format is correct for each message
-  if (strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_GET_ADDRESS_SETTINGS") != NULL || strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_GET_ADDRESS_FROM_NAME") != NULL || strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") != NULL || strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_CHECK_VOTE_STATUS") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE") != NULL || strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH") != NULL || strstr(MESSAGE,"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD") != NULL || strstr(MESSAGE,"GET /delegateswebsitegetstatistics HTTP/") != NULL || strstr(MESSAGE,"GET /getdelegates HTTP/") != NULL || strncmp(MESSAGE,"GET /getdelegatesstatistics?parameter1=",39) == 0 || strncmp(MESSAGE,"GET /getdelegatesinformation?parameter1=",40) == 0)
+  if (strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_GET_ADDRESS_SETTINGS") != NULL || strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_GET_ADDRESS_FROM_NAME") != NULL || strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_GET_INFORMATION_SETTINGS") != NULL || strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") != NULL || strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_CHECK_VOTE_STATUS") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE") != NULL || strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH") != NULL || strstr(MESSAGE,"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD") != NULL || strstr(MESSAGE,"GET /delegateswebsitegetstatistics HTTP/") != NULL || strstr(MESSAGE,"GET /getdelegates HTTP/") != NULL || strncmp(MESSAGE,"GET /getdelegatesstatistics?parameter1=",39) == 0 || strncmp(MESSAGE,"GET /getdelegatesinformation?parameter1=",40) == 0)
   {
     return 1;
   }
@@ -1000,6 +1000,13 @@ int validate_data(const char* MESSAGE)
     else if (strncmp(MESSAGE,"GET /remotedatagetaddressfromname?parameter1=",45) == 0)
     {
       if (strlen(&MESSAGE[45]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[45]," HTTP/") == NULL)
+      {
+        VALIDATE_DATA_ERROR("Invalid message");
+      }      
+    }
+    else if (strncmp(MESSAGE,"GET /remotedatagetinformationfromname?parameter1=",49) == 0)
+    {
+      if (strlen(&MESSAGE[49]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[49]," HTTP/") == NULL)
       {
         VALIDATE_DATA_ERROR("Invalid message");
       }      
