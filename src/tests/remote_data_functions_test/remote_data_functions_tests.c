@@ -499,6 +499,86 @@ int remote_data_functions_test(void)
   {
     color_print("FAILED! Test for /remotedatagetaddressfromname - error due to empty tx hash","red");
   }
+  
+
+
+
+
+
+
+
+
+  // get_information_from_name - get information
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"test\",\"address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"paddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"paddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"website\":\"test.xcash\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  memcpy(result_test,"NODE_TO_NETWORK_DATA_NODES_GET_INFORMATION_FROM_NAME|test|",58);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  sleep(5);
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  if (strncmp(result_test,"Information for test:\r\naddress: XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\r\nprivate only address (saddress): XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\r\npublic only address (paddress): XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\r\npublic only address (paddress): XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\r\nwebsite: test.xcash\r\ntimestamp: 10000000000\r\nregister delegate: XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\r\nregister amount: 100\r\ntx_hash: TX_HASH\r\n\r\n",BUFFER_SIZE) == 0)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for get_information_from_name - get information\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for get_information_from_name - get information\033[0m\n");
+  }
+
+  // get_information_from_name - error due to not in database
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"test\",\"address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"paddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"paddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"website\":\"test.xcash\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  memcpy(result_test,"NODE_TO_NETWORK_DATA_NODES_GET_INFORMATION_FROM_NAME|test1|",59);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  sleep(5);
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  if (strncmp(result_test,"Error: Could not get the information}",BUFFER_SIZE) == 0)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for get_information_from_name - error due to not in database\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for get_information_from_name - error due to not in database\033[0m\n");
+  }
+
+
+
+
+
+
+
+
+
+  // /remotedatagetinformationfromname - get information
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"test\",\"address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"paddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"paddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"website\":\"test.xcash\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  memset(data_test,0,sizeof(data_test));
+  if (send_and_receive_data_socket(data_test,sizeof(data_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,"GET /remotedatagetinformationfromname?parameter1=test HTTP/",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,"{\"name\":\"test\",\"address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"paddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"website\":\"test.xcash\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}",sizeof(data_test)) == 0)
+  {
+    color_print("PASSED! Test for /remotedatagetinformationfromname - get information","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for /remotedatagetinformationfromname - get information","red");
+  }
+
+  // /remotedatagetinformationfromname - error due to not in database
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"test\",\"address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"paddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"paddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"website\":\"test.xcash\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  memset(data_test,0,sizeof(data_test));
+  if (send_and_receive_data_socket(data_test,sizeof(data_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,"GET /remotedatagetinformationfromname?parameter1=test1 HTTP/",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,"{\"Error\":\"Could not get the information\"}",sizeof(data_test)) == 0)
+  {
+    color_print("PASSED! Test for /remotedatagetinformationfromname  - error due to not in database","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for /remotedatagetinformationfromname - error due to not in database","red");
+  }
 
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nremote data functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,REMOTE_DATA_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
