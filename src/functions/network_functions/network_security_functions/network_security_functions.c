@@ -393,6 +393,50 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
           VERIFY_DATA_ERROR("Could not parse the message");
         }  
       }
+      else if (strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_REMOTE_DATA_GET_ADDRESS_SETTINGS",sizeof(message_settings)) == 0)
+      {
+        if (string_count(MESSAGE,"|") == REMOTE_DATA_GET_ADDRESS_SETTINGS_PARAMETER_AMOUNT)
+        {
+          for (count = 0, count2 = 0; count < string_count(MESSAGE,"|"); count++)
+          {
+            if (count == 1)
+            {
+              if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
+              {
+                VERIFY_DATA_ERROR("Invalid message data");
+              }
+              memcpy(public_address,&MESSAGE[count2],data_size);
+            }
+            count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
+          }
+        }
+        else
+        {
+          VERIFY_DATA_ERROR("Could not parse the message");
+        }  
+      }
+      else if (strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_REMOTE_DATA_GET_ADDRESS_FROM_NAME",sizeof(message_settings)) == 0)
+      {
+        if (string_count(MESSAGE,"|") == REMOTE_DATA_GET_ADDRESS_FROM_NAME_PARAMETER_AMOUNT)
+        {
+          for (count = 0, count2 = 0; count < string_count(MESSAGE,"|"); count++)
+          {
+            if (count == 1)
+            {
+              if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
+              {
+                VERIFY_DATA_ERROR("Invalid message data");
+              }
+              memcpy(public_address,&MESSAGE[count2],data_size);
+            }            
+            count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
+          }
+        }
+        else
+        {
+          VERIFY_DATA_ERROR("Could not parse the message");
+        }  
+      }
       else if (strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH",sizeof(message_settings)) == 0)
       {
         if (string_count(MESSAGE,"|") == GET_RESERVE_BYTES_DATABASE_HASH_PARAMETER_AMOUNT)
@@ -1018,4 +1062,5 @@ int validate_data(const char* MESSAGE)
   
   #undef VALIDATE_DATA_ERROR
 }
+
 

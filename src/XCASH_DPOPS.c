@@ -31,6 +31,7 @@
 #include "network_functions.h"
 #include "network_security_functions.h"
 #include "network_wallet_functions.h"
+#include "remote_data_functions_test.h"
 #include "server_functions.h"
 #include "string_functions.h"
 #include "VRF_functions.h"
@@ -97,6 +98,7 @@ char XCASH_DPOPS_delegates_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH]; 
 int xcash_wallet_port; // The xcash wallet port
 char database_name[BUFFER_SIZE_NETWORK_BLOCK_DATA];
 char shared_delegates_database_name[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+char remote_data_database_name[BUFFER_SIZE_NETWORK_BLOCK_DATA];
 char database_path_write[1024]; // holds the database write path
 char database_path_write_before_majority[1024]; // holds the database write path before the majority sync
 char database_path_read[1024]; // holds the database read path
@@ -181,6 +183,7 @@ void initialize_data(int parameters_count, char* parameters[])
   memcpy(XCASH_DPOPS_delegates_IP_address,"127.0.0.1",9);
   memset(database_name,0,sizeof(database_name));
   memset(shared_delegates_database_name,0,sizeof(shared_delegates_database_name));
+  memset(remote_data_database_name,0,sizeof(remote_data_database_name));
   memset(database_path_write,0,sizeof(database_path_write));
   memset(database_path_write_before_majority,0,sizeof(database_path_write_before_majority));
   memset(database_path_read,0,sizeof(database_path_read));
@@ -611,6 +614,7 @@ int set_parameters(int parameters_count, char* parameters[])
   log_file_settings = 0;
   memcpy(database_name,DATABASE_NAME,sizeof(DATABASE_NAME)-1);
   memcpy(shared_delegates_database_name,DATABASE_NAME_DELEGATES,sizeof(DATABASE_NAME_DELEGATES)-1);
+  memcpy(remote_data_database_name,DATABASE_NAME_REMOTE_DATA,sizeof(DATABASE_NAME_REMOTE_DATA)-1);
   log_file_settings = 0;
   test_settings = 0;
   memcpy(voter_inactivity_count,VOTER_INACTIVITY_COUNT,sizeof(VOTER_INACTIVITY_COUNT)-1);
@@ -684,6 +688,13 @@ int set_parameters(int parameters_count, char* parameters[])
       database_reset;
       exit(0);
     }
+    if (strncmp(parameters[count],"--remote-data-test",BUFFER_SIZE) == 0)
+    {
+      get_delegates_data();
+      test(3);
+      database_reset;
+      exit(0);
+    }
     if (strncmp(parameters[count],"--debug",BUFFER_SIZE) == 0)
     {
       debug_settings = 1;
@@ -710,6 +721,11 @@ int set_parameters(int parameters_count, char* parameters[])
     {
       memset(shared_delegates_database_name,0,sizeof(shared_delegates_database_name));
       memcpy(shared_delegates_database_name,parameters[count+1],strnlen(parameters[count+1],sizeof(shared_delegates_database_name)));
+    }
+    if (strncmp(parameters[count],"--remote-data-database-name",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
+    {
+      memset(remote_data_database_name,0,sizeof(remote_data_database_name));
+      memcpy(remote_data_database_name,parameters[count+1],strnlen(parameters[count+1],sizeof(remote_data_database_name)));
     }
     if (strncmp(parameters[count],"--log-file",BUFFER_SIZE) == 0 && count != (size_t)parameters_count)
     {
@@ -882,6 +898,8 @@ void print_settings(void)
     snprintf(data+strlen(data),sizeof(data)-1,"%lld",minimum_amount);
     memcpy(data+strlen(data),"\nShared Delegates Database Name: ",33);
     memcpy(data+strlen(data),shared_delegates_database_name,strnlen(shared_delegates_database_name,sizeof(shared_delegates_database_name)));
+    memcpy(data+strlen(data),"\nRemote Data Database Name: ",28);
+    memcpy(data+strlen(data),remote_data_database_name,strnlen(remote_data_database_name,sizeof(remote_data_database_name)));
   }
   else
   {

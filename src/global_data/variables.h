@@ -68,6 +68,7 @@ extern char XCASH_DPOPS_delegates_IP_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LE
 extern int xcash_wallet_port; // The xcash wallet port
 extern char database_name[BUFFER_SIZE_NETWORK_BLOCK_DATA];
 extern char shared_delegates_database_name[BUFFER_SIZE_NETWORK_BLOCK_DATA];
+extern char remote_data_database_name[BUFFER_SIZE_NETWORK_BLOCK_DATA];
 extern char database_path_write[1024]; // holds the database write path
 extern char database_path_write_before_majority[1024]; // holds the database write path before the majority sync
 extern char database_path_read[1024]; // holds the database read path

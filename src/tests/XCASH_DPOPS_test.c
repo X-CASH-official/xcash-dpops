@@ -32,6 +32,7 @@
 #include "optimizations_functions_test.h"
 #include "organize_functions_test.h"
 #include "reset_variables_allocated_on_the_heap_test.h"
+#include "remote_data_functions_test.h"
 #include "shared_delegate_website_functions_test.h"
 #include "shared_delegate_website_thread_server_functions_test.h"
 #include "string_functions_test.h"
@@ -88,6 +89,8 @@ void test(int settings)
   memcpy(database_name,DATABASE_NAME_TEST,sizeof(DATABASE_NAME_TEST)-1);
   memset(shared_delegates_database_name,0,sizeof(shared_delegates_database_name));
   memcpy(shared_delegates_database_name,DATABASE_NAME_TEST,sizeof(DATABASE_NAME_TEST)-1);
+  memset(remote_data_database_name,0,sizeof(remote_data_database_name));
+  memcpy(remote_data_database_name,DATABASE_NAME_TEST,sizeof(DATABASE_NAME_TEST)-1);
 
   // reset the test database
   delete_database(DATABASE_COLLECTION_TEST);
@@ -106,7 +109,12 @@ void test(int settings)
   color_print(data_test,"yellow");
   
   // run the tests
-  if (settings == 2)
+  if (settings == 3)
+  {
+    XCASH_DPOPS_total_passed_test += remote_data_functions_test();
+    total_test = REMOTE_DATA_FUNCTIONS_TOTAL_TEST;
+  }
+  else if (settings == 2)
   {
     XCASH_DPOPS_total_passed_test += network_functions_test();
     XCASH_DPOPS_total_passed_test += optimizations_functions_test();

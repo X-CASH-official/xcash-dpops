@@ -31,6 +31,7 @@
 #include "network_functions.h"
 #include "network_security_functions.h"
 #include "network_wallet_functions.h"
+#include "remote_data_functions.h"
 #include "server_functions.h"
 #include "shared_delegates_website_functions.h"
 #include "string_functions.h"
@@ -851,6 +852,22 @@ void socket_thread(const int CLIENT_SOCKET)
    {
      server_receive_data_socket_node_to_node((const char*)buffer);
      server_limit_public_addresses(3,(const char*)buffer);
+   }
+ }
+ else if (strstr(buffer,"NODE_TO_NETWORK_DATA_NODES_REMOTE_DATA_GET_ADDRESS_SETTINGS") != NULL)
+ {
+   if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
+   {
+     server_receive_data_socket_nodes_to_network_data_nodes_remote_data_get_address_settings(CLIENT_SOCKET,(const char*)buffer);
+     server_limit_IP_addresses(0,(const char*)client_IP_address);
+   }
+ }
+ else if (strstr(buffer,"NODE_TO_NETWORK_DATA_NODES_REMOTE_DATA_GET_ADDRESS_FROM_NAME") != NULL)
+ {
+   if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
+   {
+     server_receive_data_socket_nodes_to_network_data_nodes_remote_data_get_address_from_name(CLIENT_SOCKET,(const char*)buffer);
+     server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }
  else if (strstr(buffer,"GET /") != NULL && strstr(&buffer[5]," HTTP/") != NULL && (delegates_website == 1 || shared_delegates_website == 1))

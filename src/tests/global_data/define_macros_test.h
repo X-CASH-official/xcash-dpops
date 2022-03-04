@@ -1821,4 +1821,38 @@ memset(data_test,0,sizeof(data_test));
   #define BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_DOWNLOAD "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_STATISTICS_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"statistics_database\": \"true\",\r\n \"public_address\": \"" TEST_WALLET "\",\r\n \"previous_block_hash\": \"0000000000000000000000000000000000000000000000000000000000000000\",\r\n \"current_round_part\": \"1\",\r\n \"current_round_part_backup_node\": \"0\",\r\n \"data\": \"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"XCASH_DPOPS_signature\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
  
 
+
+
+
+
+
+
+
+// Remote data
+
+/*
+  The purpose of this message is for a node to get an address remote data settings
+ 
+  message_settings - The type of the message
+  public_address - The public address of the node that is sending the data.
+  */
+  #define NODE_TO_NETWORK_DATA_NODES_GET_ADDRESS_SETTINGS "NODE_TO_NETWORK_DATA_NODES_GET_ADDRESS_SETTINGS|" TEST_WALLET "|"
+
+
+
+/*
+  The purpose of this message is for a node to get an address from a name
+ 
+  message_settings - The type of the message
+  name - the name to get the public address for.
+  */
+  #define NODE_TO_NETWORK_DATA_NODES_GET_ADDRESS_FROM_NAME "NODE_TO_NETWORK_DATA_NODES_GET_ADDRESS_FROM_NAME|" TEST_REMOTE_DATA_NAME "|"
+
+
+
+#define REMOTE_DATA_FUNCTIONS_TOTAL_TEST 2
+#define TEST_REMOTE_DATA_NAME "test.xcash" // the remote data name used for test
+#define TEST_REMOTE_DATA_PRIVATE_TRANSACTIONS_NAME "test.sxcash" // the remote data name used for test
+#define TEST_REMOTE_DATA_PUBLIC_TRANSACTIONS_NAME "test.pxcash" // the remote data name used for test
+
 #endif
