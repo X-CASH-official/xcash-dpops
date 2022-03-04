@@ -393,50 +393,6 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
           VERIFY_DATA_ERROR("Could not parse the message");
         }  
       }
-      else if (strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_REMOTE_DATA_GET_ADDRESS_SETTINGS",sizeof(message_settings)) == 0)
-      {
-        if (string_count(MESSAGE,"|") == REMOTE_DATA_GET_ADDRESS_SETTINGS_PARAMETER_AMOUNT)
-        {
-          for (count = 0, count2 = 0; count < string_count(MESSAGE,"|"); count++)
-          {
-            if (count == 1)
-            {
-              if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
-              {
-                VERIFY_DATA_ERROR("Invalid message data");
-              }
-              memcpy(public_address,&MESSAGE[count2],data_size);
-            }
-            count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
-          }
-        }
-        else
-        {
-          VERIFY_DATA_ERROR("Could not parse the message");
-        }  
-      }
-      else if (strncmp(message_settings,"NODE_TO_NETWORK_DATA_NODES_REMOTE_DATA_GET_ADDRESS_FROM_NAME",sizeof(message_settings)) == 0)
-      {
-        if (string_count(MESSAGE,"|") == REMOTE_DATA_GET_ADDRESS_FROM_NAME_PARAMETER_AMOUNT)
-        {
-          for (count = 0, count2 = 0; count < string_count(MESSAGE,"|"); count++)
-          {
-            if (count == 1)
-            {
-              if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
-              {
-                VERIFY_DATA_ERROR("Invalid message data");
-              }
-              memcpy(public_address,&MESSAGE[count2],data_size);
-            }            
-            count2 = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1;
-          }
-        }
-        else
-        {
-          VERIFY_DATA_ERROR("Could not parse the message");
-        }  
-      }
       else if (strncmp(message_settings,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH",sizeof(message_settings)) == 0)
       {
         if (string_count(MESSAGE,"|") == GET_RESERVE_BYTES_DATABASE_HASH_PARAMETER_AMOUNT)
@@ -714,7 +670,7 @@ int validate_data(const char* MESSAGE)
   memset(data,0,sizeof(data));
 
   // check if the format is correct for each message
-  if (strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") != NULL || strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_CHECK_VOTE_STATUS") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE") != NULL || strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH") != NULL || strstr(MESSAGE,"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD") != NULL || strstr(MESSAGE,"GET /delegateswebsitegetstatistics HTTP/") != NULL || strstr(MESSAGE,"GET /getdelegates HTTP/") != NULL || strncmp(MESSAGE,"GET /getdelegatesstatistics?parameter1=",39) == 0 || strncmp(MESSAGE,"GET /getdelegatesinformation?parameter1=",40) == 0)
+  if (strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_GET_ADDRESS_SETTINGS") != NULL || strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_GET_ADDRESS_FROM_NAME") != NULL || strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") != NULL || strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_CHECK_VOTE_STATUS") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE") != NULL || strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH") != NULL || strstr(MESSAGE,"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD") != NULL || strstr(MESSAGE,"GET /delegateswebsitegetstatistics HTTP/") != NULL || strstr(MESSAGE,"GET /getdelegates HTTP/") != NULL || strncmp(MESSAGE,"GET /getdelegatesstatistics?parameter1=",39) == 0 || strncmp(MESSAGE,"GET /getdelegatesinformation?parameter1=",40) == 0)
   {
     return 1;
   }

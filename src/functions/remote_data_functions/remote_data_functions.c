@@ -65,7 +65,106 @@ Parameters:
 
 void server_receive_data_socket_nodes_to_network_data_nodes_remote_data_get_address_settings(const int CLIENT_SOCKET, const char* MESSAGE)
 {
+  // Variables
+  char data[BUFFER_SIZE];
+  char public_address[XCASH_WALLET_LENGTH+1];
+  char message[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  int count;
+  int count2;
+  size_t data_size;
+
+  // define macros
+  #define DATABASE_COLLECTION "remote_data"
+  #define REMOTE_DATA_GET_ADDRESS_SETTINGS_ERROR \
+  if (debug_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_network_data_nodes_remote_data_get_address_settings",87); \
+    memcpy(error_message.data[error_message.total],"Error: Could not get the address settings",41); \
+    error_message.total++; \
+  } \
+  memset(message,0,strlen(message)); \
+  memcpy(message,"Error: Could not get the address settings}",42); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,0,0,""); \
+  return;
+
+  #define REMOTE_DATA_GET_ADDRESS_SETTINGS_STATUS(settings) \
+  memset(message,0,strlen(message)); \
+  memcpy(message,settings,strlen(settings)); \
+  memcpy(message+strlen(message),"}",1); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,0,0,""); \
+  return;
   
+  memset(data,0,sizeof(data));
+  memset(public_address,0,sizeof(public_address));
+  memset(data2,0,sizeof(data2));
+  memset(message,0,sizeof(message));
+
+  // parse the message
+  for (count = 0, count2 = 0; count < REMOTE_DATA_GET_ADDRESS_SETTINGS_PARAMETER_AMOUNT; count++)
+  {
+    if (count == 1)
+    {
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
+      {
+        REMOTE_DATA_GET_ADDRESS_SETTINGS_ERROR;
+      }
+      memcpy(public_address,&MESSAGE[count2],data_size);
+    }
+    count2 = (int)(strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1);
+  }
+
+  // the public address can only be in address, saddress, paddress, saddress_list or paddress_list. If not their its address
+
+  // create the message
+  memcpy(message,"{\"saddress\":\"",13);
+  memcpy(message+strlen(message),public_address,XCASH_WALLET_LENGTH);
+  memcpy(message+strlen(message),"\"}",2);
+
+  if (count_documents_in_collection(remote_data_database_name,DATABASE_COLLECTION,message) > 0)
+  {    
+    REMOTE_DATA_GET_ADDRESS_SETTINGS_STATUS("saddress");
+  }
+
+  // create the message
+  memset(message,0,sizeof(message));
+  memcpy(message,"{\"paddress\":\"",13);
+  memcpy(message+strlen(message),public_address,XCASH_WALLET_LENGTH);
+  memcpy(message+strlen(message),"\"}",2);
+
+  if (count_documents_in_collection(remote_data_database_name,DATABASE_COLLECTION,message) > 0)
+  {    
+    REMOTE_DATA_GET_ADDRESS_SETTINGS_STATUS("paddress");
+  }
+
+  // create the message
+  memset(message,0,sizeof(message));
+  memcpy(message,"{\"saddress_list\":{\"$regex\":\"",28);
+  memcpy(message+strlen(message),public_address,XCASH_WALLET_LENGTH);
+  memcpy(message+strlen(message),"|\"}}",4);
+
+  if (count_documents_in_collection(remote_data_database_name,DATABASE_COLLECTION,message) > 0)
+  {    
+    REMOTE_DATA_GET_ADDRESS_SETTINGS_STATUS("saddress");
+  }
+
+  // create the message
+  memset(message,0,sizeof(message));
+  memcpy(message,"{\"paddress_list\":{\"$regex\":\"",28);
+  memcpy(message+strlen(message),public_address,XCASH_WALLET_LENGTH);
+  memcpy(message+strlen(message),"|\"}}",4);
+
+  if (count_documents_in_collection(remote_data_database_name,DATABASE_COLLECTION,message) > 0)
+  {    
+    REMOTE_DATA_GET_ADDRESS_SETTINGS_STATUS("paddress");
+  }
+
+  // the public address is either address or not in the database. either way return address
+  REMOTE_DATA_GET_ADDRESS_SETTINGS_STATUS("address");
+
+  #undef DATABASE_COLLECTION
+  #undef REMOTE_DATA_GET_ADDRESS_SETTINGS_ERROR
+  #undef REMOTE_DATA_GET_ADDRESS_SETTINGS_STATUS
 }
 
 
@@ -82,5 +181,136 @@ Parameters:
 
 void server_receive_data_socket_nodes_to_network_data_nodes_remote_data_get_address_from_name(const int CLIENT_SOCKET, const char* MESSAGE)
 {
+  // Variables
+  char data[BUFFER_SIZE];
+  char name[REMOTE_DATA_NAME_MAXIMUM_LENGTH+1];
+  char message[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
+  int count;
+  int count2;
+  int name_settings_length;
+  long int registration_length;
+  size_t data_size;
+
+  // define macros
+  #define DATABASE_COLLECTION "remote_data"
+  #define REMOTE_DATA_GET_ADDRESS_FROM_NAME_ERROR \
+  if (debug_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_nodes_to_network_data_nodes_remote_data_get_address_from_name",88); \
+    memcpy(error_message.data[error_message.total],"Error: Could not get the address settings",41); \
+    error_message.total++; \
+  } \
+  memset(message,0,strlen(message)); \
+  memcpy(message,"Error: Could not get the address settings}",42); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,0,0,""); \
+  return;
+
+  #define REMOTE_DATA_GET_ADDRESS_FROM_NAME_STATUS(settings) \
+  memset(message,0,strlen(message)); \
+  memcpy(message,settings,strlen(settings)); \
+  memcpy(message+strlen(message),"}",1); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,0,0,""); \
+  return;
   
+  memset(data,0,sizeof(data));
+  memset(name,0,sizeof(name));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+  memset(message,0,sizeof(message));
+
+  // parse the message
+  for (count = 0, count2 = 0; count < REMOTE_DATA_GET_ADDRESS_FROM_NAME_PARAMETER_AMOUNT; count++)
+  {
+    if (count == 1)
+    {
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) > REMOTE_DATA_NAME_MAXIMUM_LENGTH)
+      {
+        REMOTE_DATA_GET_ADDRESS_FROM_NAME_ERROR;
+      }
+      memcpy(name,&MESSAGE[count2],data_size);
+    }
+    count2 = (int)(strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1);
+  }
+
+  // validate the name settings
+  if (strstr(name,".xcash") != NULL)
+  {
+    name_settings_length = 6;
+  }
+  else if (strstr(name,".sxcash") != NULL)
+  {
+    name_settings_length = 7;
+  }
+  else if (strstr(name,".pxcash") != NULL)
+  {
+    name_settings_length = 7;
+  }
+  else if (strstr(name,".website") != NULL)
+  {
+    name_settings_length = 8;
+  }
+  else
+  {
+    REMOTE_DATA_GET_ADDRESS_FROM_NAME_ERROR;
+  }
+
+  // check if the tx_hash is empty or the name is expired
+
+  // create the message
+  memcpy(message,"{\"name\":\"",9);
+  memcpy(message+strlen(message),name,strlen(name)-name_settings_length);
+  memcpy(message+strlen(message),"\"}",2);
+
+  if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"timestamp",data2) == 1 && read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"tx_hash",data3) == 1)
+  {
+    // check if the name has a valid registration and a valid tx_hash
+    sscanf(data2,"%ld", &registration_length);
+    if ((registration_length + REMOTE_DATA_REGISTRATION_LENGTH) < time(NULL) || strlen(data3) != TRANSACTION_HASH_LENGTH)
+    {
+      REMOTE_DATA_GET_ADDRESS_FROM_NAME_ERROR;
+    }
+  }
+  else
+  {
+    REMOTE_DATA_GET_ADDRESS_FROM_NAME_ERROR;
+  }
+
+  // get the remote data
+  memset(data2,0,sizeof(data2));
+  if (strstr(name,".xcash") != NULL)
+  {
+    if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"address",data2) == 1)
+    {
+      REMOTE_DATA_GET_ADDRESS_FROM_NAME_STATUS(data2);
+    }
+  }
+  else if (strstr(name,".sxcash") != NULL)
+  {
+    if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"saddress",data2) == 1)
+    {
+      REMOTE_DATA_GET_ADDRESS_FROM_NAME_STATUS(data2);
+    }
+  }
+  else if (strstr(name,".pxcash") != NULL)
+  {
+    if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"paddress",data2) == 1)
+    {
+      REMOTE_DATA_GET_ADDRESS_FROM_NAME_STATUS(data2);
+    }
+  }
+  else if (strstr(name,".website") != NULL)
+  {
+    if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"website",data2) == 1)
+    {
+      REMOTE_DATA_GET_ADDRESS_FROM_NAME_STATUS(data2);
+    }
+  }
+  
+  REMOTE_DATA_GET_ADDRESS_FROM_NAME_ERROR;
+
+  #undef DATABASE_COLLECTION
+  #undef REMOTE_DATA_GET_ADDRESS_FROM_NAME_ERROR
+  #undef REMOTE_DATA_GET_ADDRESS_FROM_NAME_STATUS
 }
