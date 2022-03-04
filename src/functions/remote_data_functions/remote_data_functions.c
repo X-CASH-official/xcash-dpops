@@ -696,7 +696,7 @@ void server_receive_data_socket_nodes_to_network_data_nodes_remote_data_get_info
   memcpy(message+strlen(message),"\r\n\r\n}",5);
 
   send_data(CLIENT_SOCKET,(unsigned char*)message,0,0,"");
-  return 1;
+  return;
 
   #undef DATABASE_COLLECTION
   #undef REMOTE_DATA_GET_INFORMATION_FROM_NAME_ERROR
@@ -722,10 +722,7 @@ int server_receive_data_socket_remote_data_get_information_from_name(const int C
   char message[BUFFER_SIZE];
   char data2[BUFFER_SIZE];
   char data3[BUFFER_SIZE];
-  int count;
-  int count2;
   long int registration_length;
-  size_t data_size;
 
   // define macros
   #define DATABASE_COLLECTION "remote_data"
@@ -746,19 +743,14 @@ int server_receive_data_socket_remote_data_get_information_from_name(const int C
   memset(data3,0,sizeof(data3));
   memset(message,0,sizeof(message));
 
-  // parse the message
-  for (count = 0, count2 = 0; count < REMOTE_DATA_GET_ADDRESS_FROM_NAME_PARAMETER_AMOUNT; count++)
+  // get the parameter1
+  memcpy(name,&DATA[49],(strnlen(DATA,sizeof(name)) - strnlen(strstr(DATA," HTTP/"),sizeof(name)))-49);
+
+  // error check
+  if (strncmp(name,"",BUFFER_SIZE) == 0 || strlen(name) > REMOTE_DATA_NAME_MAXIMUM_LENGTH)
   {
-    if (count == 1)
-    {
-      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) > REMOTE_DATA_NAME_MAXIMUM_LENGTH)
-      {
-        REMOTE_DATA_GET_INFORMATION_FROM_NAME_ERROR;
-      }
-      memcpy(name,&MESSAGE[count2],data_size);
-    }
-    count2 = (int)(strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1);
-  }
+    REMOTE_DATA_GET_INFORMATION_FROM_NAME_ERROR;
+  } 
 
   // check if the tx_hash is empty or the name is expired
 
