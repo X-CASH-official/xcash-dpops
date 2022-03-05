@@ -1830,10 +1830,10 @@ memset(data_test,0,sizeof(data_test));
 
 // Remote data
 #define REMOTE_DATA_FUNCTIONS_TOTAL_TEST 2
-#define TEST_REMOTE_DATA_NAME "test" // the remote data name used for test
-#define TEST_REMOTE_DATA_ADDRESS_NAME "test.xcash" // the remote data name used for test
-#define TEST_REMOTE_DATA_PRIVATE_TRANSACTIONS_NAME "test.sxcash" // the remote data name used for test
-#define TEST_REMOTE_DATA_PUBLIC_TRANSACTIONS_NAME "test.pxcash" // the remote data name used for test
+#define TEST_REMOTE_DATA_NAME "TEST" // the remote data name used for test
+#define TEST_REMOTE_DATA_ADDRESS_NAME "TEST.xcash" // the remote data name used for test
+#define TEST_REMOTE_DATA_PRIVATE_TRANSACTIONS_NAME "TEST.sxcash" // the remote data name used for test
+#define TEST_REMOTE_DATA_PUBLIC_TRANSACTIONS_NAME "TEST.pxcash" // the remote data name used for test
 
 /*
   The purpose of this message is for a node to get an address remote data settings
@@ -1875,6 +1875,33 @@ memset(data_test,0,sizeof(data_test));
   XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
   */
   #define NODES_TO_BLOCK_VERIFIERS_UPDATE_REMOTE_DATA "NODES_TO_BLOCK_VERIFIERS_UPDATE_REMOTE_DATA|website|data|" TEST_WALLET "|SigV10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|"
+
+
+
+  /*
+  The purpose of this message is for a node to save a name
+ 
+  message_settings - The type of the message
+  name - The name to save
+  public_address - The public address of the node that is sending the data.
+  XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_SAVE_NAME "NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_SAVE_NAME|name|" TEST_WALLET "|SigV10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|"
+ 
+
+
+ /*
+  The purpose of this message is for a node to update its remote data
+ 
+  message_settings - The type of the message
+  saddress - The saddress
+  paddress - The paddress
+  tx_hash - The tx_hash that is the payment to purchase the name
+  public_address - The public address of the node that is sending the data.
+  XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_PURCHASE_NAME "NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_PURCHASE_NAME|" TEST_WALLET "|" TEST_WALLET "|tx_hash|" TEST_WALLET "|SigV10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|"
+ 
  
 
 
