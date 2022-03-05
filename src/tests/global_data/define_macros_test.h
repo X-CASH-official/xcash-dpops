@@ -1865,4 +1865,18 @@ memset(data_test,0,sizeof(data_test));
 
 
 
+  /*
+  The purpose of this message is for a node to update its remote data
+ 
+  message_settings - The type of the message
+  item - The field name to update (website,smart_contract_hash)
+  value - The field names value
+  public_address - The public address of the node that is sending the data.
+  XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define NODES_TO_BLOCK_VERIFIERS_UPDATE_REMOTE_DATA "NODES_TO_BLOCK_VERIFIERS_UPDATE_REMOTE_DATA|website|data|" TEST_WALLET "|SigV10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|"
+ 
+
+
+
 #endif
