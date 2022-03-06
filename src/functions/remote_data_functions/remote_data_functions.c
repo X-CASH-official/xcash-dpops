@@ -33,6 +33,7 @@
 #include "update_database_functions.h"
 #include "delete_database_functions.h"
 #include "count_database_functions.h"
+#include "organize_functions.h"
 #include "remote_data_functions.h"
 #include "network_daemon_functions.h"
 #include "network_functions.h"
@@ -1774,7 +1775,7 @@ int server_receive_data_socket_remote_data_get_block_producer_information(const 
   } 
 
   // create the message
-  memcpy(message,"{\"delegate\":\"",13);
+  memcpy(message,"{\"public_address\":\"",19);
   memcpy(message+strlen(message),public_address,XCASH_WALLET_LENGTH);
   memcpy(message+strlen(message),"\"}",2);
 
@@ -1797,4 +1798,83 @@ int server_receive_data_socket_remote_data_get_block_producer_information(const 
   #undef DATABASE_COLLECTION
   #undef REMOTE_DATA_GET_BLOCK_PRODUCER_INFORMATION_ERROR
   #undef REMOTE_DATA_GET_BLOCK_PRODUCER_INFORMATION_STATUS
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: add_delegates_to_remote_data_delegates
+Description: Adds delegates to the remote_data_delegates
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void add_delegates_to_remote_data_delegates(void)
+{
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+  struct delegates delegates[MAXIMUM_AMOUNT_OF_DELEGATES];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  int count;
+  int count2;
+  int total_delegates;
+
+  // define macros
+  #define DATABASE_COLLECTION "remote_data"
+
+  memset(data,0,sizeof(data));
+
+  // initialize the delegates struct
+  INITIALIZE_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES,"add_delegates_to_remote_data_delegates",data,current_date_and_time,current_UTC_date_and_time);
+
+  // organize the delegates  
+  if ((total_delegates = organize_delegates(delegates)) == 0)
+  {
+    POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+    return;
+  }
+
+  for (count = 0; count < total_delegates; count++)
+  {
+    // check to make sure it is not a network data node
+    for (count2 = 0; count2 < NETWORK_DATA_NODES_AMOUNT; count2++)
+    {
+      if (strncmp(network_data_nodes_list.network_data_nodes_public_address[count2],delegates[count].public_address,XCASH_WALLET_LENGTH) == 0)
+      {
+        continue;
+      }
+    }
+
+    // check to make sure it is not an official delegate
+    if (strncmp(OFFICIAL_SHARED_DELEGATE_PUBLIC_ADDRESS_PRODUCTION,delegates[count].public_address,XCASH_WALLET_LENGTH) == 0)
+    {
+      continue;
+    }
+
+    // add the delegate to the database
+    memset(data,0,strlen(data));
+    memcpy(data,"{\"name\":\"",9);
+    memcpy(data+strlen(data),delegates[count].delegate_name,strlen(delegates[count].delegate_name));
+    memcpy(data,"\",\"public_address\":\"",20);
+    memcpy(data+strlen(data),delegates[count].public_address,XCASH_WALLET_LENGTH);
+    memcpy(data+strlen(data),"\",\"amount\":\"0\"}",15);
+    insert_document_into_collection_json(remote_data_database_name,DATABASE_COLLECTION,data);
+    RESET_ERROR_MESSAGES;
+  }
+  
+  POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+  return;
+
+  #undef DATABASE_COLLECTION
 }

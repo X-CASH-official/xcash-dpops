@@ -87,6 +87,10 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   If the database collection is reserve bytes than the id is the reserve bytes data hash
   If the database collection is delegates than the id is the public key
   If the database collection is statistics than the id is 0
+
+  remote data
+  If the database collection is remote_data than the id is address
+  If the database collection is remote_data_delegates than the id is public_address
   */
 
   if (strstr(COLLECTION,"reserve_proofs") != NULL && strstr(data2,"\"public_address_created_reserve_proof\":\"") != NULL)
@@ -109,6 +113,18 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   else if (strstr(COLLECTION,"statistics") != NULL)
   {
     memcpy(data_hash,"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",DATA_HASH_LENGTH);
+  }
+  else if (strstr(COLLECTION,"remote_data") != NULL && strstr(data2,"\"address\":\"") != NULL)
+  {
+    message = strstr(data2,"\"address\":\"") + 11;
+    memcpy(data_hash,"000000000000000000000000000000",DATA_HASH_LENGTH-XCASH_WALLET_LENGTH);
+    memcpy(data_hash+strlen(data_hash),message,XCASH_WALLET_LENGTH);
+  }
+  else if (strstr(COLLECTION,"remote_data_delegates") != NULL && strstr(data2,"\"public_address\":\"") != NULL)
+  {
+    message = strstr(data2,"\"public_address\":\"") + 18;
+    memcpy(data_hash,"000000000000000000000000000000",DATA_HASH_LENGTH-XCASH_WALLET_LENGTH);
+    memcpy(data_hash+strlen(data_hash),message,XCASH_WALLET_LENGTH);
   }
   else
   {
@@ -284,6 +300,10 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     If the database collection is reserve bytes than the id is the reserve bytes data hash
     If the database collection is delegates than the id is the public key
     If the database collection is statistics than the id is 0
+
+    remote data
+    If the database collection is remote_data than the id is address
+    If the database collection is remote_data_delegates than the id is public_address
     */
 
     if (strstr(COLLECTION,"reserve_proofs") != NULL && strstr(data3,"\"public_address_created_reserve_proof\":\"") != NULL)
@@ -306,6 +326,18 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     else if (strstr(COLLECTION,"statistics") != NULL)
     {
       memcpy(data_hash,"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",DATA_HASH_LENGTH);
+    }
+    else if (strstr(COLLECTION,"remote_data") != NULL && strstr(data2,"\"address\":\"") != NULL)
+    {
+      message = strstr(data2,"\"address\":\"") + 11;
+      memcpy(data_hash,"000000000000000000000000000000",DATA_HASH_LENGTH-XCASH_WALLET_LENGTH);
+      memcpy(data_hash+strlen(data_hash),message,XCASH_WALLET_LENGTH);
+    }
+    else if (strstr(COLLECTION,"remote_data_delegates") != NULL && strstr(data2,"\"public_address\":\"") != NULL)
+    {
+      message = strstr(data2,"\"public_address\":\"") + 18;
+      memcpy(data_hash,"000000000000000000000000000000",DATA_HASH_LENGTH-XCASH_WALLET_LENGTH);
+      memcpy(data_hash+strlen(data_hash),message,XCASH_WALLET_LENGTH);
     }
     else
     {
