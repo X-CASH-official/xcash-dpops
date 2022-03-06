@@ -915,6 +915,14 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }
+ else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_SET_AMOUNT") != NULL)
+ {
+   if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
+   {
+     server_receive_data_socket_remote_data_nodes_to_block_verifiers_delegates_set_amount(CLIENT_SOCKET,(const char*)buffer);
+     server_limit_IP_addresses(0,(const char*)client_IP_address);
+   }
+ }
  else if (strstr(buffer,"GET /remotedatagetaddresssettings?parameter1=") != NULL && delegates_website == 1)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)

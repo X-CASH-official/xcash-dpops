@@ -1014,6 +1014,85 @@ int remote_data_functions_test(void)
 
 
 
+  // delegates_set_amount - set amount
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"delegate\",\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"amount\":\"100\"}");
+  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_SET_AMOUNT|1000|XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|SigV10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",255);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  sleep(5);
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  if (strncmp(result_test,"Set the amount}",BUFFER_SIZE) == 0)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for delegates_set_amount - set amount\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for delegates_set_amount - set amount\033[0m\n");
+  }
+
+  // delegates_set_amount - invalid signature
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"delegate\",\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"amount\":\"100\"}");
+  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_SET_AMOUNT|1000|XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|SigV10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",255);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  sleep(5);
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  if (strncmp(result_test,"Set the amount}",BUFFER_SIZE) == 0)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for delegates_set_amount - invalid signature\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for delegates_set_amount - invalid signature\033[0m\n");
+  }
+
+  // delegates_set_amount - invalid amount
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"delegate\",\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"amount\":\"100\"}");
+  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_SET_AMOUNT|TEST|XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|SigV10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",255);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  sleep(5);
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  if (strncmp(result_test,"Set the amount}",BUFFER_SIZE) == 0)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for delegates_set_amount - invalid amount\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for delegates_set_amount  - invalid amount\033[0m\n");
+  }
+
+  // delegates_set_amount - not in database
+  delete_database(database_name);
+  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_SET_AMOUNT|1000|XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|SigV10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",255);
+  send_data_socket(XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  sleep(5);
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  if (strncmp(result_test,"Set the amount}",BUFFER_SIZE) == 0)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for delegates_set_amount - not in database\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for delegates_set_amount - not in database\033[0m\n");
+  }
+
+
+
+
+
+
+
+
+
   // add_delegates_to_remote_data_delegates
   delete_database(database_name);
   insert_document_into_collection_json(database_name,"delegates",DATABASE_COLLECTION_DELEGATES_DATA_1);

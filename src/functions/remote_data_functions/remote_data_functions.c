@@ -132,6 +132,67 @@ int get_previous_block_producer(char *previous_block_producer)
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: validate_name
+Description: Checks if the amount is valid
+Parameters:
+  MESSAGE - The amount
+Return: 0 if an error has occured or invalid, 1 if valid
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int validate_amount(const char* MESSAGE)
+{
+  // Constants
+  const size_t MESSAGE_LENGTH = strlen(MESSAGE);
+
+  // define macros
+  #define VALID_DATA "0123456789"
+
+  // Variables
+  char data[sizeof(VALID_DATA)];
+  size_t count;
+  size_t count2;
+
+  memset(data,0,sizeof(data));
+  memcpy(data,VALID_DATA,sizeof(VALID_DATA)-1);
+
+  if (MESSAGE_LENGTH < 1 || MESSAGE_LENGTH > MAXIMUM_NUMBER_SIZE)
+  {
+    return 0;
+  }
+
+  // check if the amount is over the maximum supply
+  sscanf(MESSAGE,"%zu", &count);
+
+  if (count > XCASH_TOTAL_SUPPLY)
+  {
+    return 0;
+  }
+  
+  // check if the delegate name has any invalid characters
+  for (count = 0; count < MESSAGE_LENGTH; count++)
+  {
+    for (count2 = 0; count2 < (sizeof(VALID_DATA)-1); count2++)
+    {
+      if (strncmp(&MESSAGE[count],&data[count2],sizeof(char)) == 0)
+      {
+        break;
+      }
+    }
+    if (count2 == (sizeof(VALID_DATA)-1))
+    {
+      return 0;
+    }
+  }
+  return 1;
+
+  #undef VALID_DATA
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: validate_name
 Description: Checks if the name is valid
 Parameters:
   MESSAGE - The name
@@ -1798,6 +1859,114 @@ int server_receive_data_socket_remote_data_get_block_producer_information(const 
   #undef DATABASE_COLLECTION
   #undef REMOTE_DATA_GET_BLOCK_PRODUCER_INFORMATION_ERROR
   #undef REMOTE_DATA_GET_BLOCK_PRODUCER_INFORMATION_STATUS
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_remote_data_nodes_to_block_verifiers_delegates_set_amount
+Description: Runs the code when the server receives the NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_SET_AMOUNT message
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  MESSAGE - The message
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void server_receive_data_socket_remote_data_nodes_to_block_verifiers_delegates_set_amount(const int CLIENT_SOCKET, const char* MESSAGE)
+{
+  // Variables
+  char data[4096];
+  char data2[4096];
+  char delegate_public_address[XCASH_WALLET_LENGTH+1];
+  char amount[MAXIMUM_NUMBER_SIZE+1];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  int count;
+  int count2;
+  size_t data_size;
+
+  // define macros
+  #define DATABASE_COLLECTION "remote_data_delegates"
+  #define REMOTE_DATA_SET_AMOUNT_ERROR \
+  if (debug_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_remote_data_nodes_to_block_verifiers_delegates_set_amount",84); \
+    memcpy(error_message.data[error_message.total],"Could not set the amount",24); \
+    error_message.total++; \
+  } \
+  send_data(CLIENT_SOCKET,(unsigned char*)"Could not set the amount}",0,0,""); \
+  return;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(delegate_public_address,0,sizeof(delegate_public_address));
+  memset(amount,0,sizeof(amount));
+
+  // get the current time
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+
+  // check if it is valid data interval
+  if (test_settings == 0 && current_UTC_date_and_time.tm_min % 60 >= 0 && current_UTC_date_and_time.tm_min % 60 < 10)
+  {
+    REMOTE_DATA_SET_AMOUNT_ERROR;
+  }
+
+  // verify the message
+  if (verify_data(MESSAGE,0) == 0 || string_count(MESSAGE,"|") != REMOTE_DATA_UPDATE_DATA_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
+  {   
+    REMOTE_DATA_SET_AMOUNT_ERROR;
+  }
+
+  // parse the message
+  for (count = 0, count2 = 0; count < REMOTE_DATA_SET_AMOUNT_PARAMETER_AMOUNT; count++)
+  {
+    if (count == 1)
+    {
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) >= sizeof(amount))
+      {
+        REMOTE_DATA_SET_AMOUNT_ERROR;
+      }
+      memcpy(amount,&MESSAGE[count2],data_size);
+    }
+    if (count == 2)
+    {
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
+      {
+        REMOTE_DATA_SET_AMOUNT_ERROR;
+      }
+      memcpy(delegate_public_address,&MESSAGE[count2],data_size);
+    }
+    count2 = (int)(strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1);
+  }
+
+  // check if the amount is valid
+  if (validate_amount(amount) == 0)
+  {
+    REMOTE_DATA_SET_AMOUNT_ERROR;
+  }
+
+  // create the message
+  memcpy(data,"{\"public_address\":\"",19);
+  memcpy(data+strlen(data),delegate_public_address,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\"}",2);
+
+  memset(data2,0,sizeof(data2));
+  memcpy(data2,"{\"amount\":\"",11);
+  memcpy(data2+strlen(data2),amount,strlen(amount));
+  memcpy(data2+strlen(data2),"\"}",2);
+
+  // update the delegate in the database
+  if (update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,data2) == 0)
+  {
+    REMOTE_DATA_SET_AMOUNT_ERROR;
+  }
+
+  send_data(CLIENT_SOCKET,(unsigned char*)"Set the amount}",0,0,"");
+  return;
+
+  #undef DATABASE_COLLECTION
+  #undef REMOTE_DATA_SET_AMOUNT_ERROR
 }
 
 

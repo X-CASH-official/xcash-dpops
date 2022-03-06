@@ -1902,6 +1902,17 @@ memset(data_test,0,sizeof(data_test));
   */
   #define NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_PURCHASE_NAME "NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_PURCHASE_NAME|" TEST_WALLET "|" TEST_WALLET "|tx_hash|" TEST_WALLET "|SigV10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|"
  
+
+
+ /*
+  The purpose of this message is for a delegate to update its amount
+ 
+  message_settings - The type of the message
+  amount - The amount
+  public_address - The public address of the node that is sending the data.
+  XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_SET_AMOUNT "NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_SET_AMOUNT|100|" TEST_WALLET "|SigV10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|"
  
 
 
