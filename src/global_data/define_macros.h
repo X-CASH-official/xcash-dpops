@@ -156,7 +156,7 @@ Using define statements instead of constants for increased efficiency
 #define DATABASE_NAME_REMOTE_DATA "XCASH_REMOTE_DATA" // The name of the database for the remote data
 #define DATABASE_EMPTY_STRING "empty_database_collection" // The database data to give when the database collection is empty
 #define MAXIMUM_DATABASE_WRITE_SIZE 48000000 // The maximum database write size
-#define MAXIMUM_DATABASE_COLLECTION_DOCUMENTS 5000 // The maximum amount of documents in a database collection
+#define MAXIMUM_DATABASE_COLLECTION_DOCUMENTS 10000 // The maximum amount of documents in a database collection
 #define DATABASE_TOTAL 4 // The amount of databases
 #define TOTAL_RESERVE_PROOFS_DATABASES 50 // The total reserve proofs databases
 #define TOTAL_RESERVE_BYTES_DATABASE_FIELDS 3 // The reserve bytes database fields
