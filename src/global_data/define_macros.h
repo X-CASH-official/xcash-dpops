@@ -193,6 +193,7 @@ Using define statements instead of constants for increased efficiency
 #define REMOTE_DATA_SAVE_NAME_LENGTH 3600 // 1 hour
 #define REMOTE_DATA_NAME_MAXIMUM_LENGTH 50
 #define PUBLIC_TRANSACTION_VERIFICATION "2227c"
+#define TOTAL_REMOTE_DATA_DATABASE_FIELDS 12
 #define TOTAL_REMOTE_DATA_DELEGATES_DATABASE_FIELDS 2
 
 

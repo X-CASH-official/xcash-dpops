@@ -1031,6 +1031,110 @@ int remote_data_functions_test(void)
     color_print("FAILED! Test for add_delegates_to_remote_data_delegates","red");
   }
 
+
+
+
+
+
+
+
+
+  // maintain_slist_and_plist
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"TEST\",\"address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"paddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"paddress_list\":\"\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"TEST1\",\"address\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"saddress\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"paddress\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"saddress_list\":\"\",\"paddress_list\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv|\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"TEST2\",\"address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"paddress\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress_list\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v|\",\"paddress_list\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v|\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"TEST3\",\"address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"paddress\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress_list\":\"\",\"paddress_list\":\"\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  maintain_slist_and_plist();
+  memset(data_test,0,sizeof(data_test));
+  memset(result_test,0,sizeof(result_test));
+  memcpy(result_test,"{\"name\":\"TEST\"}",15);
+  if (read_document_field_from_collection(database_name,"remote_data",result_test,"saddress_list",data_test) == 1 && strncmp(data_test,"",BUFFER_SIZE) == 0)
+  {
+    memset(data_test,0,sizeof(data_test));
+    memset(result_test,0,sizeof(result_test));
+    memcpy(result_test,"{\"name\":\"TEST1\"}",16);
+    if (read_document_field_from_collection(database_name,"remote_data",result_test,"paddress_list",data_test) == 1 && strncmp(data_test,"",BUFFER_SIZE) == 0)
+    {
+      memset(data_test,0,sizeof(data_test));
+      memset(result_test,0,sizeof(result_test));
+      memcpy(result_test,"{\"name\":\"TEST2\"}",16);
+      if (read_document_field_from_collection(database_name,"remote_data",result_test,"saddress_list",data_test) == 1 && strncmp(data_test,"",BUFFER_SIZE) == 0 && read_document_field_from_collection(database_name,"remote_data",result_test,"paddress_list",data_test) == 1 && strncmp(data_test,"",BUFFER_SIZE) == 0)
+      {
+        memset(data_test,0,sizeof(data_test));
+        memset(result_test,0,sizeof(result_test));
+        memcpy(result_test,"{\"name\":\"TEST3\"}",16);
+        if (read_document_field_from_collection(database_name,"remote_data",result_test,"saddress_list",data_test) == 1 && strncmp(data_test,"",BUFFER_SIZE) == 0 && read_document_field_from_collection(database_name,"remote_data",result_test,"paddress_list",data_test) == 1 && strncmp(data_test,"",BUFFER_SIZE) == 0)
+        {
+          color_print("PASSED! Test for maintain_slist_and_plist","green");
+          count_test++;
+        }
+        else
+        {
+          color_print("FAILED! Test for maintain_slist_and_plist","red");
+        }
+      }
+      else
+      {
+        color_print("FAILED! Test for maintain_slist_and_plist","red");
+      }
+    }
+    else
+    {
+      color_print("FAILED! Test for maintain_slist_and_plist","red");
+    }
+  }
+  else
+  {
+    color_print("FAILED! Test for maintain_slist_and_plist","red");
+  }
+
+
+
+
+
+
+
+
+
+  // check_for_expired_names
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"TEST\",\"address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress\":\"\",\"paddress\":\"\",\"saddress_list\":\"\",\"paddress_list\":\"\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"1500000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"TEST1\",\"address\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"saddress\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"paddress\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"saddress_list\":\"\",\"paddress_list\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv|\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"1500000000\",\"reserve_delegate_address\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"TEST2\",\"address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"paddress\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress_list\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v|\",\"paddress_list\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v|\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  check_for_expired_names();
+  memset(result_test,0,sizeof(result_test));
+  memcpy(result_test,"{\"name\":\"TEST\"}",15);
+  if (count_documents_in_collection(database_name,"remote_data",result_test) == 0)
+  {
+    memset(data_test,0,sizeof(data_test));
+    memset(result_test,0,sizeof(result_test));
+    memcpy(result_test,"{\"name\":\"TEST1\"}",16);
+    if (read_document_field_from_collection(database_name,"remote_data",result_test,"paddress_list",data_test) == 1 && strncmp(data_test,"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv|XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv|",BUFFER_SIZE) == 0 && read_document_field_from_collection(database_name,"remote_data",result_test,"saddress_list",data_test) == 1 && strncmp(data_test,"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv|",BUFFER_SIZE) == 0)
+    {
+      memset(data_test,0,sizeof(data_test));
+      memset(result_test,0,sizeof(result_test));
+      memcpy(result_test,"{\"name\":\"TEST2\"}",16);
+      if (read_document_field_from_collection(database_name,"remote_data",result_test,"address",data_test) == 1 && strncmp(data_test,"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v",BUFFER_SIZE) == 0)
+      {
+        color_print("PASSED! Test for check_for_expired_names","green");
+        count_test++;
+      }
+      else
+      {
+        color_print("FAILED! Test for check_for_expired_names","red");
+      }
+    }
+    else
+    {
+      color_print("FAILED! Test for check_for_expired_names","red");
+    }
+  }
+  else
+  {
+    color_print("FAILED! Test for check_for_expired_names","red");
+  }
+
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nremote data functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,REMOTE_DATA_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   return count_test;

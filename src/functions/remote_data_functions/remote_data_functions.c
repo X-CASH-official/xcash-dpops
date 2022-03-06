@@ -1669,7 +1669,7 @@ int server_receive_data_socket_remote_data_get_delegates_information(const int C
   send_data(CLIENT_SOCKET,(unsigned char*)buffer,strlen(buffer),400,"application/json"); \
   if ((settings) == 0) \
   { \
-    POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS); \
+    POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_REMOTE_DATA_DELEGATES_DATABASE_FIELDS); \
   } \
   return 0;
 
@@ -1689,7 +1689,7 @@ int server_receive_data_socket_remote_data_get_delegates_information(const int C
 
   if (read_multiple_documents_all_fields_from_collection(remote_data_database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,0,document_count,0,"") == 0)
   {
-    REMOTE_DATA_GET_DELEGATES_INFORMATION_ERROR(0,"Could not get the delegates blocks found data");
+    REMOTE_DATA_GET_DELEGATES_INFORMATION_ERROR(0,"Could not get the remote data delegates");
   }
 
   // count how many bytes to allocate for the json data
@@ -1812,6 +1812,28 @@ int server_receive_data_socket_remote_data_get_block_producer_information(const 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: add_delegates_to_remote_data_delegates
@@ -1877,4 +1899,313 @@ void add_delegates_to_remote_data_delegates(void)
   return;
 
   #undef DATABASE_COLLECTION
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: check_for_expired_names
+Description: Checks for expired names
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void check_for_expired_names(void)
+{
+  // Variables
+  char buffer[1024];
+  char name[SMALL_BUFFER_SIZE];
+  char message[SMALL_BUFFER_SIZE];
+  char message2[BUFFER_SIZE];
+  char message3[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  size_t count = 0;
+  size_t counter = 0;
+  struct database_multiple_documents_fields database_multiple_documents_fields;
+  int document_count = 0;
+  long int timestamp;
+
+  // define macros
+  #define DATABASE_COLLECTION "remote_data"
+
+  #define REMOTE_DATA_CHECK_FOR_EXPIRED_NAMES_ERROR(settings,MESSAGE) \
+  if (debug_settings == 1) \
+  { \
+  memcpy(error_message.function[error_message.total],"check_for_expired_names",23); \
+  memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
+  error_message.total++; \
+  } \
+  if ((settings) == 0) \
+  { \
+    POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_REMOTE_DATA_DATABASE_FIELDS); \
+  } \
+  return;
+
+  
+  memset(message,0,sizeof(message));
+  memset(message2,0,sizeof(message2));
+  memset(message3,0,sizeof(message3));
+
+  // get the total documents
+  if ((document_count = count_all_documents_in_collection(remote_data_database_name,DATABASE_COLLECTION)) <= 0)
+  {
+    REMOTE_DATA_CHECK_FOR_EXPIRED_NAMES_ERROR(1,"Could not get the remote data");
+  }
+
+  memset(buffer,0,sizeof(buffer));
+
+  // initialize the database_multiple_documents_fields struct
+  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_REMOTE_DATA_DATABASE_FIELDS,"maintain_slist_and_plist",buffer,current_date_and_time,current_UTC_date_and_time);
+
+  if (read_multiple_documents_all_fields_from_collection(remote_data_database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,0,document_count,0,"") == 0)
+  {
+    REMOTE_DATA_CHECK_FOR_EXPIRED_NAMES_ERROR(0,"Could not get the remote data");
+  }
+
+  // loop through all documents, if the name is expired
+  for (count = 0; count < database_multiple_documents_fields.document_count; count++)
+  {
+    // get the timestamp
+    sscanf(database_multiple_documents_fields.value[count][9], "%ld", &timestamp);
+
+    // check if this is a name that was saved but never registered
+    if (time(NULL) > (timestamp + REMOTE_DATA_REGISTRATION_LENGTH) && strncmp(database_multiple_documents_fields.value[count][2],"",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[count][3],"",BUFFER_SIZE) == 0 && strncmp(database_multiple_documents_fields.value[count][11],"",BUFFER_SIZE) == 0)
+    {
+      // delete the document
+      memset(message,0,sizeof(message));
+      memcpy(message,"{\"name\":\"",9);
+      memcpy(message+strlen(message),database_multiple_documents_fields.value[count][0],strlen(database_multiple_documents_fields.value[count][0]));
+      memcpy(message+strlen(message),"\"}",2);
+      delete_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,message);
+    }
+
+    // check if this is a name that expired or was in renewal and never got renewed
+    if (time(NULL) > (timestamp + REMOTE_DATA_REGISTRATION_LENGTH))
+    {
+      // edit the document
+      memset(name,0,sizeof(name));
+      memset(message,0,sizeof(message));
+      memset(message2,0,sizeof(message2));
+      memset(message3,0,sizeof(message3));
+
+      memcpy(name,"{\"name\":\"",9);
+      memcpy(name+strlen(name),database_multiple_documents_fields.value[count][0],strlen(database_multiple_documents_fields.value[count][0]));
+      memcpy(name+strlen(name),"\"}",2);
+
+      // move the saddress to the saddress_list
+      memcpy(message,database_multiple_documents_fields.value[count][4],strlen(database_multiple_documents_fields.value[count][4]));
+      memcpy(message+strlen(message),database_multiple_documents_fields.value[count][2],XCASH_WALLET_LENGTH);
+      memcpy(message+strlen(message),"|",1);       
+      memcpy(message2,"{\"saddress_list\":\"",18);
+      memcpy(message2+strlen(message2),message,strlen(message));
+      memcpy(message2+strlen(message2),"\"}",2);
+      update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,message2);
+
+      // move the paddress to the paddress_list
+      memcpy(message,database_multiple_documents_fields.value[count][5],strlen(database_multiple_documents_fields.value[count][5]));
+      memcpy(message+strlen(message),database_multiple_documents_fields.value[count][3],XCASH_WALLET_LENGTH);
+      memcpy(message+strlen(message),"|",1);       
+      memcpy(message2,"{\"paddress_list\":\"",18);
+      memcpy(message2+strlen(message2),message,strlen(message));
+      memcpy(message2+strlen(message2),"\"}",2);
+      update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,message2);
+
+      // empty all other fields (set the timestamp in the future so it does not get checked again until someone renews it)
+      update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,"{\"address\":\"\"}");
+      update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,"{\"saddress\":\"\"}");
+      update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,"{\"paddress\":\"\"}");
+      update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,"{\"website\":\"\"}");
+      update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,"{\"smart_contract_hash\":\"\"}");
+      update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,"{\"reserve_delegate_address\":\"\"}");
+      update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,"{\"reserve_delegate_amount\":\"\"}");
+      update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,"{\"tx_hash\":\"\"}");
+      update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,"{\"timestamp\":\"10000000000\"}");
+    }
+  }
+  
+  POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_REMOTE_DATA_DATABASE_FIELDS);
+  return;
+
+  #undef DATABASE_COLLECTION
+  #undef REMOTE_DATA_CHECK_FOR_EXPIRED_NAMES_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: maintain_slist_and_plist
+Description: Maintains the slist and plist
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void maintain_slist_and_plist(void)
+{
+  // Variables
+  char buffer[1024];
+  char saddress[XCASH_WALLET_LENGTH+1];
+  char paddress[XCASH_WALLET_LENGTH+1];
+  char message[SMALL_BUFFER_SIZE];
+  char message2[BUFFER_SIZE];
+  char message3[BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  size_t count = 0;
+  size_t counter = 0;
+  struct database_multiple_documents_fields database_multiple_documents_fields;
+  int document_count = 0;
+
+  // define macros
+  #define DATABASE_COLLECTION "remote_data"
+
+  #define REMOTE_DATA_MAINTAIN_SLIST_AND_PLIST_ERROR(settings,MESSAGE) \
+  if (debug_settings == 1) \
+  { \
+  memcpy(error_message.function[error_message.total],"maintain_slist_and_plist",24); \
+  memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
+  error_message.total++; \
+  } \
+  if ((settings) == 0) \
+  { \
+    POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_REMOTE_DATA_DATABASE_FIELDS); \
+  } \
+  return;
+
+  memset(saddress,0,sizeof(saddress));
+  memset(paddress,0,sizeof(paddress));
+  memset(message,0,sizeof(message));
+  memset(message2,0,sizeof(message2));
+  memset(message3,0,sizeof(message3));
+
+  // get the total documents
+  if ((document_count = count_all_documents_in_collection(remote_data_database_name,DATABASE_COLLECTION)) <= 0)
+  {
+    REMOTE_DATA_MAINTAIN_SLIST_AND_PLIST_ERROR(1,"Could not get the remote data");
+  }
+
+  memset(buffer,0,sizeof(buffer));
+
+  // initialize the database_multiple_documents_fields struct
+  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_REMOTE_DATA_DATABASE_FIELDS,"maintain_slist_and_plist",buffer,current_date_and_time,current_UTC_date_and_time);
+
+  if (read_multiple_documents_all_fields_from_collection(remote_data_database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,0,document_count,0,"") == 0)
+  {
+    REMOTE_DATA_MAINTAIN_SLIST_AND_PLIST_ERROR(0,"Could not get the remote data");
+  }
+
+  // loop through all documents, for every saddress read all saddress_list and if its their remove it from the list. Do the same for paddress and paddress_list
+  for (count = 0; count < database_multiple_documents_fields.document_count; count++)
+  {
+    // get the saddress and paddress
+    memset(saddress,0,sizeof(saddress));
+    memset(paddress,0,sizeof(paddress));
+    memcpy(saddress,database_multiple_documents_fields.value[count][2],XCASH_WALLET_LENGTH);
+    memcpy(paddress,database_multiple_documents_fields.value[count][3],XCASH_WALLET_LENGTH);
+
+    for (counter = 0; counter < database_multiple_documents_fields.document_count; counter++)
+    {
+      // check for saddress
+      if (strstr(database_multiple_documents_fields.value[counter][4],saddress) != NULL)
+      {
+        // remove the saddress from the list
+        memset(message,0,sizeof(message));
+        memcpy(message,saddress,XCASH_WALLET_LENGTH);
+        memcpy(message+strlen(message),"|",1);
+        memset(message2,0,sizeof(message2));
+        memcpy(message2,database_multiple_documents_fields.value[counter][4],strlen(database_multiple_documents_fields.value[counter][4]));
+        string_replace(message2,sizeof(message2),message,"");
+
+        memset(message,0,sizeof(message));
+        memcpy(message,"{\"name\":\"",9);
+        memcpy(message+strlen(message),database_multiple_documents_fields.value[counter][0],strlen(database_multiple_documents_fields.value[counter][0]));
+        memcpy(message+strlen(message),"\"}",2);
+
+        memset(message3,0,sizeof(message3));
+        memcpy(message3,"{\"saddress_list\":\"",18);
+        memcpy(message3+strlen(message3),message2,strlen(message2));
+        memcpy(message3+strlen(message3),"\"}",2);
+
+        // update the document
+        if (update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,message3) == 0)
+        {
+          continue;
+        }
+      }
+
+      // check for paddress
+      if (strstr(database_multiple_documents_fields.value[counter][5],paddress) != NULL)
+      {
+        // remove the paddress from the list
+        memset(message,0,sizeof(message));
+        memcpy(message,paddress,XCASH_WALLET_LENGTH);
+        memcpy(message+strlen(message),"|",1);
+        memset(message2,0,sizeof(message2));
+        memcpy(message2,database_multiple_documents_fields.value[counter][5],strlen(database_multiple_documents_fields.value[counter][5]));
+        string_replace(message2,sizeof(message2),message,"");
+
+        memset(message,0,sizeof(message));
+        memcpy(message,"{\"name\":\"",9);
+        memcpy(message+strlen(message),database_multiple_documents_fields.value[counter][0],strlen(database_multiple_documents_fields.value[counter][0]));
+        memcpy(message+strlen(message),"\"}",2);
+
+        memset(message3,0,sizeof(message3));
+        memcpy(message3,"{\"paddress_list\":\"",18);
+        memcpy(message3+strlen(message3),message2,strlen(message2));
+        memcpy(message3+strlen(message3),"\"}",2);
+
+        // update the document
+        if (update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,message3) == 0)
+        {
+          continue;
+        }
+      }
+    }
+  }
+  
+  POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_REMOTE_DATA_DATABASE_FIELDS);
+  return;
+
+  #undef DATABASE_COLLECTION
+  #undef REMOTE_DATA_MAINTAIN_SLIST_AND_PLIST_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: remote_data_timer_thread
+Description: Runs the timer thread functions for the remote data
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* remote_data_timer_thread(void* parameters)
+{
+  // Variables
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+
+  // unused parameters
+  (void)parameters;
+
+  for (;;)
+  {
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+
+    if (current_UTC_date_and_time.tm_hour == 0 && current_UTC_date_and_time.tm_min == 30)
+    {
+      maintain_slist_and_plist();
+    }
+    else if (current_UTC_date_and_time.tm_hour == 1 && current_UTC_date_and_time.tm_min == 30)
+    {
+      add_delegates_to_remote_data_delegates();
+    }
+    else if (current_UTC_date_and_time.tm_min == 30 && current_UTC_date_and_time.tm_hour != 0 && current_UTC_date_and_time.tm_hour != 1)
+    {
+      check_for_expired_names();
+    }
+    sleep(60);
+  }
+  pthread_exit((void *)(intptr_t)1);
 }

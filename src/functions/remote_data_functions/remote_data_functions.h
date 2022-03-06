@@ -23,4 +23,7 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_na
 int server_receive_data_socket_remote_data_get_delegates_information(const int CLIENT_SOCKET);
 int server_receive_data_socket_remote_data_get_block_producer_information(const int CLIENT_SOCKET, const char* DATA);
 void add_delegates_to_remote_data_delegates(void);
+void check_for_expired_names(void);
+void maintain_slist_and_plist(void);
+void* remote_data_timer_thread(void* parameters);
 #endif
