@@ -1373,7 +1373,7 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_save_name(c
   }
 
   memset(data,0,sizeof(data));
-  memcpy(data,"{\"delegate\":\"",13);
+  memcpy(data,"{\"public_address\":\"",19);
   memcpy(data+strlen(data),block_producer_delegate_address,XCASH_WALLET_LENGTH);
   memcpy(data+strlen(data),"\"}",2);
   if (read_document_field_from_collection(remote_data_database_name,"remote_data_delegates",data,"amount",block_producer_delegate_amount) == 0)
@@ -1649,7 +1649,7 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_na
     REMOTE_DATA_PURCHASE_NAME_ERROR;
   }
 
-  // purchase the name (add the saddress,paddress and tx_hash)
+  // purchase the name (add the saddress,paddress and tx_hash and update the timestamp)
   memset(data2,0,sizeof(data2));
   memcpy(data2,"{\"saddress\":\"",13);
   memcpy(data2+strlen(data2),saddress,XCASH_WALLET_LENGTH);
@@ -1675,6 +1675,17 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_na
   memset(data2,0,sizeof(data2));
   memcpy(data2,"{\"tx_hash\":\"",12);
   memcpy(data2+strlen(data2),tx_hash,TRANSACTION_HASH_LENGTH);
+  memcpy(data2+strlen(data2),"\"}",2);
+
+  // update the delegate in the database
+  if (update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,data2) == 0)
+  {
+    REMOTE_DATA_PURCHASE_NAME_ERROR;
+  }
+
+  memset(data2,0,sizeof(data2));
+  memcpy(data2,"{\"timestamp\":\"",14);
+  snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%ld",time(NULL) + REMOTE_DATA_REGISTRATION_LENGTH);
   memcpy(data2+strlen(data2),"\"}",2);
 
   // update the delegate in the database
@@ -1971,35 +1982,335 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_delegates_s
 
 
 
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_remote_data_nodes_to_block_verifiers_renewal_start
+Description: Runs the code when the server receives the NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_RENEWAL_START message
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  MESSAGE - The message
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void server_receive_data_socket_remote_data_nodes_to_block_verifiers_renewal_start(const int CLIENT_SOCKET, const char* MESSAGE)
+{
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
+  char public_address[XCASH_WALLET_LENGTH+1];
+  char block_producer_delegate_address[XCASH_WALLET_LENGTH+1];
+  char block_producer_delegate_amount[MAXIMUM_NUMBER_SIZE+1];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  int count;
+  int count2;
+  size_t data_size;
+
+  // define macros
+  #define DATABASE_COLLECTION "remote_data"
+  #define REMOTE_DATA_RENEWAL_START_ERROR \
+  if (debug_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_remote_data_nodes_to_block_verifiers_renewal_start",77); \
+    memcpy(error_message.data[error_message.total],"Could not start to renew the name",23); \
+    error_message.total++; \
+  } \
+  send_data(CLIENT_SOCKET,(unsigned char*)"Could not start to renew the name}",0,0,""); \
+  return;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(public_address,0,sizeof(public_address));
+  memset(block_producer_delegate_address,0,sizeof(block_producer_delegate_address));
+  memset(block_producer_delegate_amount,0,sizeof(block_producer_delegate_amount));
+
+  // get the current time
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+
+  // check if it is valid data interval
+  if (test_settings == 0 && current_UTC_date_and_time.tm_min % BLOCK_TIME != 1 && current_UTC_date_and_time.tm_min % BLOCK_TIME != 2 && current_UTC_date_and_time.tm_min % BLOCK_TIME != 3)
+  {
+    REMOTE_DATA_RENEWAL_START_ERROR;
+  }
+
+  // verify the message
+  if (verify_data(MESSAGE,0) == 0 || string_count(MESSAGE,"|") != REMOTE_DATA_RENEWAL_START_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
+  {   
+    REMOTE_DATA_RENEWAL_START_ERROR;
+  }
+
+  // parse the message
+  for (count = 0, count2 = 0; count < REMOTE_DATA_RENEWAL_START_PARAMETER_AMOUNT; count++)
+  {
+    if (count == 1)
+    {
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
+      {
+        REMOTE_DATA_RENEWAL_START_ERROR;
+      }
+      memcpy(public_address,&MESSAGE[count2],data_size);
+    }
+    count2 = (int)(strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1);
+  }
+
+  // check if the data is valid
+  if (strlen(public_address) != XCASH_WALLET_LENGTH || strncmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+  {
+    REMOTE_DATA_RENEWAL_START_ERROR;
+  }
+
+  // get the current block producer and the amount
+  if (get_previous_block_producer(block_producer_delegate_address) == 0)
+  {
+    REMOTE_DATA_RENEWAL_START_ERROR;
+  }
+
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"public_address\":\"",19);
+  memcpy(data+strlen(data),block_producer_delegate_address,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\"}",2);
+  if (read_document_field_from_collection(remote_data_database_name,"remote_data_delegates",data,"amount",block_producer_delegate_amount) == 0)
+  {
+    REMOTE_DATA_RENEWAL_START_ERROR;
+  }
+
+  // start the renewal process
+  memcpy(data2,"{\"address\":\"",12);
+  memcpy(data2+strlen(data2),public_address,XCASH_WALLET_LENGTH);
+  memcpy(data2+strlen(data2),"\"}",2);
+
+  // update the timestamp
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"timestamp\":\"",14);
+  snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%ld",time(NULL) + REMOTE_DATA_REGISTRATION_LENGTH);
+  memcpy(data+strlen(data),"\"}",2);
+
+  if (update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,data2,data) == 0)
+  {
+    REMOTE_DATA_RENEWAL_START_ERROR;
+  }
+
+  // update the reserve_delegate_address
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"reserve_delegate_address\":\"",29);
+  memcpy(data+strlen(data),block_producer_delegate_address,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\"}",2);
+
+  if (update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,data2,data) == 0)
+  {
+    REMOTE_DATA_RENEWAL_START_ERROR;
+  }
+
+  // update the reserve_delegate_amount
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"reserve_delegate_amount\":\"",28);
+  memcpy(data+strlen(data),block_producer_delegate_amount,strlen(block_producer_delegate_amount));
+  memcpy(data+strlen(data),"\"}",2);
+
+  if (update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,data2,data) == 0)
+  {
+    REMOTE_DATA_RENEWAL_START_ERROR;
+  }
+
+  // update the tx_hash
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"tx_hash\":\"\"}",14);
+
+  if (update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,data2,data) == 0)
+  {
+    REMOTE_DATA_RENEWAL_START_ERROR;
+  }
+
+  send_data(CLIENT_SOCKET,(unsigned char*)"Started to renew the name}",0,0,"");
+  return;
+
+  #undef DATABASE_COLLECTION
+  #undef REMOTE_DATA_RENEWAL_START_ERROR
+}
 
 
 
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_remote_data_nodes_to_block_verifiers_renewal_end
+Description: Runs the code when the server receives the NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_RENEWAL_END message
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  MESSAGE - The message
+-----------------------------------------------------------------------------------------------------------
+*/
 
+void server_receive_data_socket_remote_data_nodes_to_block_verifiers_renewal_end(const int CLIENT_SOCKET, const char* MESSAGE)
+{
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
+  char public_address[XCASH_WALLET_LENGTH+1];
+  char tx_hash[TRANSACTION_HASH_LENGTH+1];
+  char delegates_public_address[XCASH_WALLET_LENGTH+1];
+  char delegates_amount[MAXIMUM_NUMBER_SIZE+1];  
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  int count;
+  int count2;
+  long int registration_length;
+  size_t data_size;
 
+  // define macros
+  #define DATABASE_COLLECTION "remote_data"
+  #define REMOTE_DATA_RENEWAL_END_ERROR \
+  if (debug_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_remote_data_nodes_to_block_verifiers_renewal_end",75); \
+    memcpy(error_message.data[error_message.total],"Could not renew the name",24); \
+    error_message.total++; \
+  } \
+  send_data(CLIENT_SOCKET,(unsigned char*)"Could not renew the name}",0,0,""); \
+  return;
 
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(public_address,0,sizeof(public_address));
+  memset(tx_hash,0,sizeof(tx_hash));
+  memset(delegates_public_address,0,sizeof(delegates_public_address));
+  memset(delegates_amount,0,sizeof(delegates_amount));
 
+  // get the current time
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
+  // check if it is valid data interval
+  if (test_settings == 0 && current_UTC_date_and_time.tm_min % 60 >= 0 && current_UTC_date_and_time.tm_min % 60 < 10)
+  {
+    REMOTE_DATA_RENEWAL_END_ERROR;
+  }
 
+  // verify the message
+  if (verify_data(MESSAGE,0) == 0 || string_count(MESSAGE,"|") != REMOTE_DATA_RENEWAL_END_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
+  {   
+    REMOTE_DATA_RENEWAL_END_ERROR;
+  }
 
+  // parse the message
+  for (count = 0, count2 = 0; count < REMOTE_DATA_RENEWAL_END_PARAMETER_AMOUNT; count++)
+  {
+    if (count == 1)
+    {
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != TRANSACTION_HASH_LENGTH)
+      {
+        REMOTE_DATA_RENEWAL_END_ERROR;
+      }
+      memcpy(tx_hash,&MESSAGE[count2],data_size);
+    }
+    if (count == 2)
+    {
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
+      {
+        REMOTE_DATA_RENEWAL_END_ERROR;
+      }
+      memcpy(public_address,&MESSAGE[count2],data_size);
+    }
+    count2 = (int)(strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) + 1);
+  }
 
+  // check if the data is valid
+  if (strlen(public_address) != XCASH_WALLET_LENGTH || strncmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(tx_hash) != TRANSACTION_HASH_LENGTH)
+  {
+    REMOTE_DATA_RENEWAL_END_ERROR;
+  }
 
+  // check if the address is already in the database for another name on the address, saddress or paddress
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"address\":\"",12);
+  memcpy(data+strlen(data),public_address,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\"}",2);
 
+  if (count_documents_in_collection(remote_data_database_name,DATABASE_COLLECTION,data) > 0)
+  {
+    REMOTE_DATA_RENEWAL_END_ERROR;
+  }
 
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"saddress\":\"",13);
+  memcpy(data+strlen(data),public_address,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\"}",2);
 
+  if (count_documents_in_collection(remote_data_database_name,DATABASE_COLLECTION,data) > 0)
+  {
+    REMOTE_DATA_RENEWAL_END_ERROR;
+  }
 
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"paddress\":\"",13);
+  memcpy(data+strlen(data),public_address,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\"}",2);
 
+  if (count_documents_in_collection(remote_data_database_name,DATABASE_COLLECTION,data) > 0)
+  {
+    REMOTE_DATA_RENEWAL_END_ERROR;
+  }
 
+  // check if the timestamp is valid
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memcpy(data,"{\"address\":\"",12);
+  memcpy(data+strlen(data),public_address,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\"}",2);
+  if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,"timestamp",data2) == 0)
+  {
+    REMOTE_DATA_RENEWAL_END_ERROR;
+  }
 
+  sscanf(data2,"%ld", &registration_length);
+  if ((registration_length + REMOTE_DATA_SAVE_NAME_LENGTH) < time(NULL))
+  {
+    REMOTE_DATA_RENEWAL_END_ERROR;
+  }
 
+  // get the delegates data
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"address\":\"",12);
+  memcpy(data+strlen(data),public_address,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\"}",2);
+  if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,"reserve_delegate_address",delegates_public_address) == 0 || read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,"reserve_delegate_amount",delegates_amount) == 0)
+  {
+    REMOTE_DATA_RENEWAL_END_ERROR;
+  }
 
+  // check if the tx_hash is valid
+  if (remote_data_validate_tx_hash(tx_hash,public_address,delegates_public_address,delegates_amount) == 0)
+  {
+    REMOTE_DATA_RENEWAL_END_ERROR;
+  }
 
+  // renew the name (set the new tx_hash and update the timestamp)
+  memset(data2,0,sizeof(data2));
+  memcpy(data2,"{\"tx_hash\":\"",12);
+  memcpy(data2+strlen(data2),tx_hash,TRANSACTION_HASH_LENGTH);
+  memcpy(data2+strlen(data2),"\"}",2);
 
+  // update the delegate in the database
+  if (update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,data2) == 0)
+  {
+    REMOTE_DATA_RENEWAL_END_ERROR;
+  }
 
+  memset(data2,0,sizeof(data2));
+  memcpy(data2,"{\"timestamp\":\"",14);
+  snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%ld",time(NULL) + REMOTE_DATA_REGISTRATION_LENGTH);
+  memcpy(data2+strlen(data2),"\"}",2);
 
+  // update the delegate in the database
+  if (update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,data2) == 0)
+  {
+    REMOTE_DATA_RENEWAL_END_ERROR;
+  }
 
+  send_data(CLIENT_SOCKET,(unsigned char*)"Renewed the name}",0,0,"");
+  return;
 
-
-
+  #undef DATABASE_COLLECTION
+  #undef REMOTE_DATA_RENEWAL_END_ERROR
+}
 
 
 

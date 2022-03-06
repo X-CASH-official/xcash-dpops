@@ -1913,6 +1913,29 @@ memset(data_test,0,sizeof(data_test));
   XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
   */
   #define NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_SET_AMOUNT "NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_SET_AMOUNT|100|" TEST_WALLET "|SigV10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|"
+
+
+
+  /*
+  The purpose of this message is for a node to start the renewal process
+ 
+  message_settings - The type of the message
+  public_address - The public address of the node that is sending the data.
+  XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_RENEWAL_START "NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_RENEWAL_START|" TEST_WALLET "|SigV10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|"
+
+
+
+  /*
+  The purpose of this message is for a node to finish the renewal process
+ 
+  message_settings - The type of the message
+  tx_hash - The tx_hash
+  public_address - The public address of the node that is sending the data.
+  XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_RENEWAL_END "NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_RENEWAL_END|0000000000000000000000000000000000000000000000000000000000000000|" TEST_WALLET "|SigV10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|"
  
 
 
