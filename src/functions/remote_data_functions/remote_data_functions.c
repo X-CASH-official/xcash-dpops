@@ -55,6 +55,81 @@ Functions
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: get_previous_block_producer
+Description: Get the previous block producer
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int get_previous_block_producer(char *previous_block_producer)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE];
+  char data3[BUFFER_SIZE];
+  char* message;
+  size_t count;
+  size_t count2;
+  
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+  memset(previous_block_producer,0,strlen(previous_block_producer));  
+
+  // check if it is a valid block height
+  sscanf(current_block_height, "%zu", &count);
+  count--;
+
+  if (count <= XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT)
+  {
+    return 0;
+  }
+
+  if (test_settings == 0)
+  {
+    // create the message
+    memcpy(data2,"{\"block_height\":\"",17);
+    snprintf(data2+17,MAXIMUM_NUMBER_SIZE,"%zu",count);
+    memcpy(data2+strlen(data2),"\"}",2);
+
+    // get the current reserve_bytes database
+    get_reserve_bytes_database(count,1);
+    memcpy(data3,"reserve_bytes_",14);
+    snprintf(data3+14,MAXIMUM_NUMBER_SIZE,"%zu",count);
+
+    // get the previous blocks reserve bytes
+    if (read_document_field_from_collection(database_name,data3,data2,"reserve_bytes",data) == 0)
+    {    
+      return 0;
+    }
+  }
+  else if (test_settings == 1)
+  {
+    memcpy(data,NETWORK_BLOCK,sizeof(NETWORK_BLOCK)-1);
+  }
+  
+  if ((message = strstr(data,BLOCKCHAIN_DATA_SEGMENT_STRING)) == NULL)
+  {
+    return 0;
+  }
+
+  memset(data3,0,sizeof(data3));
+
+  memcpy(data3,&message[sizeof(BLOCKCHAIN_DATA_SEGMENT_STRING)-1],XCASH_WALLET_LENGTH*2);
+
+  // convert the hexadecimal string to a string
+  for (count = 0, count2 = 0; count < XCASH_WALLET_LENGTH*2; count2++, count += 2)
+  {
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,&data3[count],2);
+    previous_block_producer[count2] = (char)strtol(data2, NULL, 16);
+  }
+  return 1;
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: validate_name
 Description: Checks if the name is valid
 Parameters:
@@ -1208,8 +1283,20 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_save_name(c
   }
 
   // get the current block producer and the amount
+  if (get_previous_block_producer(block_producer_delegate_address) == 0)
+  {
+    REMOTE_DATA_SAVE_NAME_ERROR;
+  }
 
-
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"delegate\":\"",13);
+  memcpy(data+strlen(data),block_producer_delegate_address,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\"}",2);
+  if (read_document_field_from_collection(remote_data_database_name,"remote_data_delegates",data,"amount",block_producer_delegate_amount) == 0)
+  {
+    REMOTE_DATA_SAVE_NAME_ERROR;
+  }
+  
   // save the name
   memset(data,0,sizeof(data));
   memcpy(data,"{\"name\":\"",9);
@@ -1446,7 +1533,7 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_na
   }
 
   sscanf(data2,"%ld", &registration_length);
-  if ((registration_length + 3600) < time(NULL))
+  if ((registration_length + REMOTE_DATA_SAVE_NAME_LENGTH) < time(NULL))
   {
     REMOTE_DATA_PURCHASE_NAME_ERROR;
   }

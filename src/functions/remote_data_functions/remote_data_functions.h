@@ -7,6 +7,7 @@ Function prototypes
 -----------------------------------------------------------------------------------------------------------
 */
 
+int get_previous_block_producer(char *previous_block_producer);
 int validate_name(const char* MESSAGE);
 int validate_name_settings(const char* MESSAGE);
 int remote_data_validate_tx_hash(const char* tx_hash,const char* public_address,const char* delegates_public_address,const char* delegates_amount);
