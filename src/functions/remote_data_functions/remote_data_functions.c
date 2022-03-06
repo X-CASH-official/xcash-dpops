@@ -1065,6 +1065,8 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_update_remo
   char delegate_public_address[XCASH_WALLET_LENGTH+1];
   char item[100];
   char value[100];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
   int count;
   int count2;
   size_t data_size;
@@ -1086,6 +1088,15 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_update_remo
   memset(delegate_public_address,0,sizeof(delegate_public_address));
   memset(item,0,sizeof(item));
   memset(value,0,sizeof(value));
+
+  // get the current time
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+
+  // check if it is valid data interval
+  if (test_settings == 0 && current_UTC_date_and_time.tm_min % 60 >= 0 && current_UTC_date_and_time.tm_min % 60 < 10)
+  {
+    REMOTE_DATA_UPDATE_DATA_ERROR;
+  }
 
   // verify the message
   if (verify_data(MESSAGE,0) == 0 || string_count(MESSAGE,"|") != REMOTE_DATA_UPDATE_DATA_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
@@ -1185,6 +1196,8 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_save_name(c
   char block_producer_delegate_address[XCASH_WALLET_LENGTH+1];
   char block_producer_delegate_amount[MAXIMUM_NUMBER_SIZE+1];
   char name[100];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
   int count;
   int count2;
   size_t data_size;
@@ -1206,6 +1219,15 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_save_name(c
   memset(block_producer_delegate_address,0,sizeof(block_producer_delegate_address));
   memset(block_producer_delegate_amount,0,sizeof(block_producer_delegate_amount));
   memset(name,0,sizeof(name));
+
+  // get the current time
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+
+  // check if it is valid data interval
+  if (test_settings == 0 && current_UTC_date_and_time.tm_min % BLOCK_TIME != 1 && current_UTC_date_and_time.tm_min % BLOCK_TIME != 2 && current_UTC_date_and_time.tm_min % BLOCK_TIME != 3)
+  {
+    REMOTE_DATA_SAVE_NAME_ERROR;
+  }
 
   // verify the message
   if (verify_data(MESSAGE,0) == 0 || string_count(MESSAGE,"|") != REMOTE_DATA_SAVE_NAME_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
@@ -1296,7 +1318,7 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_save_name(c
   {
     REMOTE_DATA_SAVE_NAME_ERROR;
   }
-  
+
   // save the name
   memset(data,0,sizeof(data));
   memcpy(data,"{\"name\":\"",9);
@@ -1346,6 +1368,8 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_na
   char tx_hash[TRANSACTION_HASH_LENGTH+1];
   char delegates_public_address[XCASH_WALLET_LENGTH+1];
   char delegates_amount[MAXIMUM_NUMBER_SIZE+1];  
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
   int count;
   int count2;
   long int registration_length;
@@ -1371,6 +1395,15 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_na
   memset(tx_hash,0,sizeof(tx_hash));
   memset(delegates_public_address,0,sizeof(delegates_public_address));
   memset(delegates_amount,0,sizeof(delegates_amount));
+
+  // get the current time
+  get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+
+  // check if it is valid data interval
+  if (test_settings == 0 && current_UTC_date_and_time.tm_min % 60 >= 0 && current_UTC_date_and_time.tm_min % 60 < 10)
+  {
+    REMOTE_DATA_PURCHASE_NAME_ERROR;
+  }
 
   // verify the message
   if (verify_data(MESSAGE,0) == 0 || string_count(MESSAGE,"|") != REMOTE_DATA_PURCHASE_NAME_PARAMETER_AMOUNT || check_for_invalid_strings(MESSAGE) == 0)
