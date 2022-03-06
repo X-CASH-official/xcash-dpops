@@ -20,4 +20,6 @@ int server_receive_data_socket_remote_data_get_information_from_name(const int C
 void server_receive_data_socket_remote_data_nodes_to_block_verifiers_update_remote_data(const int CLIENT_SOCKET, const char* MESSAGE);
 void server_receive_data_socket_remote_data_nodes_to_block_verifiers_save_name(const int CLIENT_SOCKET, const char* MESSAGE);
 void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_name(const int CLIENT_SOCKET, const char* MESSAGE);
+int server_receive_data_socket_remote_data_get_delegates_information(const int CLIENT_SOCKET);
+int server_receive_data_socket_remote_data_get_block_producer_information(const int CLIENT_SOCKET, const char* DATA);
 #endif

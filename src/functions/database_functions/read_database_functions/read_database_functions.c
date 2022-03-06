@@ -470,6 +470,10 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
   {
     result->count = TOTAL_BLOCKS_FOUND_DATABASE_FIELDS;
   }
+  else if (strstr(COLLECTION,"remote_data_delegates") != NULL)
+  {
+    result->count = TOTAL_REMOTE_DATA_DELEGATES_DATABASE_FIELDS;
+  }
 
   // get a temporary connection
   if (!(database_client_thread = mongoc_client_pool_pop(database_client_thread_pool)))
@@ -612,6 +616,10 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
   else if (strstr(COLLECTION,"blocks_found") != NULL)
   {
     result->database_fields_count = TOTAL_BLOCKS_FOUND_DATABASE_FIELDS;
+  }
+  else if (strstr(COLLECTION,"remote_data_delegates") != NULL)
+  {
+    result->database_fields_count = TOTAL_REMOTE_DATA_DELEGATES_DATABASE_FIELDS;
   }
 
   // get a temporary connection

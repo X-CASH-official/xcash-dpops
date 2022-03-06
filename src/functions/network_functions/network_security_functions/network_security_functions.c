@@ -1101,6 +1101,20 @@ int validate_data(const char* MESSAGE)
         VALIDATE_DATA_ERROR("Invalid message");
       }      
     }
+    else if (strncmp(MESSAGE,"GET /remotedatagetdelegatesinformation",38) == 0)
+    {
+      if (strlen(&MESSAGE[38]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[38]," HTTP/") == NULL)
+      {
+        VALIDATE_DATA_ERROR("Invalid message");
+      }      
+    }
+    else if (strncmp(MESSAGE,"GET /remotedatagetblockproducerinformation?parameter1=",54) == 0)
+    {
+      if (strlen(&MESSAGE[54]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[54]," HTTP/") == NULL)
+      {
+        VALIDATE_DATA_ERROR("Invalid message");
+      }      
+    }
   }
   else if (shared_delegates_website == 1)
   {

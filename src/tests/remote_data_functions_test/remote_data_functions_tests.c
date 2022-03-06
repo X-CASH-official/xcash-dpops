@@ -961,6 +961,66 @@ int remote_data_functions_test(void)
     fprintf(stderr,"\033[1;31mFAILED! Test for remote_data_purchase_name - tx_hash invalid from address\033[0m\n");
   }
 
+
+
+
+
+
+
+
+
+  // /remotedatagetdelegatesinformation
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"delegate\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"amount\":\"100\"}");
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"delegate\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"amount\":\"1000\"}");
+  memset(data_test,0,sizeof(data_test));
+  if (send_and_receive_data_socket(data_test,sizeof(data_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,"GET /remotedatagetdelegatesinformation HTTP/",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,"[{\"delegate\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"amount\":\"100\"},{\"delegate\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"amount\":\"1000\"}]",sizeof(data_test)) == 0)
+  {
+    color_print("PASSED! Test for /remotedatagetdelegatesinformation","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for /remotedatagetdelegatesinformation","red");
+  }
+
+
+
+
+
+
+
+
+
+  // /remotedatagetblockproducerinformation
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"delegate\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"amount\":\"100\"}");
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"delegate\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"amount\":\"1000\"}");
+  memset(data_test,0,sizeof(data_test));
+  if (send_and_receive_data_socket(data_test,sizeof(data_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,"GET /remotedatagetblockproducerinformation?parameter1=XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP HTTP/",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,"{\"amount\":\"100\"}",sizeof(data_test)) == 0)
+  {
+    color_print("PASSED! Test for /remotedatagetblockproducerinformation","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for /remotedatagetblockproducerinformation","red");
+  }
+
+  // /remotedatagetblockproducerinformation - delegate not found
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"delegate\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"amount\":\"1000\"}");
+  memset(data_test,0,sizeof(data_test));
+  if (send_and_receive_data_socket(data_test,sizeof(data_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,"GET /remotedatagetblockproducerinformation?parameter1=XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v HTTP/",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,"{\"Error\":\"Could not get the delegates remote data information\"}",sizeof(data_test)) == 0)
+  {
+    color_print("PASSED! Test for /remotedatagetblockproducerinformation - delegate not found","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for /remotedatagetblockproducerinformation - delegate not found","red");
+  }
+
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nremote data functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,REMOTE_DATA_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   return count_test;

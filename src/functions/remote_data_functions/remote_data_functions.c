@@ -1627,3 +1627,174 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_na
   #undef DATABASE_COLLECTION
   #undef REMOTE_DATA_PURCHASE_NAME_ERROR
 }
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_remote_data_get_delegates_information
+Description: Runs the code when the server receives /remotedatagetdelegatesinformation
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_remote_data_get_delegates_information(const int CLIENT_SOCKET)
+{
+  // Variables
+  char buffer[1024];
+  char start[MAXIMUM_NUMBER_SIZE+1];
+  char amount[MAXIMUM_NUMBER_SIZE+1];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  int count = 0;
+  size_t counter = 0;
+  struct database_multiple_documents_fields database_multiple_documents_fields;
+  int document_count = 0;
+
+  // define macros
+  #define DATABASE_COLLECTION "remote_data_delegates"
+
+  #define REMOTE_DATA_GET_DELEGATES_INFORMATION_ERROR(settings,MESSAGE) \
+  if (debug_settings == 1) \
+  { \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_remote_data_get_delegates_information",64); \
+  memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
+  error_message.total++; \
+  } \
+  memset(buffer,0,strlen(buffer)); \
+  memcpy(buffer,"{\"Error\":\"Could not get the remote data delegates\"}",51); \
+  send_data(CLIENT_SOCKET,(unsigned char*)buffer,strlen(buffer),400,"application/json"); \
+  if ((settings) == 0) \
+  { \
+    POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS); \
+  } \
+  return 0;
+
+  memset(start,0,sizeof(start));
+  memset(amount,0,sizeof(amount));
+
+  // get the total delegates
+  if ((document_count = count_all_documents_in_collection(remote_data_database_name,DATABASE_COLLECTION)) <= 0)
+  {
+    REMOTE_DATA_GET_DELEGATES_INFORMATION_ERROR(1,"Could not get the remote data delegates");
+  }
+
+  memset(buffer,0,sizeof(buffer));
+
+  // initialize the database_multiple_documents_fields struct
+  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_REMOTE_DATA_DELEGATES_DATABASE_FIELDS,"server_receive_data_socket_remote_data_get_delegates_information",buffer,current_date_and_time,current_UTC_date_and_time);
+
+  if (read_multiple_documents_all_fields_from_collection(remote_data_database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,0,document_count,0,"") == 0)
+  {
+    REMOTE_DATA_GET_DELEGATES_INFORMATION_ERROR(0,"Could not get the delegates blocks found data");
+  }
+
+  // count how many bytes to allocate for the json data
+  for (count = 0, counter = BUFFER_SIZE; count < document_count; count++)
+  {
+    counter += 16; // 16 is for quotes for the items and values
+    counter += strlen(database_multiple_documents_fields.item[count][0]);
+    counter += strlen(database_multiple_documents_fields.item[count][1]);
+    counter += strlen(database_multiple_documents_fields.value[count][0]);
+    counter += strlen(database_multiple_documents_fields.value[count][1]);
+  }
+
+  char* message = (char*)calloc(counter,sizeof(char)); 
+  
+  if (create_json_data_from_database_multiple_documents_array(&database_multiple_documents_fields,message,"") == 0)
+  {
+    pointer_reset(message);
+    REMOTE_DATA_GET_DELEGATES_INFORMATION_ERROR(0,"Could not create the json data");
+  }  
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");
+  
+  pointer_reset(message);
+  POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS);
+  return 1;
+
+  #undef DATABASE_COLLECTION
+  #undef REMOTE_DATA_GET_DELEGATES_INFORMATION_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_remote_data_get_block_producer_information
+Description: Runs the code when the server receives /remotedatagetblockproducerinformation
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  DATA - The data
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_remote_data_get_block_producer_information(const int CLIENT_SOCKET, const char* DATA)
+{
+  // Variables
+  char public_address[XCASH_WALLET_LENGTH+1];
+  char data2[BUFFER_SIZE];
+  char message[BUFFER_SIZE];
+
+  // define macros
+  #define DATABASE_COLLECTION "remote_data_delegates"
+  #define REMOTE_DATA_GET_BLOCK_PRODUCER_INFORMATION_ERROR \
+  if (debug_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_remote_data_get_block_producer_information",69); \
+    memcpy(error_message.data[error_message.total],"Invalid parameters",18); \
+    error_message.total++; \
+  } \
+  memset(message,0,strlen(message)); \
+  memcpy(message,"{\"Error\":\"Could not get the block producer\"}",44); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
+  return 0;
+
+  #define REMOTE_DATA_GET_BLOCK_PRODUCER_INFORMATION_STATUS(settings) \
+  memset(message,0,strlen(message)); \
+  memcpy(message,"{\"remote_data\":\"",16); \
+  memcpy(message+strlen(message),settings,strlen(settings)); \
+  memcpy(message+strlen(message),"\"}",2); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json"); \
+  return 1;
+  
+  memset(public_address,0,sizeof(public_address));
+  memset(data2,0,sizeof(data2));
+  memset(message,0,sizeof(message));
+
+  // get the parameter1
+  memcpy(public_address,&DATA[54],(strnlen(DATA,sizeof(public_address)) - strnlen(strstr(DATA," HTTP/"),sizeof(public_address)))-54);
+
+  // error check
+  if (strncmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(public_address) != XCASH_WALLET_LENGTH)
+  {
+    REMOTE_DATA_GET_BLOCK_PRODUCER_INFORMATION_ERROR;
+  } 
+
+  // create the message
+  memcpy(message,"{\"delegate\":\"",13);
+  memcpy(message+strlen(message),public_address,XCASH_WALLET_LENGTH);
+  memcpy(message+strlen(message),"\"}",2);
+
+  // get the amount
+  if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"amount",data2) == 1)
+  {
+    REMOTE_DATA_GET_BLOCK_PRODUCER_INFORMATION_STATUS(data2);
+  }
+
+  // create the message
+  memset(message,0,sizeof(message));
+  memcpy(message,"{\"amount\":\"",11);
+  memcpy(message+strlen(message),data2,strlen(data2));
+  memcpy(message+strlen(message),"\"}",2);
+
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");
+  
+  REMOTE_DATA_GET_BLOCK_PRODUCER_INFORMATION_ERROR;
+
+  #undef DATABASE_COLLECTION
+  #undef REMOTE_DATA_GET_BLOCK_PRODUCER_INFORMATION_ERROR
+  #undef REMOTE_DATA_GET_BLOCK_PRODUCER_INFORMATION_STATUS
+}
