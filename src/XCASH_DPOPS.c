@@ -1086,6 +1086,23 @@ void start_timer_threads(void)
   
   color_print("Started the current block height timer thread","green");
 
+  // start the remote data threads
+  if (pthread_create(&thread_id[1], NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)
+  {
+    START_TIMER_THREADS_ERROR("Could not start the current_block_height_timer_thread");
+  }
+  
+  color_print("Started the remote data database synchronization timer thread","green");
+
+  if (pthread_create(&thread_id[2], NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[2]) != 0)
+  {
+    START_TIMER_THREADS_ERROR("Could not start the current_block_height_timer_thread");
+  }
+  
+  color_print("Started the remote data maintence timer thread","green");
+
+
+
   // start the block height timer thread
   if (shared_delegates_website == 1)
   {
@@ -1104,6 +1121,7 @@ void start_timer_threads(void)
   
     color_print("Started the payment_timer_thread","green");
   }
+
   return;
 
   #undef START_TIMER_THREADS_ERROR

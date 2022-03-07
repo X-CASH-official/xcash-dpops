@@ -778,7 +778,7 @@ int sync_check_delegates_database(int settings)
     }
     if (sync_delegates_database(settings,network_data_nodes_list.network_data_nodes_IP_address[0]) == 0)
     {
-      SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sync the reserve proofs database");
+      SYNC_CHECK_DELEGATES_DATABASE_ERROR("Could not sync the delegates database");
     }
   }
 
@@ -994,7 +994,7 @@ int sync_check_statistics_database(int settings)
     }
     if (sync_statistics_database(settings,network_data_nodes_list.network_data_nodes_IP_address[0]) == 0)
     {
-      SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sync the reserve proofs database");
+      SYNC_CHECK_STATISTICS_DATABASE_ERROR("Could not sync the statistics database");
     }
   }
 

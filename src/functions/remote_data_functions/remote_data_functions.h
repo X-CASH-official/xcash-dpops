@@ -29,5 +29,18 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_renewal_end
 void add_delegates_to_remote_data_delegates(void);
 void check_for_expired_names(void);
 void maintain_slist_and_plist(void);
-void* remote_data_timer_thread(void* parameters);
+void* remote_data_database_synchronization_timer_thread(void* parameters);
+void* remote_data_maintenance_timer_thread(void* parameters);
+void sync_delegates_remote_data_databases(void);
+void server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check_remote_data(const char* MESSAGE);
+int sync_check_remote_data_database(int settings);
+int sync_check_majority_remote_data_database(void);
+int sync_check_remote_data_delegates_database(int settings);
+int sync_check_majority_remote_data_delegates_database(void);
+void server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_database_sync_check_update(const int CLIENT_SOCKET, const char* MESSAGE);
+void server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_database_download_file_update(const int CLIENT_SOCKET);
+void server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_delegates_database_sync_check_update(const int CLIENT_SOCKET, const char* MESSAGE);
+void server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_delegates_database_download_file_update(const int CLIENT_SOCKET);
+int sync_remote_data_database(int settings, const char* DELEGATES_IP_ADDRESS);
+int sync_remote_data_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS);
 #endif

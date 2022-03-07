@@ -37,6 +37,7 @@ int remote_data_functions_test(void)
 {
   // Variables
   char data[BUFFER_SIZE];
+  int count;
 
   // define macros 
   #define REMOTE_DATA_FUNCTIONS_TEST_ERROR(DATA,FUNCTION_NAME,TEST) \
@@ -1260,10 +1261,10 @@ int remote_data_functions_test(void)
 
   // maintain_slist_and_plist
   delete_database(database_name);
-  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"TEST\",\"address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"paddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"paddress_list\":\"\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
-  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"TEST1\",\"address\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"saddress\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"paddress\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"saddress_list\":\"\",\"paddress_list\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv|\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
-  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"TEST2\",\"address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"paddress\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress_list\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v|\",\"paddress_list\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v|\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
-  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"TEST3\",\"address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"paddress\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress_list\":\"\",\"paddress_list\":\"\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"TEST\",\"address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"paddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"paddress_list\":\"\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"TEST1\",\"address\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"saddress\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"paddress\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"saddress_list\":\"\",\"paddress_list\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv|\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"TEST2\",\"address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"paddress\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress_list\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v|\",\"paddress_list\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v|\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"TEST3\",\"address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"paddress\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress_list\":\"\",\"paddress_list\":\"\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
   maintain_slist_and_plist();
   memset(data_test,0,sizeof(data_test));
   memset(result_test,0,sizeof(result_test));
@@ -1318,9 +1319,9 @@ int remote_data_functions_test(void)
 
   // check_for_expired_names
   delete_database(database_name);
-  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"TEST\",\"address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress\":\"\",\"paddress\":\"\",\"saddress_list\":\"\",\"paddress_list\":\"\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"1500000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
-  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"TEST1\",\"address\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"saddress\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"paddress\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"saddress_list\":\"\",\"paddress_list\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv|\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"1500000000\",\"reserve_delegate_address\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
-  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"TEST2\",\"address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"paddress\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress_list\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v|\",\"paddress_list\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v|\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"TEST\",\"address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress\":\"\",\"paddress\":\"\",\"saddress_list\":\"\",\"paddress_list\":\"\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"1500000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"TEST1\",\"address\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"saddress\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"paddress\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"saddress_list\":\"\",\"paddress_list\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv|\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"1500000000\",\"reserve_delegate_address\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"TEST2\",\"address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"paddress\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress_list\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v|\",\"paddress_list\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v|\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
   check_for_expired_names();
   memset(result_test,0,sizeof(result_test));
   memcpy(result_test,"{\"name\":\"TEST\"}",15);
@@ -1354,6 +1355,198 @@ int remote_data_functions_test(void)
     color_print("FAILED! Test for check_for_expired_names","red");
   }
 
+
+
+
+
+
+
+
+
+  // sync_check_functions_test
+  network_functions_test_error_settings = 2;
+  delete_database(database_name);
+  RESET_ERROR_MESSAGES;
+  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"" TEST_REMOTE_DATA_NAME "\",\"address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"paddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"paddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"delegate\",\"public_address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"amount\":\"1000\"}");
+  INITIALIZE_NETWORK_DATA_NODES_TEST;
+
+  if (sync_check_remote_data_database(1) == 1)
+  {
+    color_print("PASSED! Test for sync_check_remote_data_database from a random block verifier","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for sync_check_remote_data_database from a random block verifier","red");
+  }
+  if (sync_check_remote_data_database(3) == 1)
+  {
+    color_print("PASSED! Test for sync_check_remote_data_database from a random network data node","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for sync_check_remote_data_database from a random network data node","red");
+  }
+  if (sync_check_majority_remote_data_database() == 1)
+  {
+    color_print("PASSED! Test for sync_check_majority_remote_data_database","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for sync_check_majority_remote_data_database","red");
+  }
+
+  if (sync_check_remote_data_delegates_database(1) == 1)
+  {
+    color_print("PASSED! Test for sync_check_remote_data_delegates_database from a random block verifier","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for sync_check_remote_data_delegates_database from a random block verifier","red");
+  }
+  if (sync_check_remote_data_delegates_database(3) == 1)
+  {
+    color_print("PASSED! Test for sync_check_remote_data_delegates_database from a random network data node","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for sync_check_remote_data_delegates_database from a random network data node","red");
+  }
+  if (sync_check_majority_remote_data_delegates_database() == 1)
+  {
+    color_print("PASSED! Test for sync_check_majority_remote_data_delegates_database","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for sync_check_majority_remote_data_delegates_database","red");
+  }
+
+  for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+  {
+    memset(network_data_nodes_list.network_data_nodes_public_address[count],0,sizeof(network_data_nodes_list.network_data_nodes_public_address[count]));
+    memset(network_data_nodes_list.network_data_nodes_IP_address[count],0,sizeof(network_data_nodes_list.network_data_nodes_IP_address[count]));
+  }
+  INITIALIZE_NETWORK_DATA_NODES;
+
+
+
+
+
+
+
+
+
+  // sync_server_functions_test
+  delete_database(database_name);
+  RESET_ERROR_MESSAGES;
+  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"" TEST_REMOTE_DATA_NAME "\",\"address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"paddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"paddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"delegate\",\"public_address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"amount\":\"1000\"}");
+  // initialize the previous, current and next block verifiers list
+  INITIALIZE_PREVIOUS_CURRENT_NEXT_BLOCK_VERIFIERS_TEST;
+
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  RESET_ERROR_MESSAGES;
+  memcpy(data_test,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"data_hash\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000fde35120678435cf108dcc6da942ecf2\",\r\n}",250);
+  if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && strncmp(result_test,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"remote_data_database\": \"true\"",135) == 0)
+  {
+    color_print("PASSED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_database_sync_check_update","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_database_sync_check_update","red");
+  }
+  RESET_ERROR_MESSAGES;
+
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  delete_database(database_name);
+  RESET_ERROR_MESSAGES;
+  memcpy(data_test,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n}",106);
+  if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && strncmp(result_test,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"remote_data_database\": \"{\"name\" : \"" TEST_REMOTE_DATA_NAME "\", \"address\" : \"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\", \"saddress\" : \"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\", \"paddress\" : \"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\", \"saddress_list\" : \"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\", \"paddress_list\" : \"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\", \"website\" : \"TEST_REMOTE_DATA_ADDRESS_NAME\", \"smart_contract_hash\" : \"\", \"timestamp\" : \"10000000000\", \"reserve_delegate_address\" : \"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\", \"reserve_delegate_amount\" : \"100\", \"tx_hash\" : \"TX_HASH\" }\"",1025) == 0)
+  {
+    color_print("PASSED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_database_download_file_update","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_database_download_file_update","red");
+  }
+  RESET_ERROR_MESSAGES;
+
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  RESET_ERROR_MESSAGES;
+  memcpy(data_test,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"data_hash\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000fde35120678435cf108dcc6da942ecf2\",\r\n}",250);
+  if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && strncmp(result_test,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"remote_data_database\": \"true\"",135) == 0)
+  {
+    color_print("PASSED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_delegates_database_sync_check_update","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_delegates_database_sync_check_update","red");
+  }
+  RESET_ERROR_MESSAGES;
+
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  delete_database(database_name);
+  RESET_ERROR_MESSAGES;
+  memcpy(data_test,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n}",116);
+  if (sign_data(data_test) == 1 && send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,data_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && strncmp(result_test,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"remote_data_delegates_database\": \"{\"name\" : \"delegate\", \"public_address\" : \"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\", \"amount\" : \"1000\" }\"",316) == 0)
+  {
+    color_print("PASSED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_delegates_database_download_file_update","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_delegates_database_download_file_update","red");
+  }
+  RESET_ERROR_MESSAGES;
+
+
+
+
+
+
+
+
+
+  // sync_server_functions_test
+  delete_database(database_name);
+  RESET_ERROR_MESSAGES;
+  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"" TEST_REMOTE_DATA_NAME "\",\"address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"paddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"paddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"TX_HASH\"}");
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"delegate\",\"public_address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"amount\":\"1000\"}");
+  
+  // sync_remote_data_database
+  if (sync_remote_data_database(0,XCASH_DPOPS_delegates_IP_address) == 1)
+  {
+    color_print("PASSED! Test for sync_remote_data_database","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for sync_remote_data_database","red");
+  }
+  if (sync_remote_data_delegates_database(0,XCASH_DPOPS_delegates_IP_address) == 1)
+  {
+    color_print("PASSED! Test for sync_remote_data_delegates_database","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for sync_remote_data_delegates_database","red");
+  }
+
+  
   // write the end test message
   fprintf(stderr,"\033[1;33m\n\n%s\nremote data functions test - Passed test: %d, Failed test: %d\n%s\n\n\n\033[0m",TEST_OUTLINE,count_test,REMOTE_DATA_FUNCTIONS_TOTAL_TEST-count_test,TEST_OUTLINE);
   return count_test;

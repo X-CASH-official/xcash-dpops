@@ -23,6 +23,7 @@
 #include "define_macros_test.h"
 
 #include "blockchain_functions.h"
+#include "block_verifiers_functions.h"
 #include "block_verifiers_server_functions.h"
 #include "block_verifiers_synchronize_server_functions.h"
 #include "block_verifiers_synchronize_functions.h"
@@ -2654,13 +2655,55 @@ void maintain_slist_and_plist(void)
 
 /*
 -----------------------------------------------------------------------------------------------------------
-Name: remote_data_timer_thread
-Description: Runs the timer thread functions for the remote data
+Name: remote_data_database_synchronization_timer_thread
+Description: Runs the timer thread database sync functions for the remote data
 Return: NULL
 -----------------------------------------------------------------------------------------------------------
 */
 
-void* remote_data_timer_thread(void* parameters)
+void* remote_data_database_synchronization_timer_thread(void* parameters)
+{
+  // Variables
+  size_t count;
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+
+  // unused parameters
+  (void)parameters;
+
+  // check if the start block is valid
+  sscanf(current_block_height,"%zu", &count);
+
+  while (count < BLOCK_HEIGHT_REMOTE_DATA)
+  {
+    sscanf(current_block_height,"%zu", &count);
+    sleep(60);
+  }
+
+  for (;;)
+  {
+    get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
+
+    if (current_UTC_date_and_time.tm_min == 0)
+    {
+      sync_delegates_remote_data_databases();
+    }
+    sleep(60);
+  }
+  pthread_exit((void *)(intptr_t)1);
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: remote_data_maintenance_timer_thread
+Description: Runs the timer thread maintenance functions for the remote data
+Return: NULL
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void* remote_data_maintenance_timer_thread(void* parameters)
 {
   // Variables
   time_t current_date_and_time;
@@ -2688,4 +2731,1417 @@ void* remote_data_timer_thread(void* parameters)
     sleep(60);
   }
   pthread_exit((void *)(intptr_t)1);
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: sync_delegates_remote_data_databases
+Description: Sync all of the remote data database
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void sync_delegates_remote_data_databases(void)
+{
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+  char database_data_hash_majority[REMOTE_DATA_DATABASE_TOTAL][DATA_HASH_LENGTH+1];
+  int count;
+  int count3;
+  size_t count2;
+  int database_count;
+  int settings = 0;
+  int reset_count = 1;
+
+  // define macros
+  #define SYNC_BLOCK_VERIFIERS \
+  if (database_count == 0) \
+  { \
+    color_print("Syncing the remote data database","yellow"); \
+    sync_delegates_database(0,SYNCED_BLOCK_VERIFIER_STRING); \
+  } \
+  else if (database_count == 1) \
+  { \
+    color_print("Syncing the remote data delegates database","yellow"); \
+    sync_statistics_database(0,SYNCED_BLOCK_VERIFIER_STRING); \
+  }
+
+  #define SYNC_BLOCK_VERIFIERS_FROM_SPECIFIC_BLOCK_VERIFIER(BLOCK_VERIFIER) \
+  if (database_count == 0) \
+  { \
+    color_print("Syncing the remote data database","yellow"); \
+    sync_delegates_database(0,BLOCK_VERIFIER); \
+  } \
+  else if (database_count == 1) \
+  { \
+    color_print("Syncing the remote data delegates database","yellow"); \
+    sync_statistics_database(0,BLOCK_VERIFIER); \
+  }
+
+  #define SYNC_BLOCK_VERIFIERS_FROM_RANDOM_NETWORK_DATA_NODE \
+  if (database_count == 0) \
+  { \
+    color_print("Syncing the remote data database","yellow"); \
+    sync_delegates_database(2,""); \
+  } \
+  else if (database_count == 1) \
+  { \
+    color_print("Syncing the remote data delegates database","yellow"); \
+    sync_statistics_database(2,""); \
+  }
+
+  #define MAXIMUM_DATABASE_MAJORITY_SYNC_CONNECTIONS_ATTEMPTS 5
+
+  memset(data,0,sizeof(data));
+
+  // reset the variables
+  for (database_count = 0; database_count < REMOTE_DATA_DATABASE_TOTAL; database_count++)
+  {
+    memset(database_data_hash_majority[database_count],0,sizeof(database_data_hash_majority[database_count]));
+    for (count3 = 0; count3 < BLOCK_VERIFIERS_AMOUNT; count3++)
+    {
+      synced_block_verifiers_nodes[database_count][count3] = -1;
+      memset(block_verifiers_sync_database_list.block_verifiers_database_data_hash[database_count][count3],0,sizeof(block_verifiers_sync_database_list.block_verifiers_database_data_hash[database_count][count3]));
+    }
+  }
+  
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {    
+    memset(block_verifiers_sync_database_list.block_verifiers_public_address[count],0,sizeof(block_verifiers_sync_database_list.block_verifiers_public_address[count]));
+    memset(block_verifiers_sync_database_list.block_verifiers_IP_address[count],0,sizeof(block_verifiers_sync_database_list.block_verifiers_IP_address[count]));    
+    memcpy(block_verifiers_sync_database_list.block_verifiers_public_address[count],current_block_verifiers_list.block_verifiers_public_address[count],strnlen(current_block_verifiers_list.block_verifiers_public_address[count],sizeof(block_verifiers_sync_database_list.block_verifiers_public_address[count])));
+    memcpy(block_verifiers_sync_database_list.block_verifiers_IP_address[count],current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(block_verifiers_sync_database_list.block_verifiers_IP_address[count])));
+    block_verifiers_sync_database_list.block_verifiers_previous_block_settings[count] = 0;
+  }
+
+  // wait so all block verifiers start at the same time, this way one is not reseting the variables as another one is sending them data
+  sync_block_verifiers_minutes_and_seconds(0,40);
+
+  // get the data and send it to the other block verifiers
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (strncmp(block_verifiers_sync_database_list.block_verifiers_public_address[count],xcash_wallet_public_address,BUFFER_SIZE) == 0)
+    {
+      // set your own block_verifiers_sync_database_list.block_verifiers_previous_block_settings
+      block_verifiers_sync_database_list.block_verifiers_previous_block_settings[count] = 1;
+      
+      // get the database data hash and send it to all other network data nodes
+      if (get_database_data_hash(block_verifiers_sync_database_list.block_verifiers_database_data_hash[0][count],database_name,"remote_data") == 0 || get_database_data_hash(block_verifiers_sync_database_list.block_verifiers_database_data_hash[1][count],database_name,"remote_data_delegates") == 0)
+      {
+        break;
+      }
+
+      // create the message
+      memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_REMOTE_DATA\",\r\n \"data_hash_remote_data\": \"",128);
+      memcpy(data+strlen(data),block_verifiers_sync_database_list.block_verifiers_database_data_hash[0][count],DATA_HASH_LENGTH);
+      memcpy(data+strlen(data),"\",\r\n \"data_hash_remote_data_delegates\": \"",41);
+      memcpy(data+strlen(data),block_verifiers_sync_database_list.block_verifiers_database_data_hash[1][count],DATA_HASH_LENGTH);
+      memcpy(data+strlen(data),"\",\r\n}",5);
+
+      // sign_data
+      if (sign_data(data) == 0)
+      { 
+        break;
+      }
+
+      // send the data to the other network data nodes
+      block_verifiers_send_data_socket((const char*)data);
+    }
+  }
+
+  // wait for all of the block verifiers to process the data
+  sync_block_verifiers_minutes_and_seconds(1,15);
+
+  // get the majority database data hash, and every block verifier that is in the majority
+  for (database_count = 0; database_count < REMOTE_DATA_DATABASE_TOTAL; database_count++)
+  {
+    for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
+    {
+      for (count = 0, count3 = 0; count3 < BLOCK_VERIFIERS_AMOUNT; count3++)
+      {
+        if (strncmp(block_verifiers_sync_database_list.block_verifiers_database_data_hash[database_count][count2],block_verifiers_sync_database_list.block_verifiers_database_data_hash[database_count][count3],sizeof(block_verifiers_sync_database_list.block_verifiers_database_data_hash[database_count][count3])) == 0)
+        {
+          count++;
+        }
+      }
+      if (count >= BLOCK_VERIFIERS_VALID_AMOUNT)
+      {
+        memset(database_data_hash_majority[database_count],0,sizeof(database_data_hash_majority[database_count]));
+        memcpy(database_data_hash_majority[database_count],block_verifiers_sync_database_list.block_verifiers_database_data_hash[database_count][count2],DATA_HASH_LENGTH);
+
+        // the majority can only use one data hash, but we dont exit the loop because we want to get every block verifier that is in the majority for syncing
+        synced_block_verifiers_nodes[database_count][count2] = 0;
+      }
+    }
+  }
+
+  // check if there is a majority
+  for (database_count = 0; database_count < REMOTE_DATA_DATABASE_TOTAL; database_count++, reset_count = 1)
+  {
+    if (database_count == 0)
+    {
+      color_print("Checking remote data","green");
+    }
+    else if (database_count == 1)
+    {
+      color_print("Checking remote data delegates","green");
+    }
+    if (strlen(database_data_hash_majority[database_count]) == DATA_HASH_LENGTH)
+    {
+      // there is a majority, check if the block verifier is in the majority
+      for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+      {
+        if (strncmp(block_verifiers_sync_database_list.block_verifiers_public_address[count],xcash_wallet_public_address,BUFFER_SIZE) == 0)
+        {
+          settings = strncmp(block_verifiers_sync_database_list.block_verifiers_database_data_hash[database_count][count],database_data_hash_majority[database_count],BUFFER_SIZE) == 0 ? 1 : 0;
+        }
+      }
+
+      if (settings == 1)
+      {
+        // the block verifier is in the majority
+        color_print("A majority has been reached and the block verifier is already synced with the majority\n","yellow");
+        if (database_count == REMOTE_DATA_DATABASE_TOTAL-1)
+        {
+          return;
+        }
+        else
+        {
+          goto start;
+        }
+      }
+      else
+      {
+        // the block verifier is not in the majority, sync the database from a block verifier that is in the majority
+        color_print("The database is not synced with the majority of block verifiers, syncing the database from a random block verifier that is in the majority","yellow");  
+        do
+        {
+          SYNC_BLOCK_VERIFIERS;
+
+          color_print("Checking to make sure the database received is the majority database, if not sync from another block verifier in the majority\n","blue");
+
+          // check if you received the same database data as the database_data_hash_majority, otherwise sync from a different block verifier
+          memset(data,0,sizeof(data));
+
+          if (reset_count >= MAXIMUM_DATABASE_MAJORITY_SYNC_CONNECTIONS_ATTEMPTS)
+          {
+            color_print("Could not sync the database, maximum connection attempts has been reached\n","red");
+            goto start2;
+          }
+          reset_count++;
+        } while ((database_count == 0 && (get_database_data_hash(data,database_name,"remote_data") == 0 || strncmp(data,database_data_hash_majority[database_count],sizeof(database_data_hash_majority[database_count])) != 0)) || (database_count == 1 && (get_database_data_hash(data,database_name,"remote_data_delegates") == 0 || strncmp(data,database_data_hash_majority[database_count],sizeof(database_data_hash_majority[database_count])) != 0)));      
+      
+        color_print("Successfully synced the database\n","yellow");
+
+        start2:
+        if (database_count == REMOTE_DATA_DATABASE_TOTAL-1)
+        {
+          return;
+        }
+        else
+        {
+          goto start;
+        }
+      }    
+    }
+    else
+    {
+      // there is not a majority, sync from a block verifier that has the previous blocks reserve bytes data
+      color_print("A majority could not be reached between block verifiers for the database sync. Syncing the database from a block verifier with the previous blocks reserve bytes\n","yellow");
+    
+      for (count = 0, settings = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+      {
+        if (block_verifiers_sync_database_list.block_verifiers_previous_block_settings[count] == 1)
+        {
+          settings = 1;
+          if (strncmp(block_verifiers_sync_database_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
+          {
+            SYNC_BLOCK_VERIFIERS_FROM_SPECIFIC_BLOCK_VERIFIER(block_verifiers_sync_database_list.block_verifiers_IP_address[count]);
+            if (database_count == REMOTE_DATA_DATABASE_TOTAL-1)
+            {
+              return;
+            }  
+            else
+            {
+              goto start;
+            }
+          }
+          else
+          {
+            color_print("Successfully synced all databases\n","yellow");
+            if (database_count == REMOTE_DATA_DATABASE_TOTAL-1)
+            {
+              return;
+            }
+            else
+            {
+              goto start;
+            }
+          } 
+        }        
+      }
+
+      // if no block verifiers had the previous blocks reserve bytes, sync from a random network data node
+      if (settings == 0)
+      {
+        SYNC_BLOCK_VERIFIERS_FROM_RANDOM_NETWORK_DATA_NODE;
+      }
+    }
+    start: ;
+  }
+  color_print("Syncing databases is complete","yellow");
+  return;
+
+  #undef SYNC_BLOCK_VERIFIERS
+  #undef SYNC_BLOCK_VERIFIERS_FROM_SPECIFIC_BLOCK_VERIFIER
+  #undef SYNC_BLOCK_VERIFIERS_FROM_RANDOM_NETWORK_DATA_NODE
+  #undef MAXIMUM_DATABASE_MAJORITY_SYNC_CONNECTIONS_ATTEMPTS
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check_remote_data
+Description: Runs the code when the server receives the NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_REMOTE_DATA message
+Parameters:
+  MESSAGE - The message
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check_remote_data(const char* MESSAGE)
+{
+  // Variables
+  char data_hash[REMOTE_DATA_DATABASE_TOTAL][DATA_HASH_LENGTH+1];
+  char public_address[XCASH_WALLET_LENGTH+1];
+  char data[SMALL_BUFFER_SIZE];
+  int count;
+  int count2;
+
+  // define macros
+  #define SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_REMOTE_DATA_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check_remote_data",99); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  } \
+  return;
+
+  memset(data,0,sizeof(data));
+  memset(public_address,0,sizeof(public_address));
+
+  for (count = 0; count < DATABASE_TOTAL; count++)
+  {
+    memset(data_hash[count],0,sizeof(data_hash[count]));
+  }
+
+  // parse the message
+  if (registration_settings == 0)
+  {
+    if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || parse_json_data(MESSAGE,"data_hash_remote_data",data_hash[0],DATA_HASH_LENGTH) == 0 || parse_json_data(MESSAGE,"data_hash_remtoe_data_delegates",data_hash[1],DATA_HASH_LENGTH) == 0)
+    {
+      SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_REMOTE_DATA_ERROR("Could not parse the message");
+    }
+  }
+
+  if (registration_settings == 0)
+  {
+    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    {
+      if (strncmp(block_verifiers_sync_database_list.block_verifiers_public_address[count],public_address,sizeof(public_address)) == 0)
+      {
+        for (count2 = 0; count2 < DATABASE_TOTAL; count2++)
+        {
+          memset(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count2][count],0,sizeof(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count2][count]));
+          memcpy(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count2][count],data_hash[count2],DATA_HASH_LENGTH);
+        }
+        block_verifiers_sync_database_list.block_verifiers_previous_block_settings[count] = 1;
+      }
+    }
+  }
+  else
+  {
+    for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
+    {
+      if (strncmp(network_data_nodes_sync_database_list.network_data_node_public_address[count],public_address,sizeof(public_address)) == 0)
+      {
+        memset(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count],0,sizeof(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count]));
+        memcpy(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count],data_hash[0],DATA_HASH_LENGTH);
+        network_data_nodes_sync_database_list.network_data_nodes_previous_block_settings[count] = 1;
+      }
+    }
+  }
+  
+  return;
+  
+  #undef SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_REMOTE_DATA_ERROR
+}
+
+
+
+#define SEND_DATABASE_SYNC_CHECK_MESSAGE_REMOTE_DATA(database) \
+for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++) \
+{ \
+  memset(synced_block_verifiers.vote_settings[count],0,sizeof(synced_block_verifiers.vote_settings[count])); \
+  if (strncmp((char*)synced_block_verifiers.synced_block_verifiers_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0) \
+  { \
+    memset(data,0,strlen(data)); \
+    memset(data2,0,strlen(data2)); \
+    if (send_and_receive_data_socket(data,sizeof(data),synced_block_verifiers.synced_block_verifiers_IP_address[count],SEND_DATA_PORT,message,CONNECTION_TIMEOUT_SETTINGS) == 0 || verify_data(data,0) == 0) \
+    { \
+      memcpy(synced_block_verifiers.vote_settings[count],"connection_timeout",18); \
+      synced_block_verifiers.vote_settings_connection_timeout++; \
+    } \
+    else \
+    { \
+      if (strstr(data,"false") != NULL) \
+      { \
+        memcpy(synced_block_verifiers.vote_settings[count],"false",5); \
+        synced_block_verifiers.vote_settings_false++; \
+      } \
+      else \
+      { \
+        memcpy(synced_block_verifiers.vote_settings[count],"true",4); \
+        synced_block_verifiers.vote_settings_true++; \
+      } \
+    } \
+  } \
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: sync_check_remote_data_database
+Description: Checks if the block verifier needs to sync the remote data database
+Paramters:
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from a random network data node and not check the majority, 4 to sync from the main network data node and not check the majority
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int sync_check_remote_data_database(int settings)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE]; 
+  char message[SMALL_BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  int count;
+
+  // define macros 
+  #define DATABASE_COLLECTION "remote_data"
+  #define SYNC_CHECK_REMOTE_DATA_DATABASE_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"sync_check_remote_data_database",31); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  return 0;
+  
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(message,0,sizeof(message));
+
+  if (test_settings == 0)
+  {
+    print_start_message(current_date_and_time,current_UTC_date_and_time,"Checking if the remote_data database is synced",data2);
+  }
+
+  if (time(NULL) - synced_block_verifiers.last_refresh_time_of_synced_block_verifiers > GET_SYNCED_BLOCK_VERIFIERS_REFRESH_SETTINGS && get_synced_block_verifiers() == 0)
+  {
+    SYNC_CHECK_REMOTE_DATA_DATABASE_ERROR("Could not get the synced block verifiers");
+  }
+
+  reset_synced_block_verifiers_vote_settings;
+
+  if (settings == 1)
+  {
+    // get the database data hash for the delegates database
+    if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
+    {
+      SYNC_CHECK_REMOTE_DATA_DATABASE_ERROR("Could not get the database data hash for the remote_data database");
+    }
+
+    // create the message
+    memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"data_hash\": \"",117);
+    memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
+    memcpy(message+strlen(message),"\",\r\n}",5);
+
+    // sign_data
+    if (sign_data(message) == 0)
+    { 
+      SYNC_CHECK_REMOTE_DATA_DATABASE_ERROR("Could not sign_data");
+    }
+
+    if (test_settings == 0)
+    {
+      color_print("Sending all block verifiers a message to check if the remote_data database is synced","white"); 
+    }
+
+    SEND_DATABASE_SYNC_CHECK_MESSAGE_REMOTE_DATA("remote_data_database");
+
+    // get the vote settings of the block verifiers
+
+    // check if a consensus could not be reached and sync from a network data node
+    if (synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
+    {
+      if (test_settings == 0)
+      {
+        color_print("A Consensus could not be reached for trying to sync the remote_data database, syncing from a random network data node","red");
+      }
+      settings = 2;
+    }
+    else if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT)
+    {
+      if (test_settings == 0)
+      {
+        color_print("The remote_data database is not synced, syncing from a random block verifier","red");
+      }
+
+      // get the data
+      if (sync_remote_data_database(settings,"") == 0)
+      {
+        SYNC_CHECK_REMOTE_DATA_DATABASE_ERROR("Could not sync the remote_data database database");
+      }
+    }
+  }
+  if (settings == 2 || settings == 3)
+  {
+    if (test_settings == 0)
+    {
+      color_print("Syncing from a random network data node","white");
+    }
+    if (sync_remote_data_database(settings,"") == 0)
+    {
+      SYNC_CHECK_REMOTE_DATA_DATABASE_ERROR("Could not sync the remote_data database database");
+    }
+  }
+  if (settings == 4)
+  {
+    if (test_settings == 0)
+    {
+      color_print("Syncing from the main network data node","white");
+    }
+    if (sync_remote_data_database(settings,network_data_nodes_list.network_data_nodes_IP_address[0]) == 0)
+    {
+      SYNC_CHECK_REMOTE_DATA_DATABASE_ERROR("Could not sync the remote_data database");
+    }
+  }
+
+
+  // check to see if the block verifiers database is now in the majority, and if not directly sync the database from the main network data node
+  if (settings != 3)
+  {
+    /*disable this for now
+    sync_check_majority_delegates_database();*/
+  }
+
+  if (test_settings == 0)
+  {
+    color_print("The remote_data database is synced","green");
+  }
+  return 1;
+
+  #undef DATABASE_COLLECTION  
+  #undef SYNC_CHECK_REMOTE_DATA_DATABASE_ERROR  
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: sync_check_majority_remote_data_database
+Description: Checks if the block verifiers remote data database is in the majority and if not syncs the remote data database from the main network data node
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int sync_check_majority_remote_data_database(void)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE]; 
+  char message[SMALL_BUFFER_SIZE];
+  int count;
+
+  // define macros 
+  #define DATABASE_COLLECTION "remote_data"
+  #define SYNC_CHECK_MAJORITY_REMOTE_DATA_DATABASE_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"sync_check_majority_remote_data_database",40); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  return 0;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(message,0,sizeof(message));
+
+  if (test_settings == 0)
+  {
+    color_print("Checking if the database is in the majority","yellow");
+  }
+
+  if (time(NULL) - synced_block_verifiers.last_refresh_time_of_synced_block_verifiers > GET_SYNCED_BLOCK_VERIFIERS_REFRESH_SETTINGS && get_synced_block_verifiers() == 0)
+  {
+    SYNC_CHECK_MAJORITY_REMOTE_DATA_DATABASE_ERROR("Could not get the synced block verifiers");
+  }
+
+  reset_synced_block_verifiers_vote_settings;
+
+  // get the database data hash for the reserve proofs database
+  if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
+  {
+    SYNC_CHECK_MAJORITY_REMOTE_DATA_DATABASE_ERROR("Could not get the database data hash for the remote_data database");
+  }
+
+  // create the message
+  memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"data_hash\": \"",117);
+  memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
+  memcpy(message+strlen(message),"\",\r\n}",5);
+
+  // sign_data
+  if (sign_data(message) == 0)
+  { 
+    SYNC_CHECK_MAJORITY_REMOTE_DATA_DATABASE_ERROR("Could not sign_data");
+  }
+
+  SEND_DATABASE_SYNC_CHECK_MESSAGE_REMOTE_DATA("remote_data_database");
+
+  // get the vote settings of the block verifiers
+
+  // check if the block verifiers database is in the majority
+  if (synced_block_verifiers.vote_settings_true < BLOCK_VERIFIERS_VALID_AMOUNT)
+  {
+    if (test_settings == 0)
+    {
+      color_print("The database is not in the majority, syncing from a random network data node","red");
+    }
+    sync_remote_data_database(2,"");   
+  }
+  return 1;
+
+  #undef DATABASE_COLLECTION  
+  #undef SYNC_CHECK_MAJORITY_REMOTE_DATA_DATABASE_ERROR  
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: sync_check_remote_data_database
+Description: Checks if the block verifier needs to sync the remote data delegates database
+Paramters:
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, 3 to sync from a random network data node and not check the majority, 4 to sync from the main network data node and not check the majority
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int sync_check_remote_data_delegates_database(int settings)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE]; 
+  char message[SMALL_BUFFER_SIZE];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  int count;
+
+  // define macros 
+  #define DATABASE_COLLECTION "remote_data_delegates"
+  #define SYNC_CHECK_REMOTE_DATA_DELEGATES_DATABASE_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"sync_check_remote_data_delegates_database",41); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  return 0;
+  
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(message,0,sizeof(message));
+
+  if (test_settings == 0)
+  {
+    print_start_message(current_date_and_time,current_UTC_date_and_time,"Checking if the remote_data_delegates database is synced",data2);
+  }
+
+  if (time(NULL) - synced_block_verifiers.last_refresh_time_of_synced_block_verifiers > GET_SYNCED_BLOCK_VERIFIERS_REFRESH_SETTINGS && get_synced_block_verifiers() == 0)
+  {
+    SYNC_CHECK_REMOTE_DATA_DELEGATES_DATABASE_ERROR("Could not get the synced block verifiers");
+  }
+
+  reset_synced_block_verifiers_vote_settings;
+
+  if (settings == 1)
+  {
+    // get the database data hash for the delegates database
+    if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
+    {
+      SYNC_CHECK_REMOTE_DATA_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the remote_data_delegates database");
+    }
+
+    // create the message
+    memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"data_hash\": \"",127);
+    memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
+    memcpy(message+strlen(message),"\",\r\n}",5);
+
+    // sign_data
+    if (sign_data(message) == 0)
+    { 
+      SYNC_CHECK_REMOTE_DATA_DELEGATES_DATABASE_ERROR("Could not sign_data");
+    }
+
+    if (test_settings == 0)
+    {
+      color_print("Sending all block verifiers a message to check if the remote_data_delegates database is synced","white"); 
+    }
+
+    SEND_DATABASE_SYNC_CHECK_MESSAGE_REMOTE_DATA("remote_data_delegates_database");
+
+    // get the vote settings of the block verifiers
+
+    // check if a consensus could not be reached and sync from a network data node
+    if (synced_block_verifiers.vote_settings_connection_timeout >= BLOCK_VERIFIERS_AMOUNT - BLOCK_VERIFIERS_VALID_AMOUNT)
+    {
+      if (test_settings == 0)
+      {
+        color_print("A Consensus could not be reached for trying to sync the remote_data_delegates database, syncing from a random network data node","red");
+      }
+      settings = 2;
+    }
+    else if (synced_block_verifiers.vote_settings_false >= BLOCK_VERIFIERS_VALID_AMOUNT)
+    {
+      if (test_settings == 0)
+      {
+        color_print("The remote_data_delegates database is not synced, syncing from a random block verifier","red");
+      }
+
+      // get the data
+      if (sync_remote_data_delegates_database(settings,"") == 0)
+      {
+        SYNC_CHECK_REMOTE_DATA_DELEGATES_DATABASE_ERROR("Could not sync the remote_data_delegates database database");
+      }
+    }
+  }
+  if (settings == 2 || settings == 3)
+  {
+    if (test_settings == 0)
+    {
+      color_print("Syncing from a random network data node","white");
+    }
+    if (sync_remote_data_delegates_database(settings,"") == 0)
+    {
+      SYNC_CHECK_REMOTE_DATA_DELEGATES_DATABASE_ERROR("Could not sync the remote_data_delegates database database");
+    }
+  }
+  if (settings == 4)
+  {
+    if (test_settings == 0)
+    {
+      color_print("Syncing from the main network data node","white");
+    }
+    if (sync_remote_data_delegates_database(settings,network_data_nodes_list.network_data_nodes_IP_address[0]) == 0)
+    {
+      SYNC_CHECK_REMOTE_DATA_DELEGATES_DATABASE_ERROR("Could not sync the remote_data_delegates database");
+    }
+  }
+
+
+  // check to see if the block verifiers database is now in the majority, and if not directly sync the database from the main network data node
+  if (settings != 3)
+  {
+    /*disable this for now
+    sync_check_majority_delegates_database();*/
+  }
+
+  if (test_settings == 0)
+  {
+    color_print("The remote_data_delegates database is synced","green");
+  }
+  return 1;
+
+  #undef DATABASE_COLLECTION  
+  #undef SYNC_CHECK_REMOTE_DATA_DELEGATES_DATABASE_ERROR  
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: sync_check_majority_remote_data_delegates_database
+Description: Checks if the block verifiers remote data database is in the majority and if not syncs the remote_data_delegates database from the main network data node
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int sync_check_majority_remote_data_delegates_database(void)
+{
+  // Variables
+  char data[BUFFER_SIZE];
+  char data2[BUFFER_SIZE]; 
+  char message[SMALL_BUFFER_SIZE];
+  int count;
+
+  // define macros 
+  #define DATABASE_COLLECTION "remote_data_delegates"
+  #define SYNC_CHECK_MAJORITY_REMOTE_DATA_DELEGATES_DATABASE_ERROR(settings) \
+  memcpy(error_message.function[error_message.total],"sync_check_majority_remote_data_delegates_database",50); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  return 0;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(message,0,sizeof(message));
+
+  if (test_settings == 0)
+  {
+    color_print("Checking if the database is in the majority","yellow");
+  }
+
+  if (time(NULL) - synced_block_verifiers.last_refresh_time_of_synced_block_verifiers > GET_SYNCED_BLOCK_VERIFIERS_REFRESH_SETTINGS && get_synced_block_verifiers() == 0)
+  {
+    SYNC_CHECK_MAJORITY_REMOTE_DATA_DELEGATES_DATABASE_ERROR("Could not get the synced block verifiers");
+  }
+
+  reset_synced_block_verifiers_vote_settings;
+
+  // get the database data hash for the remote_data_delegates database
+  if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
+  {
+    SYNC_CHECK_MAJORITY_REMOTE_DATA_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the remote_data_delegates database");
+  }
+
+  // create the message
+  memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"data_hash\": \"",127);
+  memcpy(message+strlen(message),data,DATA_HASH_LENGTH);
+  memcpy(message+strlen(message),"\",\r\n}",5);
+
+  // sign_data
+  if (sign_data(message) == 0)
+  { 
+    SYNC_CHECK_MAJORITY_REMOTE_DATA_DELEGATES_DATABASE_ERROR("Could not sign_data");
+  }
+
+  SEND_DATABASE_SYNC_CHECK_MESSAGE_REMOTE_DATA("remote_data_delegates_database");
+
+  // get the vote settings of the block verifiers
+
+  // check if the block verifiers database is in the majority
+  if (synced_block_verifiers.vote_settings_true < BLOCK_VERIFIERS_VALID_AMOUNT)
+  {
+    if (test_settings == 0)
+    {
+      color_print("The database is not in the majority, syncing from a random network data node","red");
+    }
+    sync_remote_data_delegates_database(2,"");   
+  }
+  return 1;
+
+  #undef DATABASE_COLLECTION  
+  #undef SYNC_CHECK_MAJORITY_REMOTE_DATA_DELEGATES_DATABASE_ERROR  
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_database_sync_check_update
+Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_SYNC_CHECK_UPDATE message
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  MESSAGE - The message
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_database_sync_check_update(const int CLIENT_SOCKET, const char* MESSAGE)
+{
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+  char data2[DATA_HASH_LENGTH+1];
+
+  // define macros
+  #define DATABASE_COLLECTION "remote_data"
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_SYNC_CHECK_UPDATE_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_database_sync_check_update",100); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  } \
+  ERROR_DATA_MESSAGE;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+
+  // get the database data hash for the delegates database
+  if (get_database_data_hash(data2,database_name,DATABASE_COLLECTION) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the remote data database");
+  }
+
+  // parse the message
+  if (parse_json_data(MESSAGE,"data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
+  }
+
+  // create the message
+  if (strncmp(data,data2,DATA_HASH_LENGTH) == 0)
+  {
+    memset(data,0,strlen(data));
+    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"remote_data_database\": \"true\",\r\n}",139);
+  }
+  else
+  {
+    memset(data,0,strlen(data));
+    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"remote_data_database\": \"false\",\r\n}",140);
+  }
+  
+  // sign_data
+  if (sign_data(data) == 0)
+  { 
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not sign data");
+  }
+
+  // send the data
+  send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
+
+  return;
+
+  #undef DATABASE_COLLECTION
+  #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_SYNC_CHECK_UPDATE_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_database_download_file_update
+Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_DOWNLOAD_FILE_UPDATE message
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_database_download_file_update(const int CLIENT_SOCKET)
+{
+  // define macros
+  #define DATABASE_COLLECTION "remote_data"
+  
+  // Constants
+  const size_t DATABASE_COLLECTION_SIZE = get_database_collection_size(database_name,DATABASE_COLLECTION);
+
+  if (DATABASE_COLLECTION_SIZE == 0)
+  {
+    ERROR_DATA_MESSAGE;
+  }
+
+  char* data;
+  char* data2;
+
+  if (time(NULL) > TIME_SF_V_1_0_5_PART_1)
+  {
+    data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+    data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  }
+  else
+  {
+    data = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
+    data2 = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));    
+  }
+
+  // Variables
+  char buffer[1024];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL;
+
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_database_download_file_update",103); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  } \
+  pointer_reset_all; \
+  ERROR_DATA_MESSAGE;
+
+  memset(buffer,0,sizeof(buffer));
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data2 == NULL)
+  {
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_database_download_file_update",103);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
+    exit(0);
+  }
+
+  // get the database data for the reserve bytes database
+  if (get_database_data(data2,database_name,DATABASE_COLLECTION) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the remote_data database");
+  }
+
+  // create the message
+  memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"remote_data_database\": \"",133);
+  memcpy(data+133,data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
+  memcpy(data+strlen(data),"\",\r\n}",5);
+
+  // send the data
+  send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
+
+  pointer_reset_all;
+  return;
+
+  #undef DATABASE_COLLECTION
+  #undef pointer_reset_all
+  #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_delegates_database_sync_check_update
+Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_remote_data_delegates_DELEGATES_DATABASE_SYNC_CHECK_UPDATE message
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  MESSAGE - The message
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_delegates_database_sync_check_update(const int CLIENT_SOCKET, const char* MESSAGE)
+{
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+  char data2[DATA_HASH_LENGTH+1];
+
+  // define macros
+  #define DATABASE_COLLECTION "remote_data_delegates"
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_delegates_database_sync_check_update",110); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  } \
+  ERROR_DATA_MESSAGE;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+
+  // get the database data hash for the delegates database
+  if (get_database_data_hash(data2,database_name,DATABASE_COLLECTION) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the remote data database");
+  }
+
+  // parse the message
+  if (parse_json_data(MESSAGE,"data_hash",data,sizeof(data)) == 0 || strlen(data) != DATA_HASH_LENGTH)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not parse the message");
+  }
+
+  // create the message
+  if (strncmp(data,data2,DATA_HASH_LENGTH) == 0)
+  {
+    memset(data,0,strlen(data));
+    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"remote_data_delegates_database\": \"true\",\r\n}",159);
+  }
+  else
+  {
+    memset(data,0,strlen(data));
+    memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"remote_data_delegates_database\": \"false\",\r\n}",160);
+  }
+  
+  // sign_data
+  if (sign_data(data) == 0)
+  { 
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not sign data");
+  }
+
+  // send the data
+  send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
+
+  return;
+
+  #undef DATABASE_COLLECTION
+  #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_delegates_database_download_file_update
+Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_remote_data_delegates_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE message
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_delegates_database_download_file_update(const int CLIENT_SOCKET)
+{
+  // define macros
+  #define DATABASE_COLLECTION "remote_data_delegates"
+  
+  // Constants
+  const size_t DATABASE_COLLECTION_SIZE = get_database_collection_size(database_name,DATABASE_COLLECTION);
+
+  if (DATABASE_COLLECTION_SIZE == 0)
+  {
+    ERROR_DATA_MESSAGE;
+  }
+
+  char* data;
+  char* data2;
+
+  if (time(NULL) > TIME_SF_V_1_0_5_PART_1)
+  {
+    data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+    data2 = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  }
+  else
+  {
+    data = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));
+    data2 = (char*)calloc(DATABASE_COLLECTION_SIZE+SMALL_BUFFER_SIZE,sizeof(char));    
+  }
+
+  // Variables
+  char buffer[1024];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+
+  // define macros
+  #define pointer_reset_all \
+  free(data); \
+  data = NULL; \
+  free(data2); \
+  data2 = NULL;
+
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_delegates_database_download_file_update",113); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  } \
+  pointer_reset_all; \
+  ERROR_DATA_MESSAGE;
+
+  memset(buffer,0,sizeof(buffer));
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL || data2 == NULL)
+  {
+    if (data != NULL)
+    {
+      pointer_reset(data);
+    }
+    if (data2 != NULL)
+    {
+      pointer_reset(data2);
+    }
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_delegates_database_download_file_update",113);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
+    exit(0);
+  }
+
+  // get the database data for the reserve bytes database
+  if (get_database_data(data2,database_name,DATABASE_COLLECTION) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the remote_data_delegates database");
+  }
+
+  // create the message
+  memcpy(data,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"remote_data_delegates_database\": \"",153);
+  memcpy(data+133,data2,strnlen(data2,MAXIMUM_BUFFER_SIZE));
+  memcpy(data+strlen(data),"\",\r\n}",5);
+
+  // send the data
+  send_data(CLIENT_SOCKET,(unsigned char*)data,0,1,"");
+
+  pointer_reset_all;
+  return;
+
+  #undef DATABASE_COLLECTION
+  #undef pointer_reset_all
+  #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: sync_remote_data_database
+Description: Syncs the remote_data database
+Paramters:
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, otherwise the index of the network data node to sync from + 3
+  DELEGATES_IP_ADDRESS - The specific delegates IP address, if you are syncing directly from a delegate, otherwise an empty string
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int sync_remote_data_database(int settings, const char* DELEGATES_IP_ADDRESS)
+{
+  // Variables
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char data2[BUFFER_SIZE];
+  char database_data[BUFFER_SIZE];
+  char block_verifiers_ip_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  int reset_count = 1;
+  
+  // define macros
+  #define DATABASE_COLLECTION "remote_data"
+  #define MESSAGE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n}"
+  #define SYNC_REMOTE_DATA_DATABASE_ERROR(message) \
+  memset(data,0,strlen(data)); \
+  memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
+  memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
+  memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
+  color_print(data,"red"); \
+  if (reset_count >= MAXIMUM_DATABASE_SYNC_CONNECTIONS_ATTEMPTS) \
+  { \
+    pointer_reset(data); \
+    exit(0); \
+  } \
+  else \
+  { \
+    reset_count++; \
+    goto start; \
+  }
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    pointer_reset(data);
+    memcpy(error_message.function[error_message.total],"sync_remote_data_database",25);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
+    exit(0);
+  }
+
+  start:
+
+  memset(data,0,strlen(data));
+  memset(data2,0,sizeof(data2));
+  memset(database_data,0,sizeof(database_data));
+  memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
+
+  // get a block verifier to sync the database from
+  get_block_verifier_for_syncing_database(settings,DELEGATES_IP_ADDRESS,block_verifiers_ip_address,2);
+
+  // get the database data hash for the delegates database
+  if (test_settings == 0)
+  {
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,"Getting the database data from ",31);
+    memcpy(data2+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,sizeof(block_verifiers_ip_address)));
+    memcpy(data2+strlen(data2),"\n",sizeof(char));
+    color_print(data2,"white");
+  }
+  if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
+  {
+    SYNC_REMOTE_DATA_DATABASE_ERROR("Could not get the database data hash for the remote_data database from ");
+  }
+
+  // create the message
+  memset(data2,0,strlen(data2));
+  memcpy(data2,MESSAGE,sizeof(MESSAGE)-1);
+
+  // sign_data
+  if (sign_data(data2) == 0)
+  { 
+    SYNC_REMOTE_DATA_DATABASE_ERROR("Could not sign_data");
+  }     
+  memset(data,0,strlen(data));
+
+  // allow the database data to be received over the socket
+  database_data_socket_settings = 1;
+
+  if (send_and_receive_data_socket(data,MAXIMUM_BUFFER_SIZE,block_verifiers_ip_address,SEND_DATA_PORT,data2,DATABASE_SYNCING_TIMEOUT_SETTINGS) == 0)
+  {
+    database_data_socket_settings = 0;
+    SYNC_REMOTE_DATA_DATABASE_ERROR("Could not receive data from ");
+  }
+  database_data_socket_settings = 0;
+
+  // parse the message
+  memset(data2,0,strlen(data2));
+  if (parse_json_data(data,"remote_data_database",data2,sizeof(data2)) == 0)
+  {
+    SYNC_REMOTE_DATA_DATABASE_ERROR("Could not receive data from ");
+  }
+
+  // delete the collection from the database
+  delete_collection_from_database(database_name,DATABASE_COLLECTION);
+
+  // if the database is empty dont add any data
+  if (strncmp(data2,DATABASE_EMPTY_STRING,BUFFER_SIZE) != 0)
+  {
+    // add the data to the database
+    //data2[strlen(data2)-2] = 0;
+    // insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data2,sizeof(data2));
+    memset(data,0,strlen(data));
+    memcpy(data,data2,strlen(data2)-2);
+    insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data,MAXIMUM_BUFFER_SIZE);
+  }  
+
+  pointer_reset(data);
+  return 1;
+
+  #undef DATABASE_COLLECTION
+  #undef MESSAGE
+  #undef SYNC_REMOTE_DATA_DATABASE_ERROR   
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: sync_remote_data_delegates_database
+Description: Syncs the remote_data_delegates database
+Paramters:
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, otherwise the index of the network data node to sync from + 3
+  DELEGATES_IP_ADDRESS - The specific delegates IP address, if you are syncing directly from a delegate, otherwise an empty string
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int sync_remote_data_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS)
+{
+  // Variables
+  char* data = (char*)calloc(MAXIMUM_BUFFER_SIZE,sizeof(char));
+  char data2[BUFFER_SIZE];
+  char database_data[BUFFER_SIZE];
+  char block_verifiers_ip_address[BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  int reset_count = 1;
+  
+  // define macros
+  #define DATABASE_COLLECTION "remote_data_delegates"
+  #define MESSAGE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n}"
+  #define SYNC_REMOTE_DATA_DELEGATES_DATABASE_ERROR(message) \
+  memset(data,0,strlen(data)); \
+  memcpy(data+strlen(data),message,strnlen(message,BUFFER_SIZE)); \
+  memcpy(data+strlen(data),block_verifiers_ip_address,strnlen(block_verifiers_ip_address,BLOCK_VERIFIERS_IP_ADDRESS_TOTAL_LENGTH)); \
+  memcpy(data+strlen(data),"\nConnecting to another block verifier",37); \
+  color_print(data,"red"); \
+  if (reset_count >= MAXIMUM_DATABASE_SYNC_CONNECTIONS_ATTEMPTS) \
+  { \
+    pointer_reset(data); \
+    exit(0); \
+  } \
+  else \
+  { \
+    reset_count++; \
+    goto start; \
+  }
+
+  // check if the memory needed was allocated on the heap successfully
+  if (data == NULL)
+  {
+    pointer_reset(data);
+    memcpy(error_message.function[error_message.total],"sync_remote_data_delegates_database",35);
+    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
+    error_message.total++;
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data2);  
+    exit(0);
+  }
+
+  start:
+
+  memset(data,0,strlen(data));
+  memset(data2,0,sizeof(data2));
+  memset(database_data,0,sizeof(database_data));
+  memset(block_verifiers_ip_address,0,sizeof(block_verifiers_ip_address));
+
+  // get a block verifier to sync the database from
+  get_block_verifier_for_syncing_database(settings,DELEGATES_IP_ADDRESS,block_verifiers_ip_address,2);
+
+  // get the database data hash for the delegates database
+  if (test_settings == 0)
+  {
+    memset(data2,0,sizeof(data2));
+    memcpy(data2,"Getting the database data from ",31);
+    memcpy(data2+31,block_verifiers_ip_address,strnlen(block_verifiers_ip_address,sizeof(block_verifiers_ip_address)));
+    memcpy(data2+strlen(data2),"\n",sizeof(char));
+    color_print(data2,"white");
+  }
+  if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
+  {
+    SYNC_REMOTE_DATA_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the remote_data_delegates database from ");
+  }
+
+  // create the message
+  memset(data2,0,strlen(data2));
+  memcpy(data2,MESSAGE,sizeof(MESSAGE)-1);
+
+  // sign_data
+  if (sign_data(data2) == 0)
+  { 
+    SYNC_REMOTE_DATA_DELEGATES_DATABASE_ERROR("Could not sign_data");
+  }     
+  memset(data,0,strlen(data));
+
+  // allow the database data to be received over the socket
+  database_data_socket_settings = 1;
+
+  if (send_and_receive_data_socket(data,MAXIMUM_BUFFER_SIZE,block_verifiers_ip_address,SEND_DATA_PORT,data2,DATABASE_SYNCING_TIMEOUT_SETTINGS) == 0)
+  {
+    database_data_socket_settings = 0;
+    SYNC_REMOTE_DATA_DELEGATES_DATABASE_ERROR("Could not receive data from ");
+  }
+  database_data_socket_settings = 0;
+
+  // parse the message
+  memset(data2,0,strlen(data2));
+  if (parse_json_data(data,"remote_data_delegates_database",data2,sizeof(data2)) == 0)
+  {
+    SYNC_REMOTE_DATA_DELEGATES_DATABASE_ERROR("Could not receive data from ");
+  }
+
+  // delete the collection from the database
+  delete_collection_from_database(database_name,DATABASE_COLLECTION);
+
+  // if the database is empty dont add any data
+  if (strncmp(data2,DATABASE_EMPTY_STRING,BUFFER_SIZE) != 0)
+  {
+    // add the data to the database
+    //data2[strlen(data2)-2] = 0;
+    // insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data2,sizeof(data2));
+    memset(data,0,strlen(data));
+    memcpy(data,data2,strlen(data2)-2);
+    insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data,MAXIMUM_BUFFER_SIZE);
+  }  
+
+  pointer_reset(data);
+  return 1;
+
+  #undef DATABASE_COLLECTION
+  #undef MESSAGE
+  #undef SYNC_REMOTE_DATA_DELEGATES_DATABASE_ERROR   
 }

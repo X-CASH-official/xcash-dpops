@@ -1936,8 +1936,149 @@ memset(data_test,0,sizeof(data_test));
   XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
   */
   #define NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_RENEWAL_END "NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_RENEWAL_END|0000000000000000000000000000000000000000000000000000000000000000|" TEST_WALLET "|SigV10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000|"
+
+
+
+  /*
+  The purpose of this message is for the network data nodes to get the database data hash from the other network data nodes to check if there is a majority for the remote data
+ 
+  message_settings - The type of the message
+  data_hash_remote_data - The data hash of the remote data database
+  data_hash_remote_data_delegates - The data hash of the remote data delegates database
+  public_address - The public address of the node that is sending the data.
+  previous_block_hash - The previous block hash.
+  current_round_part - The current round part (always 1)
+  current_round_part_backup_node - The current main node in the current round part (0-2)
+  data - A random 100 character string. This is the data that the XCASH_DPOPS_signature is used for. The random data  will create a different XCASH_DPOPS_signature for every message, even if the message data is the same.
+  XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_REMOTE_DATA "{\r\n \"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_REMOTE_DATA\",\r\n \"data_hash_remote_data\": \"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"data_hash_remote_data_delegates\": \"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n,\r\n \"public_address\": \"" TEST_WALLET "\",\r\n \"previous_block_hash\": \"0000000000000000000000000000000000000000000000000000000000000000\",\r\n \"current_round_part\": \"1\",\r\n \"current_round_part_backup_node\": \"0\",\r\n \"data\": \"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"XCASH_DPOPS_signature\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
+ 
  
 
+/*
+  The purpose of this message is for a block verifiers to check if they are synced up to the remote_data decentralized database
+ 
+  message_settings - The type of the message
+  data_hash - The data hash of the file
+  public_address - The public address of the node that is sending the data.
+  previous_block_hash - The previous block hash.
+  current_round_part - The current round part (always 1)
+  current_round_part_backup_node - The current main node in the current round part (0-2)
+  data - A random 100 character string. This is the data that the XCASH_DPOPS_signature is used for. The random data  will create a different XCASH_DPOPS_signature for every message, even if the message data is the same.
+  XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_SYNC_CHECK_UPDATE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"data_hash\": \"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"public_address\": \"" TEST_WALLET "\",\r\n \"previous_block_hash\": \"0000000000000000000000000000000000000000000000000000000000000000\",\r\n \"current_round_part\": \"1\",\r\n \"current_round_part_backup_node\": \"0\",\r\n \"data\": \"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"XCASH_DPOPS_signature\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
+ 
+ 
+ 
+/*
+  The purpose of this message is for the block verifiers to send a block verifier a message if their remote_data database is up to date
+ 
+  message_settings - The type of the message
+  remote_data_database - True if the database file is synced, false if not
+  public_address - The public address of the node that is sending the data.
+  previous_block_hash - The previous block hash.
+  current_round_part - The current round part (always 1)
+  current_round_part_backup_node - The current main node in the current round part (0-2)
+  data - A random 100 character string. This is the data that the XCASH_DPOPS_signature is used for. The random data  will create a different XCASH_DPOPS_signature for every message, even if the message data is the same.
+  XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_SYNC_CHECK_DOWNLOAD "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"delegates_database\": \"true\",\r\n \"public_address\": \"" TEST_WALLET "\",\r\n \"previous_block_hash\": \"0000000000000000000000000000000000000000000000000000000000000000\",\r\n \"current_round_part\": \"1\",\r\n \"current_round_part_backup_node\": \"0\",\r\n \"data\": \"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"XCASH_DPOPS_signature\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
+ 
+ 
+ 
+/*
+  The purpose of this message is for a block verifiers to download the up to date remote_data database
+ 
+  message_settings - The type of the message
+  public_address - The public address of the node that is sending the data.
+  previous_block_hash - The previous block hash.
+  current_round_part - The current round part (always 1)
+  current_round_part_backup_node - The current main node in the current round part (0-2)
+  data - A random 100 character string. This is the data that the XCASH_DPOPS_signature is used for. The random data  will create a different XCASH_DPOPS_signature for every message, even if the message data is the same.
+  XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_DOWNLOAD_FILE_UPDATE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n \"public_address\": \"" TEST_WALLET "\",\r\n \"previous_block_hash\": \"0000000000000000000000000000000000000000000000000000000000000000\",\r\n \"current_round_part\": \"1\",\r\n \"current_round_part_backup_node\": \"0\",\r\n \"data\": \"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"XCASH_DPOPS_signature\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
+ 
+ 
+ 
+/*
+  The purpose of this message is for the block verifiers to send a block verifier the up to date remote_data database
+ 
+  message_settings - The type of the message
+  remote_data_database - The database data (contains empty_database_collection if the database is empty)
+  public_address - The public address of the node that is sending the data.
+  previous_block_hash - The previous block hash.
+  current_round_part - The current round part (always 1)
+  current_round_part_backup_node - The current main node in the current round part (0-2)
+  data - A random 100 character string. This is the data that the XCASH_DPOPS_signature is used for. The random data  will create a different XCASH_DPOPS_signature for every message, even if the message data is the same.
+  XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_DOWNLOAD_FILE_DOWNLOAD "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"delegates_database\": \"true\",\r\n \"public_address\": \"" TEST_WALLET "\",\r\n \"previous_block_hash\": \"0000000000000000000000000000000000000000000000000000000000000000\",\r\n \"current_round_part\": \"1\",\r\n \"current_round_part_backup_node\": \"0\",\r\n \"data\": \"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"XCASH_DPOPS_signature\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
+
+
+
+  /*
+  The purpose of this message is for a block verifiers to check if they are synced up to the remote_data_delegates decentralized database
+ 
+  message_settings - The type of the message
+  data_hash - The data hash of the file
+  public_address - The public address of the node that is sending the data.
+  previous_block_hash - The previous block hash.
+  current_round_part - The current round part (always 1)
+  current_round_part_backup_node - The current main node in the current round part (0-2)
+  data - A random 100 character string. This is the data that the XCASH_DPOPS_signature is used for. The random data  will create a different XCASH_DPOPS_signature for every message, even if the message data is the same.
+  XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_SYNC_CHECK_UPDATE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_SYNC_CHECK_UPDATE\",\r\n \"data_hash\": \"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"public_address\": \"" TEST_WALLET "\",\r\n \"previous_block_hash\": \"0000000000000000000000000000000000000000000000000000000000000000\",\r\n \"current_round_part\": \"1\",\r\n \"current_round_part_backup_node\": \"0\",\r\n \"data\": \"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"XCASH_DPOPS_signature\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
+ 
+ 
+ 
+/*
+  The purpose of this message is for the block verifiers to send a block verifier a message if their remote_data_delegates database is up to date
+ 
+  message_settings - The type of the message
+  remote_data_delegates_database - True if the database file is synced, false if not
+  public_address - The public address of the node that is sending the data.
+  previous_block_hash - The previous block hash.
+  current_round_part - The current round part (always 1)
+  current_round_part_backup_node - The current main node in the current round part (0-2)
+  data - A random 100 character string. This is the data that the XCASH_DPOPS_signature is used for. The random data  will create a different XCASH_DPOPS_signature for every message, even if the message data is the same.
+  XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_SYNC_CHECK_DOWNLOAD "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_SYNC_CHECK_DOWNLOAD\",\r\n \"delegates_database\": \"true\",\r\n \"public_address\": \"" TEST_WALLET "\",\r\n \"previous_block_hash\": \"0000000000000000000000000000000000000000000000000000000000000000\",\r\n \"current_round_part\": \"1\",\r\n \"current_round_part_backup_node\": \"0\",\r\n \"data\": \"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"XCASH_DPOPS_signature\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
+ 
+ 
+ 
+/*
+  The purpose of this message is for a block verifiers to download the up to date remote_data_delegates database
+ 
+  message_settings - The type of the message
+  public_address - The public address of the node that is sending the data.
+  previous_block_hash - The previous block hash.
+  current_round_part - The current round part (always 1)
+  current_round_part_backup_node - The current main node in the current round part (0-2)
+  data - A random 100 character string. This is the data that the XCASH_DPOPS_signature is used for. The random data  will create a different XCASH_DPOPS_signature for every message, even if the message data is the same.
+  XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\",\r\n \"public_address\": \"" TEST_WALLET "\",\r\n \"previous_block_hash\": \"0000000000000000000000000000000000000000000000000000000000000000\",\r\n \"current_round_part\": \"1\",\r\n \"current_round_part_backup_node\": \"0\",\r\n \"data\": \"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"XCASH_DPOPS_signature\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
+ 
+ 
+ 
+/*
+  The purpose of this message is for the block verifiers to send a block verifier the up to date remote_data_delegates database
+ 
+  message_settings - The type of the message
+  remote_data_delegates_database - The database data (contains empty_database_collection if the database is empty)
+  public_address - The public address of the node that is sending the data.
+  previous_block_hash - The previous block hash.
+  current_round_part - The current round part (always 1)
+  current_round_part_backup_node - The current main node in the current round part (0-2)
+  data - A random 100 character string. This is the data that the XCASH_DPOPS_signature is used for. The random data  will create a different XCASH_DPOPS_signature for every message, even if the message data is the same.
+  XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_DOWNLOAD_FILE_DOWNLOAD "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"delegates_database\": \"true\",\r\n \"public_address\": \"" TEST_WALLET "\",\r\n \"previous_block_hash\": \"0000000000000000000000000000000000000000000000000000000000000000\",\r\n \"current_round_part\": \"1\",\r\n \"current_round_part_backup_node\": \"0\",\r\n \"data\": \"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"XCASH_DPOPS_signature\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
 
 
 #endif
