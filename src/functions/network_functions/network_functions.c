@@ -717,7 +717,7 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
       // there is data, but this is not the final data
       append_string(message,buffer,LENGTH);
     }
-    if (buffer[0] != '\0' && (strstr(buffer,SOCKET_END_STRING) != NULL || (strstr(buffer,HTTP_SOCKET_END_STRING) != NULL && (strstr(message,"Server: xcash-dpops") != NULL || strstr(buffer,"Server: xcash-dpops") != NULL || strstr(message,"User-Agent:") != NULL || strstr(buffer,"User-Agent:") != NULL)) || (strstr(buffer,XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING) != NULL) || (strstr(buffer,XCASH_DAEMON_AND_WALLET_ERROR_SOCKET_END_STRING) != NULL)))
+    if (buffer[0] != '\0' && (strstr(buffer,SOCKET_END_STRING) != NULL || (strstr(buffer,HTTP_SOCKET_END_STRING) != NULL && (strstr(message,"Server: xcash-dpops") != NULL || strstr(buffer,"Server: xcash-dpops") != NULL || strstr(message,"User-Agent:") != NULL || strstr(buffer,"User-Agent:") != NULL)) || (strstr(buffer,XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING) != NULL) || (strstr(buffer,"\"untrusted\": false\r\n}") != NULL) || (strstr(buffer,XCASH_DAEMON_AND_WALLET_ERROR_SOCKET_END_STRING) != NULL)))
     {
       // there is data, and this is the final data
       append_string(message,buffer,LENGTH);

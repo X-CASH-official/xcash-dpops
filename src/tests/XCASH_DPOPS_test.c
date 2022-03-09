@@ -111,8 +111,9 @@ void test(int settings)
   // run the tests
   if (settings == 3)
   {
+    XCASH_DPOPS_total_passed_test += network_functions_test();
     XCASH_DPOPS_total_passed_test += remote_data_functions_test();
-    total_test = REMOTE_DATA_FUNCTIONS_TOTAL_TEST;
+    total_test = REMOTE_DATA_FUNCTIONS_TOTAL_TEST + NETWORK_FUNCTIONS_TEST;
   }
   else if (settings == 2)
   {

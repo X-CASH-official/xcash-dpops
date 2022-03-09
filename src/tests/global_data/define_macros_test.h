@@ -1829,7 +1829,7 @@ memset(data_test,0,sizeof(data_test));
 
 
 // Remote data
-#define REMOTE_DATA_FUNCTIONS_TOTAL_TEST 2
+#define REMOTE_DATA_FUNCTIONS_TOTAL_TEST 87
 #define TEST_REMOTE_DATA_NAME "TEST" // the remote data name used for test
 #define TEST_REMOTE_DATA_ADDRESS_NAME "TEST.xcash" // the remote data name used for test
 #define TEST_REMOTE_DATA_PRIVATE_TRANSACTIONS_NAME "TEST.sxcash" // the remote data name used for test
@@ -1841,7 +1841,7 @@ memset(data_test,0,sizeof(data_test));
   message_settings - The type of the message
   public_address - The public address of the node that is sending the data.
   */
-  #define NODE_TO_NETWORK_DATA_NODES_GET_ADDRESS_SETTINGS "NODE_TO_NETWORK_DATA_NODES_GET_ADDRESS_SETTINGS|" TEST_WALLET "|"
+  #define NODE_TO_NETWORK_DATA_NODES_REMOTE_DATA_GET_ADDRESS_SETTINGS "NODE_TO_NETWORK_DATA_NODES_REMOTE_DATA_GET_ADDRESS_SETTINGS|" TEST_WALLET "|"
 
 
 
@@ -1851,7 +1851,7 @@ memset(data_test,0,sizeof(data_test));
   message_settings - The type of the message
   name - the name to get the public address for.
   */
-  #define NODE_TO_NETWORK_DATA_NODES_GET_ADDRESS_FROM_NAME "NODE_TO_NETWORK_DATA_NODES_GET_ADDRESS_FROM_NAME|" TEST_REMOTE_DATA_ADDRESS_NAME "|"
+  #define NODE_TO_NETWORK_DATA_NODES_REMOTE_DATA_GET_ADDRESS_FROM_NAME "NODE_TO_NETWORK_DATA_NODES_REMOTE_DATA_GET_ADDRESS_FROM_NAME|" TEST_REMOTE_DATA_ADDRESS_NAME "|"
 
 
 
@@ -1861,7 +1861,7 @@ memset(data_test,0,sizeof(data_test));
   message_settings - The type of the message
   name - the name to get the information for.
   */
-  #define NODE_TO_NETWORK_DATA_NODES_GET_INFORMATION_FROM_NAME "NODE_TO_NETWORK_DATA_NODES_GET_INFORMATION_FROM_NAME|" TEST_REMOTE_DATA_NAME "|"
+  #define NODE_TO_NETWORK_DATA_NODES_REMOTE_DATA_GET_INFORMATION_FROM_NAME "NODE_TO_NETWORK_DATA_NODES_REMOTE_DATA_GET_INFORMATION_FROM_NAME|" TEST_REMOTE_DATA_NAME "|"
 
 
 

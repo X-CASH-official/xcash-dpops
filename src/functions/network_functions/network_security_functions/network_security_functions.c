@@ -429,7 +429,7 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
         {
           for (count = 0, count2 = 0; count < string_count(MESSAGE,"|"); count++)
           {
-            if (count == 3)
+            if (count == 2)
             {
               if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
               {
@@ -437,7 +437,7 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
               }
               memcpy(public_address,&MESSAGE[count2],data_size);
             }
-            if (count == 4)
+            if (count == 3)
             {
               if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_SIGN_DATA_LENGTH)
               {
@@ -455,11 +455,11 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
       }
       else if (strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_RENEWAL_START",sizeof(message_settings)) == 0)
       {
-        if (string_count(MESSAGE,"|") == REMOTE_DATA_SET_AMOUNT_PARAMETER_AMOUNT)
+        if (string_count(MESSAGE,"|") == REMOTE_DATA_RENEWAL_START_PARAMETER_AMOUNT)
         {
           for (count = 0, count2 = 0; count < string_count(MESSAGE,"|"); count++)
           {
-            if (count == 3)
+            if (count == 1)
             {
               if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
               {
@@ -467,7 +467,7 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
               }
               memcpy(public_address,&MESSAGE[count2],data_size);
             }
-            if (count == 4)
+            if (count == 2)
             {
               if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_SIGN_DATA_LENGTH)
               {
@@ -485,11 +485,19 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
       }
       else if (strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_RENEWAL_END",sizeof(message_settings)) == 0)
       {
-        if (string_count(MESSAGE,"|") == REMOTE_DATA_SET_AMOUNT_PARAMETER_AMOUNT)
+        if (string_count(MESSAGE,"|") == REMOTE_DATA_RENEWAL_END_PARAMETER_AMOUNT)
         {
           for (count = 0, count2 = 0; count < string_count(MESSAGE,"|"); count++)
           {
-            if (count == 3)
+            if (count == 1)
+            {
+              if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != TRANSACTION_HASH_LENGTH)
+              {
+                VERIFY_DATA_ERROR("Invalid message data");
+              }
+              memcpy(public_address,&MESSAGE[count2],data_size);
+            }
+            if (count == 2)
             {
               if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
               {
@@ -497,7 +505,7 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
               }
               memcpy(public_address,&MESSAGE[count2],data_size);
             }
-            if (count == 4)
+            if (count == 3)
             {
               if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_SIGN_DATA_LENGTH)
               {
@@ -515,11 +523,11 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
       }
       else if (strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_SAVE_NAME",sizeof(message_settings)) == 0)
       {
-        if (string_count(MESSAGE,"|") == REMOTE_DATA_UPDATE_DATA_PARAMETER_AMOUNT)
+        if (string_count(MESSAGE,"|") == REMOTE_DATA_SAVE_NAME_PARAMETER_AMOUNT)
         {
           for (count = 0, count2 = 0; count < string_count(MESSAGE,"|"); count++)
           {
-            if (count == 3)
+            if (count == 2)
             {
               if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
               {
@@ -527,7 +535,7 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
               }
               memcpy(public_address,&MESSAGE[count2],data_size);
             }
-            if (count == 4)
+            if (count == 3)
             {
               if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_SIGN_DATA_LENGTH)
               {
@@ -545,11 +553,11 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
       }
       else if (strncmp(message_settings,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_PURCHASE_NAME",sizeof(message_settings)) == 0)
       {
-        if (string_count(MESSAGE,"|") == REMOTE_DATA_UPDATE_DATA_PARAMETER_AMOUNT)
+        if (string_count(MESSAGE,"|") == REMOTE_DATA_PURCHASE_NAME_PARAMETER_AMOUNT)
         {
           for (count = 0, count2 = 0; count < string_count(MESSAGE,"|"); count++)
           {
-            if (count == 3)
+            if (count == 1)
             {
               if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
               {
@@ -557,7 +565,31 @@ int verify_data(const char* MESSAGE, const int VERIFY_CURRENT_ROUND_PART_AND_CUR
               }
               memcpy(public_address,&MESSAGE[count2],data_size);
             }
+            if (count == 2)
+            {
+              if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
+              {
+                VERIFY_DATA_ERROR("Invalid message data");
+              }
+              memcpy(public_address,&MESSAGE[count2],data_size);
+            }
+            if (count == 3)
+            {
+              if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != TRANSACTION_HASH_LENGTH)
+              {
+                VERIFY_DATA_ERROR("Invalid message data");
+              }
+              memcpy(public_address,&MESSAGE[count2],data_size);
+            }
             if (count == 4)
+            {
+              if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
+              {
+                VERIFY_DATA_ERROR("Invalid message data");
+              }
+              memcpy(public_address,&MESSAGE[count2],data_size);
+            }
+            if (count == 5)
             {
               if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_SIGN_DATA_LENGTH)
               {
@@ -838,6 +870,7 @@ int validate_data(const char* MESSAGE)
 
   // define macros  
   #define VALIDATE_DATA_ERROR(settings) \
+  color_print(MESSAGE,"yellow"); \
   if (debug_settings == 1 && test_settings == 0) \
   { \
   memcpy(error_message.function[error_message.total],"validate_data",13); \
@@ -850,7 +883,7 @@ int validate_data(const char* MESSAGE)
   memset(data,0,sizeof(data));
 
   // check if the format is correct for each message
-  if (strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_GET_ADDRESS_SETTINGS") != NULL || strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_GET_ADDRESS_FROM_NAME") != NULL || strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_GET_INFORMATION_SETTINGS") != NULL || strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") != NULL || strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_CHECK_VOTE_STATUS") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_UPDATE_REMOTE_DATA") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_SET_AMOUNT") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_RENEWAL_START") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_RENEWAL_END") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_SAVE_NAME") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_PURCHASE_NAME") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE") != NULL || strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH") != NULL || strstr(MESSAGE,"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD") != NULL || strstr(MESSAGE,"GET /delegateswebsitegetstatistics HTTP/") != NULL || strstr(MESSAGE,"GET /getdelegates HTTP/") != NULL || strncmp(MESSAGE,"GET /getdelegatesstatistics?parameter1=",39) == 0 || strncmp(MESSAGE,"GET /getdelegatesinformation?parameter1=",40) == 0)
+  if (strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_REMOTE_DATA_GET_ADDRESS_SETTINGS") != NULL || strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_REMOTE_DATA_GET_INFORMATION_FROM_NAME") != NULL || strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_REMOTE_DATA_GET_ADDRESS_FROM_NAME") != NULL || strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_GET_INFORMATION_SETTINGS") != NULL || strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_ADD_RESERVE_PROOF") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REGISTER_DELEGATE") != NULL || strstr(MESSAGE,"NODE_TO_NETWORK_DATA_NODES_CHECK_VOTE_STATUS") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_UPDATE_DELEGATE") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_UPDATE_REMOTE_DATA") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_SET_AMOUNT") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_RENEWAL_START") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_RENEWAL_END") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_SAVE_NAME") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_PURCHASE_NAME") != NULL || strstr(MESSAGE,"NODES_TO_BLOCK_VERIFIERS_RECOVER_DELEGATE") != NULL || strstr(MESSAGE,"NODE_TO_BLOCK_VERIFIERS_GET_RESERVE_BYTES_DATABASE_HASH") != NULL || strstr(MESSAGE,"BLOCK_VERIFIERS_TO_NODES_RESERVE_BYTES_DATABASE_SYNC_CHECK_ALL_DOWNLOAD") != NULL || strstr(MESSAGE,"GET /delegateswebsitegetstatistics HTTP/") != NULL || strstr(MESSAGE,"GET /getdelegates HTTP/") != NULL || strncmp(MESSAGE,"GET /getdelegatesstatistics?parameter1=",39) == 0 || strncmp(MESSAGE,"GET /getdelegatesinformation?parameter1=",40) == 0)
   {
     return 1;
   }
@@ -1243,24 +1276,15 @@ int validate_data(const char* MESSAGE)
     }
     else if (strncmp(MESSAGE,"GET /remotedatagetaddressfromname?parameter1=",45) == 0)
     {
-      if (strlen(&MESSAGE[45]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[45]," HTTP/") == NULL)
-      {
-        VALIDATE_DATA_ERROR("Invalid message");
-      }      
+       
     }
     else if (strncmp(MESSAGE,"GET /remotedatagetinformationfromname?parameter1=",49) == 0)
     {
-      if (strlen(&MESSAGE[49]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[49]," HTTP/") == NULL)
-      {
-        VALIDATE_DATA_ERROR("Invalid message");
-      }      
+       
     }
     else if (strncmp(MESSAGE,"GET /remotedatagetdelegatesinformation",38) == 0)
     {
-      if (strlen(&MESSAGE[38]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[38]," HTTP/") == NULL)
-      {
-        VALIDATE_DATA_ERROR("Invalid message");
-      }      
+         
     }
     else if (strncmp(MESSAGE,"GET /remotedatagetblockproducerinformation?parameter1=",54) == 0)
     {

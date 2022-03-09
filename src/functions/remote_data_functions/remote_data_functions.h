@@ -11,6 +11,7 @@ int get_previous_block_producer(char *previous_block_producer);
 int validate_amount(const char* MESSAGE);
 int validate_name(const char* MESSAGE);
 int validate_name_settings(const char* MESSAGE);
+int document_field_contains_string_from_collection(const char* DATABASE, const char* COLLECTION, const char* FIELD_NAME, const char* DATA);
 int remote_data_validate_tx_hash(const char* tx_hash,const char* public_address,const char* delegates_public_address,const char* delegates_amount);
 void server_receive_data_socket_nodes_to_network_data_nodes_remote_data_get_address_settings(const int CLIENT_SOCKET, const char* MESSAGE);
 int server_receive_data_socket_remote_data_get_address_settings(const int CLIENT_SOCKET, const char* DATA);
