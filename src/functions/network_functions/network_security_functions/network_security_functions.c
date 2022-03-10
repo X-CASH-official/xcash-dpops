@@ -1286,12 +1286,9 @@ int validate_data(const char* MESSAGE)
     {
          
     }
-    else if (strncmp(MESSAGE,"GET /remotedatagetblockproducerinformation?parameter1=",54) == 0)
+    else if (strncmp(MESSAGE,"GET /remotedatagetblockproducerinformation",42) == 0)
     {
-      if (strlen(&MESSAGE[54]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[54]," HTTP/") == NULL)
-      {
-        VALIDATE_DATA_ERROR("Invalid message");
-      }      
+
     }
   }
   else if (shared_delegates_website == 1)

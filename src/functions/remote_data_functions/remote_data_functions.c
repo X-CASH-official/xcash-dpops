@@ -1902,12 +1902,11 @@ Name: server_receive_data_socket_remote_data_get_block_producer_information
 Description: Runs the code when the server receives /remotedatagetblockproducerinformation
 Parameters:
   CLIENT_SOCKET - The socket to send data to
-  DATA - The data
 Return: 0 if an error has occured, 1 if successfull
 -----------------------------------------------------------------------------------------------------------
 */
 
-int server_receive_data_socket_remote_data_get_block_producer_information(const int CLIENT_SOCKET, const char* DATA)
+int server_receive_data_socket_remote_data_get_block_producer_information(const int CLIENT_SOCKET)
 {
   // Variables
   char public_address[BUFFER_SIZE];
@@ -1928,26 +1927,15 @@ int server_receive_data_socket_remote_data_get_block_producer_information(const 
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
   return 0;
 
-  #define REMOTE_DATA_GET_BLOCK_PRODUCER_INFORMATION_STATUS(settings) \
-  memset(message,0,strlen(message)); \
-  memcpy(message,"{\"remote_data\":\"",16); \
-  memcpy(message+strlen(message),settings,strlen(settings)); \
-  memcpy(message+strlen(message),"\"}",2); \
-  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json"); \
-  return 1;
-  
   memset(public_address,0,sizeof(public_address));
   memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
 
-  // get the parameter1
-  memcpy(public_address,&DATA[54],(strnlen(DATA,sizeof(public_address)) - strnlen(strstr(DATA," HTTP/"),sizeof(public_address)))-54);
-
-  // error check
-  if (strncmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(public_address) != XCASH_WALLET_LENGTH)
+  // get the current block producer
+  if (get_previous_block_producer(public_address) == 0)
   {
     REMOTE_DATA_GET_BLOCK_PRODUCER_INFORMATION_ERROR;
-  } 
+  }
 
   // create the message
   memcpy(message,"{\"public_address\":\"",19);
@@ -1955,14 +1943,16 @@ int server_receive_data_socket_remote_data_get_block_producer_information(const 
   memcpy(message+strlen(message),"\"}",2);
 
   // get the amount
-  if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"amount",data2) == 1)
+  if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"amount",data2) == 0)
   {
-    REMOTE_DATA_GET_BLOCK_PRODUCER_INFORMATION_STATUS(data2);
+    REMOTE_DATA_GET_BLOCK_PRODUCER_INFORMATION_ERROR;
   }
 
   // create the message
   memset(message,0,sizeof(message));
-  memcpy(message,"{\"amount\":\"",11);
+  memcpy(message,"{\"public_address\":\"",19);
+  memcpy(message+strlen(message),public_address,XCASH_WALLET_LENGTH);
+  memcpy(message+strlen(message),"\",\"amount\":\"",12);
   memcpy(message+strlen(message),data2,strlen(data2));
   memcpy(message+strlen(message),"\"}",2);
 
@@ -1972,7 +1962,6 @@ int server_receive_data_socket_remote_data_get_block_producer_information(const 
 
   #undef DATABASE_COLLECTION
   #undef REMOTE_DATA_GET_BLOCK_PRODUCER_INFORMATION_ERROR
-  #undef REMOTE_DATA_GET_BLOCK_PRODUCER_INFORMATION_STATUS
 }
 
 

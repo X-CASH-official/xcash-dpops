@@ -1004,11 +1004,11 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
- else if (strstr(buffer,"GET /remotedatagetblockproducerinformation?parameter1=") != NULL && delegates_website == 1)
+ else if (strstr(buffer,"GET /remotedatagetblockproducerinformation") != NULL && delegates_website == 1)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
-     server_receive_data_socket_remote_data_get_block_producer_information(CLIENT_SOCKET,(const char*)buffer);
+     server_receive_data_socket_remote_data_get_block_producer_information(CLIENT_SOCKET);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }

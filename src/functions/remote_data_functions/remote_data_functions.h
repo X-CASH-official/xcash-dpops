@@ -23,7 +23,7 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_update_remo
 void server_receive_data_socket_remote_data_nodes_to_block_verifiers_save_name(const int CLIENT_SOCKET, const char* MESSAGE);
 void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_name(const int CLIENT_SOCKET, const char* MESSAGE);
 int server_receive_data_socket_remote_data_get_delegates_information(const int CLIENT_SOCKET);
-int server_receive_data_socket_remote_data_get_block_producer_information(const int CLIENT_SOCKET, const char* DATA);
+int server_receive_data_socket_remote_data_get_block_producer_information(const int CLIENT_SOCKET);
 void server_receive_data_socket_remote_data_nodes_to_block_verifiers_delegates_set_amount(const int CLIENT_SOCKET, const char* MESSAGE);
 void server_receive_data_socket_remote_data_nodes_to_block_verifiers_renewal_start(const int CLIENT_SOCKET, const char* MESSAGE);
 void server_receive_data_socket_remote_data_nodes_to_block_verifiers_renewal_end(const int CLIENT_SOCKET, const char* MESSAGE);

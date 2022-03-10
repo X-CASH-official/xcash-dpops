@@ -1123,6 +1123,29 @@ int remote_data_functions_test(void)
 
 
 
+  // /remotedatagetblockproducerinformation
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"delegate\",\"public_address\":\"" TEST_WALLET "\",\"amount\":\"100\"}");
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"delegate\",\"public_address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"amount\":\"1000\"}");
+  memset(data_test,0,sizeof(data_test));
+  if (send_and_receive_data_socket(data_test,sizeof(data_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,"GET /remotedatagetblockproducerinformation HTTP/",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,"{\"public_address\":\"" TEST_WALLET "\",\"amount\":\"100\"}",sizeof(data_test)) == 0)
+  {
+    color_print("PASSED! Test for /remotedatagetblockproducerinformation","green");
+    count_test++;
+  }
+  else
+  {color_print(data_test,"yellow");
+    color_print("FAILED! Test for /remotedatagetblockproducerinformation","red");
+  }
+
+
+
+
+
+
+
+
+
   // /remotedatagetdelegatesinformation
   delete_database(database_name);
   insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"delegate\",\"public_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"amount\":\"100\"}");
