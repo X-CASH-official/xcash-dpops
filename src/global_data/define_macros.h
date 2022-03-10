@@ -17,8 +17,8 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_EMMISION_FACTOR 524288 // The emmision factor (2^19)
 #define XCASH_DPOPS_EMMISION_FACTOR 262144 // The xcash-dpops emmision factor (2^18)
 #define FIRST_BLOCK_MINING_REWARD 190734.863281 // The first blocks mining reward
-#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 880000 // The start block height for X-CASH proof of stake
-#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_DATA "880000" // The start block height for X-CASH proof of stake
+#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 900000 // The start block height for X-CASH proof of stake
+#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_DATA "900000" // The start block height for X-CASH proof of stake
 #define BLOCK_TIME 5 // The block time in minutes
 #define BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME 288 // The blocks per day with a 5 minute block time
 #define UNLOCK_BLOCK_AMOUNT 60 // The default unlock block amount for a block reward transaction
@@ -69,8 +69,8 @@ Using define statements instead of constants for increased efficiency
 // Note the BLOCK_VERIFIERS_TOTAL_AMOUNT and BLOCK_VERIFIERS_AMOUNT should be a number that is a multiple of 4 or of 5 or BLOCK_VERIFIERS_TOTAL_AMOUNT should be lower than 50, otherwise it will not have enough time in the round to verify all of the block verifiers signatures
 #define XCASH_DPOPS_CURRENT_VERSION "xcash-dpops - Version 1.1.0\n"
 #define BLOCK_VERIFIERS_TOTAL_AMOUNT 100 // The total amount of block verifiers
-#define BLOCK_VERIFIERS_AMOUNT 30 // The amount of block verifiers in a round
-#define BLOCK_VERIFIERS_VALID_AMOUNT 17 // The amount of block verifiers that need to vote true for the part of the round to be valid
+#define BLOCK_VERIFIERS_AMOUNT 10 // The amount of block verifiers in a round
+#define BLOCK_VERIFIERS_VALID_AMOUNT 7 // The amount of block verifiers that need to vote true for the part of the round to be valid
 #define MAXIMUM_AMOUNT_OF_DELEGATES 150 // The maximum amount of delegates that can be registered
 #define MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE 1000 // The maximum amount of voters that a delegate can have
 #define MAXIMUM_AMOUNT_OF_VOTERS_PER_DELEGATE_PRIVATE_GROUP 300 // The maximum amount of voters that a delegate can have for a private group
@@ -180,23 +180,23 @@ Using define statements instead of constants for increased efficiency
 #define TIME_SF_V_1_0_5_PART_1 1917984900 // Postponed for now - fix allocation of memory for delegates database
 #define TIME_SF_V_1_0_5_PART_2 1918071300 // Postponed for now - re add missing seed nodes (need to run restart script on missing seed nodes after)
 #define TIME_SF_V_1_0_6 1618244100 // 1618244100 Monday, April 12, 2021 16:15:00 UTC - Dont add block heights to the delegates database, remove all block heights from the delegates database, add missing seed nodes to the delegates database
-#define BLOCK_HEIGHT_SF_V_1_1_0 895300 // stealth address verification
+#define BLOCK_HEIGHT_SF_V_1_1_0 8000000 // stealth address verification
 
 
 #define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION "XCA1Sk2CRVQ9EoKzkv2mnzfAwgA4zvj2HfXJrzYYCtJAdLXDPuSr1UGEJPKSTGCan9fmNpqTGefkMGZ4JX3zUf357vm5VMzMir"
-#define NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION "dpops-test-1.xcash.foundation"
+#define NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION "dpops-test-internal-1.xcash.foundation"
 #define NETWORK_DATA_NODE_1_PUBLIC_KEY_PRODUCTION "0da1964a99ad8891361285d285e99c6e1deb527a54009786da8909971fbecc06"
 #define NETWORK_DATA_NODE_2_PUBLIC_ADDRESS_PRODUCTION "XCA1tDjMy6UCGfC5tCpRF6U7NZNFWrSdMbF9FrE4HdoXHGRSr3NJgHdicsdV6c6tsvRU2NmGYsAGf19VNWVhkrL73XH3AKx9Dw"
-#define NETWORK_DATA_NODE_2_IP_ADDRESS_PRODUCTION "dpops-test-2.xcash.foundation"
+#define NETWORK_DATA_NODE_2_IP_ADDRESS_PRODUCTION "dpops-test-internal-2.xcash.foundation"
 #define NETWORK_DATA_NODE_2_PUBLIC_KEY_PRODUCTION "07935b5d753a1127dc0c86038131da38825917632bb8eb8c38b84cdf8e74cf46"
 #define NETWORK_DATA_NODE_3_PUBLIC_ADDRESS_PRODUCTION "XCA1sLyHMW23w238zJdZJVWVfMZMYyMxW9ypPVSLyduk7Ee4UtCbXMG7yJzqaT7vP24jq4ceC5F8PFTjPZEYTrKb6DdfbaLTAa"
-#define NETWORK_DATA_NODE_3_IP_ADDRESS_PRODUCTION "dpops-test-3.xcash.foundation"
+#define NETWORK_DATA_NODE_3_IP_ADDRESS_PRODUCTION "dpops-test-internal-3.xcash.foundation"
 #define NETWORK_DATA_NODE_3_PUBLIC_KEY_PRODUCTION "fe06118d4d910c7758d9623307d485593d70c581f6ed7969bb75258344120e1e"
 #define NETWORK_DATA_NODE_4_PUBLIC_ADDRESS_PRODUCTION "XCA1dYZmCGMFnmYppTHtWoQNB168NAjHmiU9WdWsB4mXiytoHiMyrYqYYBcHwewiLhYj6eij4r8BRSScNYphZRtz8RajVriGZC"
-#define NETWORK_DATA_NODE_4_IP_ADDRESS_PRODUCTION "dpops-test-4.xcash.foundation"
+#define NETWORK_DATA_NODE_4_IP_ADDRESS_PRODUCTION "dpops-test-internal-4.xcash.foundation"
 #define NETWORK_DATA_NODE_4_PUBLIC_KEY_PRODUCTION "990edbdbd4f7dccfb300fef5c9b0d77042ba2c5c10937be56b9552f3eca10fe4"
 #define NETWORK_DATA_NODE_5_PUBLIC_ADDRESS_PRODUCTION "XCA1rgiYYcY1k37GBiWz5PiUbB7SzvVGqPiLoBCyHdmAN8hfs47N7ZzFWZrJsTy8Lj4QKh1fFLdr2SNVebqimW7j24J9dsWBhM"
-#define NETWORK_DATA_NODE_5_IP_ADDRESS_PRODUCTION "dpops-test-5.xcash.foundation"
+#define NETWORK_DATA_NODE_5_IP_ADDRESS_PRODUCTION "dpops-test-internal-5.xcash.foundation"
 #define NETWORK_DATA_NODE_5_PUBLIC_KEY_PRODUCTION "e9442737a3f2060c892edb6b978047ddd4879fcb09d854b79082184cb0fc1500"
 
 #define OFFICIAL_SHARED_DELEGATE_PUBLIC_ADDRESS_PRODUCTION "XCA1cYCAbFsKvGRFYpX5QKgBYpx1yimURVcGvdTLdrm5ig9Ka9bMZ9vBXLn9iHKViYRQbmqKfmWRPDziae5rUPaQ3NXtXzKbvC"
