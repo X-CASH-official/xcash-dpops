@@ -67,7 +67,7 @@ Using define statements instead of constants for increased efficiency
 
 // XCASH DPOPS
 // Note the BLOCK_VERIFIERS_TOTAL_AMOUNT and BLOCK_VERIFIERS_AMOUNT should be a number that is a multiple of 4 or of 5 or BLOCK_VERIFIERS_TOTAL_AMOUNT should be lower than 50, otherwise it will not have enough time in the round to verify all of the block verifiers signatures
-#define XCASH_DPOPS_CURRENT_VERSION "xcash-dpops - Version 1.1.1\n"
+#define XCASH_DPOPS_CURRENT_VERSION "xcash-dpops - Version 1.2.0\n"
 #define BLOCK_VERIFIERS_TOTAL_AMOUNT 100 // The total amount of block verifiers
 #define BLOCK_VERIFIERS_AMOUNT 50 // The amount of block verifiers in a round
 #define BLOCK_VERIFIERS_VALID_AMOUNT 27 // The amount of block verifiers that need to vote true for the part of the round to be valid
@@ -180,7 +180,8 @@ Using define statements instead of constants for increased efficiency
 #define TIME_SF_V_1_0_5_PART_1 1917984900 // Postponed for now - fix allocation of memory for delegates database
 #define TIME_SF_V_1_0_5_PART_2 1918071300 // Postponed for now - re add missing seed nodes (need to run restart script on missing seed nodes after)
 #define TIME_SF_V_1_0_6 1618244100 // 1618244100 Monday, April 12, 2021 16:15:00 UTC - Dont add block heights to the delegates database, remove all block heights from the delegates database, add missing seed nodes to the delegates database
-#define BLOCK_HEIGHT_SF_V_1_1_0 8000000 // stealth address verification
+#define BLOCK_HEIGHT_SF_V_1_2_0 914000 // stealth address verification Tuesday, April 5, 2022 22:30:00 UTC
+#define TIME_SF_V_1_2_0 1649431080 // _id field sort all collections Friday, April 8, 2022 15:18:00 UTC
 
 
 #define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION "XCA1a9usG2UKajV1Dqzp8fL1BbN3hzuaaJMYjCo7qDoC4C3Vvc5owiLAqKbVw2cRbwRqx3mgrau1Z7LkX6cxR2NC4ZmFBLe2Mf"
