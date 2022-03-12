@@ -912,7 +912,7 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }
- else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_SET_AMOUNT") != NULL && current_block_height_data >= BLOCK_HEIGHT_REMOTE_DATA)
+ else if (strstr(buffer,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_SET_AMOUNT") != NULL && current_block_height_data >= BLOCK_HEIGHT_REMOTE_DATA_DELEGATES)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
@@ -936,7 +936,7 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }
- else if (strstr(buffer,"\"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_REMOTE_DATA\"") != NULL && current_block_height_data >= BLOCK_HEIGHT_REMOTE_DATA)
+ else if (strstr(buffer,"\"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_REMOTE_DATA\"") != NULL && current_block_height_data >= BLOCK_HEIGHT_REMOTE_DATA_DELEGATES)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
@@ -944,7 +944,7 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_SYNC_CHECK_UPDATE\"") != NULL && current_block_height_data >= BLOCK_HEIGHT_REMOTE_DATA)
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_SYNC_CHECK_UPDATE\"") != NULL && current_block_height_data >= BLOCK_HEIGHT_REMOTE_DATA_DELEGATES)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
@@ -952,7 +952,7 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL && current_block_height_data >= BLOCK_HEIGHT_REMOTE_DATA)
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL && current_block_height_data >= BLOCK_HEIGHT_REMOTE_DATA_DELEGATES)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
@@ -960,7 +960,7 @@ void socket_thread(const int CLIENT_SOCKET)
     server_limit_public_addresses(3,(const char*)buffer);
    }
  }
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_SYNC_CHECK_UPDATE\"") != NULL && current_block_height_data >= BLOCK_HEIGHT_REMOTE_DATA)
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_SYNC_CHECK_UPDATE\"") != NULL && current_block_height_data >= BLOCK_HEIGHT_REMOTE_DATA_DELEGATES)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
@@ -968,7 +968,7 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_public_addresses(3,(const char*)buffer);
    }
  }
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL && current_block_height_data >= BLOCK_HEIGHT_REMOTE_DATA)
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE\"") != NULL && current_block_height_data >= BLOCK_HEIGHT_REMOTE_DATA_DELEGATES)
  {
    if (server_limit_public_addresses(1,(const char*)buffer) == 1)
    {
@@ -1000,7 +1000,7 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }
- else if (strstr(buffer,"GET /remotedatagetdelegatesinformation") != NULL && delegates_website == 1 && current_block_height_data >= BLOCK_HEIGHT_REMOTE_DATA)
+ else if (strstr(buffer,"GET /remotedatagetdelegatesinformation") != NULL && delegates_website == 1 && current_block_height_data >= BLOCK_HEIGHT_REMOTE_DATA_DELEGATES)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {
@@ -1008,7 +1008,7 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
- else if (strstr(buffer,"GET /remotedatagetblockproducerinformation") != NULL && delegates_website == 1 && current_block_height_data >= BLOCK_HEIGHT_REMOTE_DATA)
+ else if (strstr(buffer,"GET /remotedatagetblockproducerinformation") != NULL && delegates_website == 1 && current_block_height_data >= BLOCK_HEIGHT_REMOTE_DATA_DELEGATES)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {

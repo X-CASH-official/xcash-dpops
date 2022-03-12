@@ -2739,7 +2739,7 @@ void* remote_data_database_synchronization_timer_thread(void* parameters)
   // check if the start block is valid
   sscanf(current_block_height,"%zu", &count);
 
-  while (count < BLOCK_HEIGHT_REMOTE_DATA)
+  while (count < BLOCK_HEIGHT_REMOTE_DATA_DELEGATES)
   {
     sscanf(current_block_height,"%zu", &count);
     sleep(60);
@@ -2781,7 +2781,7 @@ void* remote_data_maintenance_timer_thread(void* parameters)
   // check if the start block is valid
   sscanf(current_block_height,"%zu", &count);
 
-  while (count < BLOCK_HEIGHT_REMOTE_DATA)
+  while (count < BLOCK_HEIGHT_REMOTE_DATA_DELEGATES)
   {
     sscanf(current_block_height,"%zu", &count);
     sleep(60);

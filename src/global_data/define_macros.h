@@ -185,7 +185,8 @@ Using define statements instead of constants for increased efficiency
 #define TIME_SF_V_1_2_0 1647042941 // _id field sort all collections
 
 // Remote data
-#define BLOCK_HEIGHT_REMOTE_DATA 8000000
+#define BLOCK_HEIGHT_REMOTE_DATA_DELEGATES 8000000 // This is when both timer functions and most delegate server functions will work. Users will not be able to register names because delegates need time to set a price
+#define BLOCK_HEIGHT_REMOTE_DATA 8000000 // all remote data functions work
 #define REMOTE_DATA_GET_ADDRESS_SETTINGS_PARAMETER_AMOUNT 2
 #define REMOTE_DATA_GET_ADDRESS_FROM_NAME_PARAMETER_AMOUNT 2
 #define REMOTE_DATA_UPDATE_DATA_PARAMETER_AMOUNT 5
