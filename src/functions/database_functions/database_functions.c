@@ -127,8 +127,14 @@ int get_database_data(char *database_data, const char* DATABASE, const char* COL
   }
 
   // sort the documents
-  document_options = strstr(COLLECTION,"reserve_proofs") != NULL ? BCON_NEW("sort", "{", "total", BCON_INT32(-1), "}") : strstr(COLLECTION,"reserve_bytes") != NULL ? BCON_NEW("sort", "{", "block_height", BCON_INT32(1), "}") : strstr(COLLECTION,"remote_data_delegates") != NULL ? BCON_NEW("sort", "{", "_id", BCON_INT32(-1), "}") : strstr(COLLECTION,"remote_data") != NULL ? BCON_NEW("sort", "{", "_id", BCON_INT32(-1), "}") : strstr(COLLECTION,"delegates") != NULL ? BCON_NEW("sort", "{", "total_vote_count", BCON_INT32(-1), "}") : NULL;
-
+  if (time(NULL) >= TIME_SF_V_1_2_0)
+  {
+    document_options = BCON_NEW("sort", "{", "_id", BCON_INT32(1), "}");
+  }
+  else
+  {
+    document_options = strstr(COLLECTION,"reserve_proofs") != NULL ? BCON_NEW("sort", "{", "total", BCON_INT32(-1), "}") : strstr(COLLECTION,"reserve_bytes") != NULL ? BCON_NEW("sort", "{", "block_height", BCON_INT32(1), "}") : strstr(COLLECTION,"delegates") != NULL ? BCON_NEW("sort", "{", "total_vote_count", BCON_INT32(-1), "}") : NULL;
+  }
   memset(database_data,0,strlen(database_data));
 
   document_settings = mongoc_collection_find_with_opts(collection, document, document_options, NULL);

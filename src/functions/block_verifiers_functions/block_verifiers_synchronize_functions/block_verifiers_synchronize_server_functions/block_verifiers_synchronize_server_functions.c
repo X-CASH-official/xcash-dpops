@@ -505,7 +505,7 @@ void server_receive_data_socket_node_to_block_verifiers_get_reserve_bytes_databa
     memcpy(message2+strlen(message2),"|",sizeof(char));
   }
 
-  if (current_block_height_reserve_bytes >= BLOCK_HEIGHT_SF_V_1_1_0)
+  if (current_block_height_reserve_bytes >= BLOCK_HEIGHT_SF_V_1_2_0)
   {
     // reset the count
     current_block_height_reserve_bytes = current_block_height_reserve_bytes_copy;
