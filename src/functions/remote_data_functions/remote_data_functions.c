@@ -3097,7 +3097,7 @@ void server_receive_data_socket_network_data_nodes_to_network_data_nodes_databas
   memset(data,0,sizeof(data));
   memset(public_address,0,sizeof(public_address));
 
-  for (count = 0; count < DATABASE_TOTAL; count++)
+  for (count = 0; count < REMOTE_DATA_DATABASE_TOTAL; count++)
   {
     memset(data_hash[count],0,sizeof(data_hash[count]));
   }
@@ -3117,7 +3117,7 @@ void server_receive_data_socket_network_data_nodes_to_network_data_nodes_databas
     {
       if (strncmp(block_verifiers_sync_database_list.block_verifiers_public_address[count],public_address,sizeof(public_address)) == 0)
       {
-        for (count2 = 0; count2 < DATABASE_TOTAL; count2++)
+        for (count2 = 0; count2 < REMOTE_DATA_DATABASE_TOTAL; count2++)
         {
           memset(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count2][count],0,sizeof(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count2][count]));
           memcpy(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count2][count],data_hash[count2],DATA_HASH_LENGTH);
