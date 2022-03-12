@@ -2771,11 +2771,22 @@ Return: NULL
 void* remote_data_maintenance_timer_thread(void* parameters)
 {
   // Variables
+  size_t count;
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
 
   // unused parameters
   (void)parameters;
+
+  // check if the start block is valid
+  sscanf(current_block_height,"%zu", &count);
+
+  while (count < BLOCK_HEIGHT_REMOTE_DATA)
+  {
+    sscanf(current_block_height,"%zu", &count);
+    sleep(60);
+  }
+
 
   for (;;)
   {

@@ -31,6 +31,7 @@
 #include "network_functions.h"
 #include "network_security_functions.h"
 #include "network_wallet_functions.h"
+#include "remote_data_functions.h"
 #include "remote_data_functions_test.h"
 #include "server_functions.h"
 #include "string_functions.h"
@@ -1087,16 +1088,16 @@ void start_timer_threads(void)
   color_print("Started the current block height timer thread","green");
 
   // start the remote data threads
-  if (pthread_create(&thread_id[1], NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)
+  if (pthread_create(&thread_id[1], NULL, &remote_data_database_synchronization_timer_thread, NULL) != 0 && pthread_detach(thread_id[1]) != 0)
   {
-    START_TIMER_THREADS_ERROR("Could not start the current_block_height_timer_thread");
+    START_TIMER_THREADS_ERROR("Could not start the remote data database synchronization timer thread");
   }
   
   color_print("Started the remote data database synchronization timer thread","green");
 
-  if (pthread_create(&thread_id[2], NULL, &current_block_height_timer_thread, NULL) != 0 && pthread_detach(thread_id[2]) != 0)
+  if (pthread_create(&thread_id[2], NULL, &remote_data_maintenance_timer_thread, NULL) != 0 && pthread_detach(thread_id[2]) != 0)
   {
-    START_TIMER_THREADS_ERROR("Could not start the current_block_height_timer_thread");
+    START_TIMER_THREADS_ERROR("Could not start the remote data maintence timer thread");
   }
   
   color_print("Started the remote data maintence timer thread","green");
