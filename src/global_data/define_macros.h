@@ -196,11 +196,11 @@ Using define statements instead of constants for increased efficiency
 #define REMOTE_DATA_RENEWAL_START_PARAMETER_AMOUNT 3
 #define REMOTE_DATA_RENEWAL_END_PARAMETER_AMOUNT 4
 #define REMOTE_DATA_REGISTRATION_LENGTH 31536000 // 1 year
-#define REMOTE_DATA_SAVE_NAME_LENGTH 3600 // 1 hour
+#define REMOTE_DATA_SAVE_NAME_LENGTH 86400 // 1 day
 #define REMOTE_DATA_NAME_MAXIMUM_LENGTH 50
 #define PUBLIC_TRANSACTION_VERIFICATION "2227c"
 #define TOTAL_REMOTE_DATA_DATABASE_FIELDS 12
-#define TOTAL_REMOTE_DATA_DELEGATES_DATABASE_FIELDS 3
+#define TOTAL_REMOTE_DATA_DELEGATES_DATABASE_FIELDS 5
 #define REMOTE_DATA_DATABASE_TOTAL 2
 #define REMOTE_DATA_DELEGATES_DEFAULT_AMOUNT "1000000000" // The default amount for the delegate until they set their amount
 #define REMOTE_DATA_TEST_NAME "{\"name\":\"" TEST_REMOTE_DATA_NAME "\",\"address\":\"\",\"saddress\":\"\",\"paddress\":\"\",\"saddress_list\":\"\",\"paddress_list\":\"\",\"website\":\"\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"\",\"reserve_delegate_amount\":\"0\",\"tx_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\"}"

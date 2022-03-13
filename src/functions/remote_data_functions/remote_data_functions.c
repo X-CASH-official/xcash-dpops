@@ -325,6 +325,7 @@ int document_field_contains_string_from_collection(const char* DATABASE, const c
   int total_database_fields = 0;
   int settings = 0;
 
+  // define macros
   #define DOCUMENT_FIELD_CONTAINS_STRING_FROM_COLLECTION_ERROR(settings,MESSAGE) \
   if (debug_settings == 1) \
   { \
@@ -418,9 +419,95 @@ int document_field_contains_string_from_collection(const char* DATABASE, const c
   POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,total_database_fields);
 
   return settings;
+  
+  #undef DOCUMENT_FIELD_CONTAINS_STRING_FROM_COLLECTION_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: remote_data_update_delegates_statistics
+Description: Updates the remote data delegates statistics
+Parameters:
+  DELEGATE_NAME - The name of the delegate to update
+  DELEGATE_AMOUNT - The amount
+Return: 1 if successful, otherwise 0
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int remote_data_update_delegates_statistics(const char* DELEGATE_NAME,const char* DELEGATE_AMOUNT)
+{
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
+  char data3[SMALL_BUFFER_SIZE];
+  size_t count = 0;
+  size_t count2 = 0;
+
+  // define macros
+  #define DATABASE_COLLECTION "remote_data_delegates"
+  #define REMOTE_DATA_UPDATE_DELEGATES_STATISTICS_ERROR \
+  if (debug_settings == 1) \
+  { \
+  memcpy(error_message.function[error_message.total],"remote_data_update_delegates_statistics",39); \
+  memcpy(error_message.data[error_message.total],"Could not update the delegates statistics for the remote data",61); \
+  error_message.total++; \
+  } \
+  return 0;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(data3,0,sizeof(data3));
+
+  // create the message
+  memcpy(data,"{\"name\":\"",9);
+  memcpy(data+strlen(data),DELEGATE_NAME,strlen(DELEGATE_NAME));
+  memcpy(data+strlen(data),"\"}",2);
+
+  // update the total_registered_renewed_amount
+  if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,"total_registered_renewed_amount",data2) == 0)
+  {
+    REMOTE_DATA_UPDATE_DELEGATES_STATISTICS_ERROR;
+  }
+  
+  sscanf(data2, "%zu", &count);
+  count++;
+
+  memcpy(data3,"{\"total_registered_renewed_amount\":\"",36);
+  snprintf(data3+strlen(data3),MAXIMUM_NUMBER_SIZE,"%zu",count);
+  memcpy(data3+strlen(data3),"\"}",2);
+
+  if (update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,data3) == 0)
+  {
+    REMOTE_DATA_UPDATE_DELEGATES_STATISTICS_ERROR;
+  }
+
+  // update the total_amount
+  memset(data2,0,sizeof(data2));
+  if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,"total_amount",data2) == 0)
+  {
+    REMOTE_DATA_UPDATE_DELEGATES_STATISTICS_ERROR;
+  }
+  
+  sscanf(data2, "%zu", &count);
+  sscanf(DELEGATE_AMOUNT, "%zu", &count2);
+  count += count2;
+
+  memset(data3,0,sizeof(data3));
+  memcpy(data3,"{\"total_amount\":\"",17);
+  snprintf(data3+strlen(data3),MAXIMUM_NUMBER_SIZE,"%zu",count);
+  memcpy(data3+strlen(data3),"\"}",2);
+
+  if (update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,data3) == 0)
+  {
+    REMOTE_DATA_UPDATE_DELEGATES_STATISTICS_ERROR;
+  }
+
+  return 1;
 
   #undef DATABASE_COLLECTION
-  #undef DOCUMENT_FIELD_CONTAINS_STRING_FROM_COLLECTION_ERROR
+  #undef REMOTE_DATA_UPDATE_DELEGATES_STATISTICS_ERROR
 }
 
 
@@ -543,6 +630,93 @@ int remote_data_validate_tx_hash(const char* tx_hash,const char* public_address,
   return (count2 / XCASH_WALLET_DECIMAL_PLACES_AMOUNT) >= count ? 1 : 0;
 
   #undef DATABASE_COLLECTION
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_remote_data_get_statistics
+Description: Runs the code when the server receives /remotedatagetstatistics
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  DATA - The data
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_remote_data_get_statistics(const int CLIENT_SOCKET)
+{
+  // Variables
+  char message[SMALL_BUFFER_SIZE];
+  char buffer[1024];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  int count = 0;
+  size_t counter = 0;
+  size_t total_registered_renewed_amount = 0;
+  size_t total_amount = 0;
+  struct database_multiple_documents_fields database_multiple_documents_fields;
+  int document_count = 0;
+
+  // define macros
+  #define DATABASE_COLLECTION "remote_data_delegates"
+  #define REMOTE_DATA_GET_STATISTICS_ERROR(settings,MESSAGE) \
+  if (debug_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_remote_data_get_statistics",53); \
+    memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
+    error_message.total++; \
+  } \
+  memset(message,0,strlen(message)); \
+  memcpy(message,"{\"Error\":\"Could not get the remote data statistics\"}",52); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
+  if ((settings) == 0) \
+  { \
+    POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_REMOTE_DATA_DELEGATES_DATABASE_FIELDS); \
+  } \
+  return 0;
+  
+  memset(message,0,sizeof(message));
+
+  // get the total delegates
+  if ((document_count = count_all_documents_in_collection(remote_data_database_name,DATABASE_COLLECTION)) <= 0)
+  {
+    REMOTE_DATA_GET_STATISTICS_ERROR(1,"Could not get the remote data delegates");
+  }
+
+  memset(buffer,0,sizeof(buffer));
+
+  // initialize the database_multiple_documents_fields struct
+  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_REMOTE_DATA_DELEGATES_DATABASE_FIELDS,"server_receive_data_socket_remote_data_get_delegates_information",buffer,current_date_and_time,current_UTC_date_and_time);
+
+  if (read_multiple_documents_all_fields_from_collection(remote_data_database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,0,document_count,0,"") == 0)
+  {
+    REMOTE_DATA_GET_STATISTICS_ERROR(0,"Could not get the remote data delegates");
+  }
+
+  for (count = 0; count < document_count; count++)
+  {
+    sscanf(database_multiple_documents_fields.value[count][3],"%zu", &counter);
+    total_registered_renewed_amount += counter;
+    sscanf(database_multiple_documents_fields.value[count][4],"%zu", &counter);
+    total_amount += counter;
+  }
+
+  // create the message
+  memcpy(message,"{\"total_registered_renewed_amount\":\"",36);
+  snprintf(message+strlen(message),MAXIMUM_NUMBER_SIZE,"%zu",total_registered_renewed_amount);
+  memcpy(message+strlen(message),"\",\"total_amount\":\"",18);
+  snprintf(message+strlen(message),MAXIMUM_NUMBER_SIZE,"%zu",total_amount);
+  memcpy(message+strlen(message),"\"}",2);
+  
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");
+  
+  POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_REMOTE_DATA_DELEGATES_DATABASE_FIELDS);
+  return 1;
+
+  #undef DATABASE_COLLECTION
+  #undef REMOTE_DATA_GET_STATISTICS_ERROR
 }
 
 
@@ -1774,7 +1948,6 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_na
     REMOTE_DATA_PURCHASE_NAME_ERROR;
   }
 
-
   memset(data2,0,sizeof(data2));
   memcpy(data2,"{\"saddress\":\"",13);
   memcpy(data2+strlen(data2),saddress,XCASH_WALLET_LENGTH);
@@ -1819,16 +1992,21 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_na
     REMOTE_DATA_PURCHASE_NAME_ERROR;
   }
 
+  // update the delegates statistics in the database
+  if (remote_data_update_delegates_statistics(delegate_name,delegates_amount) == 0)
+  {
+    REMOTE_DATA_PURCHASE_NAME_ERROR;
+  }
+
   // log the data that the purchase was made to the network
   memset(data2,0,sizeof(data2));
   memcpy(data2,"Remote Data Protocol: Added ",28);
   memcpy(data2+strlen(data2),name,strlen(name));
-  memcpy(data2+strlen(data2),"using delegate ",15);
+  memcpy(data2+strlen(data2)," using delegate ",16);
   memcpy(data2+strlen(data2),delegate_name,strlen(delegate_name));
-  memcpy(data2+strlen(data2),"for amount ",11);
+  memcpy(data2+strlen(data2)," for amount ",12);
   memcpy(data2+strlen(data2),delegates_amount,strlen(delegates_amount));
   color_print(data2,"yellow");
-  
   send_data(CLIENT_SOCKET,(unsigned char*)"Purchased the name}",0,0,"");
   return;
 
@@ -1900,8 +2078,14 @@ int server_receive_data_socket_remote_data_get_delegates_information(const int C
     counter += 16; // 16 is for quotes for the items and values
     counter += strlen(database_multiple_documents_fields.item[count][0]);
     counter += strlen(database_multiple_documents_fields.item[count][1]);
+    counter += strlen(database_multiple_documents_fields.item[count][2]);
+    counter += strlen(database_multiple_documents_fields.item[count][3]);
+    counter += strlen(database_multiple_documents_fields.item[count][4]);
     counter += strlen(database_multiple_documents_fields.value[count][0]);
     counter += strlen(database_multiple_documents_fields.value[count][1]);
+    counter += strlen(database_multiple_documents_fields.value[count][2]);
+    counter += strlen(database_multiple_documents_fields.value[count][3]);
+    counter += strlen(database_multiple_documents_fields.value[count][4]);
   }
 
   char* message = (char*)calloc(counter,sizeof(char)); 
@@ -1914,7 +2098,7 @@ int server_receive_data_socket_remote_data_get_delegates_information(const int C
   send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");
   
   pointer_reset(message);
-  POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS);
+  POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_REMOTE_DATA_DELEGATES_DATABASE_FIELDS);
   return 1;
 
   #undef DATABASE_COLLECTION
@@ -2409,13 +2593,19 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_renewal_end
     REMOTE_DATA_RENEWAL_END_ERROR;
   }
 
+  // update the delegates statistics in the database
+  if (remote_data_update_delegates_statistics(delegate_name,delegates_amount) == 0)
+  {
+    REMOTE_DATA_RENEWAL_END_ERROR;
+  }
+
   // log the data that the purchase was made to the network
   memset(data2,0,sizeof(data2));
   memcpy(data2,"Remote Data Protocol: Renewed ",30);
   memcpy(data2+strlen(data2),name,strlen(name));
-  memcpy(data2+strlen(data2),"using delegate ",15);
+  memcpy(data2+strlen(data2)," using delegate ",16);
   memcpy(data2+strlen(data2),delegate_name,strlen(delegate_name));
-  memcpy(data2+strlen(data2),"for amount ",11);
+  memcpy(data2+strlen(data2)," for amount ",12);
   memcpy(data2+strlen(data2),delegates_amount,strlen(delegates_amount));
   color_print(data2,"yellow");
 
@@ -2484,7 +2674,7 @@ void add_delegates_to_remote_data_delegates(void)
     memcpy(data+strlen(data),delegates[count].delegate_name,strlen(delegates[count].delegate_name));
     memcpy(data+strlen(data),"\",\"public_address\":\"",20);
     memcpy(data+strlen(data),delegates[count].public_address,XCASH_WALLET_LENGTH);
-    memcpy(data+strlen(data),"\",\"amount\":\"" REMOTE_DATA_DELEGATES_DEFAULT_AMOUNT "\"}",24);
+    memcpy(data+strlen(data),"\",\"amount\":\"" REMOTE_DATA_DELEGATES_DEFAULT_AMOUNT "\",\"total_registered_renewed_amount\":\"0\",\"total_amount\":\"0\"}",81);
 
     insert_document_into_collection_json(remote_data_database_name,DATABASE_COLLECTION,data);
 
