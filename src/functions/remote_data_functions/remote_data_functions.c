@@ -347,10 +347,6 @@ int document_field_contains_string_from_collection(const char* DATABASE, const c
   {
     total_database_fields = TOTAL_RESERVE_PROOFS_DATABASE_FIELDS;
   }
-  else if (strstr(COLLECTION,"delegates") != NULL)
-  {
-    total_database_fields = TOTAL_DELEGATES_DATABASE_FIELDS;
-  }
   else if (strstr(COLLECTION,"statistics") != NULL)
   {
     total_database_fields = TOTAL_STATISTICS_DATABASE_FIELDS;
@@ -374,6 +370,10 @@ int document_field_contains_string_from_collection(const char* DATABASE, const c
   else if (strstr(COLLECTION,"remote_data") != NULL)
   {
     total_database_fields = TOTAL_REMOTE_DATA_DATABASE_FIELDS;
+  }
+  else if (strstr(COLLECTION,"delegates") != NULL)
+  {
+    total_database_fields = TOTAL_DELEGATES_DATABASE_FIELDS;
   }
 
   // get the total delegates
@@ -1567,8 +1567,10 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_na
   char saddress[SMALL_BUFFER_SIZE];
   char paddress[SMALL_BUFFER_SIZE];
   char tx_hash[SMALL_BUFFER_SIZE];
+  char name[SMALL_BUFFER_SIZE];
   char delegates_public_address[SMALL_BUFFER_SIZE];
-  char delegates_amount[MAXIMUM_NUMBER_SIZE+1];  
+  char delegates_amount[MAXIMUM_NUMBER_SIZE+1]; 
+  char delegate_name[XCASH_WALLET_LENGTH+1]; 
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count;
@@ -1594,8 +1596,10 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_na
   memset(saddress,0,sizeof(saddress));
   memset(paddress,0,sizeof(paddress));
   memset(tx_hash,0,sizeof(tx_hash));
+  memset(name,0,sizeof(name));
   memset(delegates_public_address,0,sizeof(delegates_public_address));
   memset(delegates_amount,0,sizeof(delegates_amount));
+  memset(delegate_name,0,sizeof(delegate_name));
 
   // get the current time
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
@@ -1746,7 +1750,7 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_na
   memcpy(data,"{\"address\":\"",12);
   memcpy(data+strlen(data),public_address,XCASH_WALLET_LENGTH);
   memcpy(data+strlen(data),"\"}",2);
-  if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,"reserve_delegate_address",delegates_public_address) == 0 || read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,"reserve_delegate_amount",delegates_amount) == 0)
+  if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,"reserve_delegate_address",delegates_public_address) == 0 || read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,"reserve_delegate_amount",delegates_amount) == 0 || read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,"name",name) == 0)
   {
     REMOTE_DATA_PURCHASE_NAME_ERROR;
   }
@@ -1758,6 +1762,19 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_na
   }
 
   // purchase the name (add the saddress,paddress and tx_hash and update the timestamp)
+
+  // get the delegate name for the logs
+  memset(data2,0,sizeof(data2));
+  memcpy(data2,"{\"public_address\":\"",19);
+  memcpy(data2+strlen(data2),delegates_public_address,XCASH_WALLET_LENGTH);
+  memcpy(data2+strlen(data2),"\"}",2);
+
+  if (read_document_field_from_collection(database_name,"delegates",data2,"delegate_name",delegate_name) == 0)
+  {
+    REMOTE_DATA_PURCHASE_NAME_ERROR;
+  }
+
+
   memset(data2,0,sizeof(data2));
   memcpy(data2,"{\"saddress\":\"",13);
   memcpy(data2+strlen(data2),saddress,XCASH_WALLET_LENGTH);
@@ -1801,6 +1818,16 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_na
   {
     REMOTE_DATA_PURCHASE_NAME_ERROR;
   }
+
+  // log the data that the purchase was made to the network
+  memset(data2,0,sizeof(data2));
+  memcpy(data2,"Remote Data Protocol: Added ",28);
+  memcpy(data2+strlen(data2),name,strlen(name));
+  memcpy(data2+strlen(data2),"using delegate ",15);
+  memcpy(data2+strlen(data2),delegate_name,strlen(delegate_name));
+  memcpy(data2+strlen(data2),"for amount ",11);
+  memcpy(data2+strlen(data2),delegates_amount,strlen(delegates_amount));
+  color_print(data2,"yellow");
   
   send_data(CLIENT_SOCKET,(unsigned char*)"Purchased the name}",0,0,"");
   return;
@@ -2240,7 +2267,9 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_renewal_end
   char public_address[XCASH_WALLET_LENGTH+1];
   char tx_hash[TRANSACTION_HASH_LENGTH+1];
   char delegates_public_address[XCASH_WALLET_LENGTH+1];
-  char delegates_amount[MAXIMUM_NUMBER_SIZE+1];  
+  char delegates_amount[MAXIMUM_NUMBER_SIZE+1]; 
+  char name[SMALL_BUFFER_SIZE];
+  char delegate_name[XCASH_WALLET_LENGTH+1]; 
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count;
@@ -2266,6 +2295,8 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_renewal_end
   memset(tx_hash,0,sizeof(tx_hash));
   memset(delegates_public_address,0,sizeof(delegates_public_address));
   memset(delegates_amount,0,sizeof(delegates_amount));
+  memset(name,0,sizeof(name));
+  memset(delegate_name,0,sizeof(delegate_name));
 
   // get the current time
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
@@ -2332,7 +2363,7 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_renewal_end
   memcpy(data,"{\"address\":\"",12);
   memcpy(data+strlen(data),public_address,XCASH_WALLET_LENGTH);
   memcpy(data+strlen(data),"\"}",2);
-  if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,"reserve_delegate_address",delegates_public_address) == 0 || read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,"reserve_delegate_amount",delegates_amount) == 0)
+  if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,"reserve_delegate_address",delegates_public_address) == 0 || read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,"reserve_delegate_amount",delegates_amount) == 0 || read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,"name",name) == 0)
   {
     REMOTE_DATA_RENEWAL_END_ERROR;
   }
@@ -2344,6 +2375,18 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_renewal_end
   }
 
   // renew the name (set the new tx_hash and update the timestamp)
+
+  // get the delegate name for the logs
+  memset(data2,0,sizeof(data2));
+  memcpy(data2,"{\"public_address\":\"",19);
+  memcpy(data2+strlen(data2),delegates_public_address,XCASH_WALLET_LENGTH);
+  memcpy(data2+strlen(data2),"\"}",2);
+
+  if (read_document_field_from_collection(database_name,"delegates",data2,"delegate_name",delegate_name) == 0)
+  {
+    REMOTE_DATA_RENEWAL_END_ERROR;
+  }
+
   memset(data2,0,sizeof(data2));
   memcpy(data2,"{\"tx_hash\":\"",12);
   memcpy(data2+strlen(data2),tx_hash,TRANSACTION_HASH_LENGTH);
@@ -2365,6 +2408,16 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_renewal_end
   {
     REMOTE_DATA_RENEWAL_END_ERROR;
   }
+
+  // log the data that the purchase was made to the network
+  memset(data2,0,sizeof(data2));
+  memcpy(data2,"Remote Data Protocol: Renewed ",30);
+  memcpy(data2+strlen(data2),name,strlen(name));
+  memcpy(data2+strlen(data2),"using delegate ",15);
+  memcpy(data2+strlen(data2),delegate_name,strlen(delegate_name));
+  memcpy(data2+strlen(data2),"for amount ",11);
+  memcpy(data2+strlen(data2),delegates_amount,strlen(delegates_amount));
+  color_print(data2,"yellow");
 
   send_data(CLIENT_SOCKET,(unsigned char*)"Renewed the name}",0,0,"");
   return;
@@ -2431,7 +2484,7 @@ void add_delegates_to_remote_data_delegates(void)
     memcpy(data+strlen(data),delegates[count].delegate_name,strlen(delegates[count].delegate_name));
     memcpy(data+strlen(data),"\",\"public_address\":\"",20);
     memcpy(data+strlen(data),delegates[count].public_address,XCASH_WALLET_LENGTH);
-    memcpy(data+strlen(data),"\",\"amount\":\"0\"}",15);
+    memcpy(data+strlen(data),"\",\"amount\":\"" REMOTE_DATA_DELEGATES_DEFAULT_AMOUNT "\"}",24);
 
     insert_document_into_collection_json(remote_data_database_name,DATABASE_COLLECTION,data);
 

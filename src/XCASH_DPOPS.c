@@ -1156,6 +1156,7 @@ int main(int parameters_count, char* parameters[])
   
   // define macros
   #define MESSAGE "{\"username\":\"XCASH\"}"
+  #define MESSAGE_REMOTE_DATA "{\"name\":\"" TEST_REMOTE_DATA_NAME "\"}"
   
   #define database_reset \
   mongoc_client_pool_destroy(database_client_thread_pool); \
@@ -1303,6 +1304,15 @@ int main(int parameters_count, char* parameters[])
     INITIALIZE_DATABASE_DATA(production_settings_database_data_settings);
   }
 
+  // check if it should create the default database data for the remote data
+  memset(data,0,sizeof(data));
+  if (count_documents_in_collection(database_name,"remote_data",MESSAGE_REMOTE_DATA) < 1)
+  {
+    delete_collection_from_database(database_name,"remote_data");
+    RESET_ERROR_MESSAGES;
+    insert_document_into_collection_json(database_name,"remote_data",REMOTE_DATA_TEST_NAME); 
+  }
+
   print_settings();
 
   // check if the wallets public address is loaded
@@ -1352,6 +1362,7 @@ int main(int parameters_count, char* parameters[])
   return 0; 
   
   #undef MESSAGE
+  #undef MESSAGE_REMOTE_DATA
   #undef database_reset
   #undef MAIN_ERROR
 }

@@ -104,12 +104,6 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
     message = strstr(data2,"\"reserve_bytes_data_hash\":\"") + 27;
     memcpy(data_hash,message,DATA_HASH_LENGTH);
   }
-  else if (strstr(COLLECTION,"delegates") != NULL && strstr(data2,"\"public_key\":\"") != NULL)
-  {
-    message = strstr(data2,"\"public_key\":\"") + 14;
-    memcpy(data_hash,"0000000000000000000000000000000000000000000000000000000000000000",DATA_HASH_LENGTH-VRF_PUBLIC_KEY_LENGTH);
-    memcpy(data_hash+strlen(data_hash),message,VRF_PUBLIC_KEY_LENGTH);
-  }
   else if (strstr(COLLECTION,"statistics") != NULL)
   {
     memcpy(data_hash,"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",DATA_HASH_LENGTH);
@@ -125,6 +119,12 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
     message = strstr(data2,"\"public_address\":\"") + 18;
     memcpy(data_hash,"000000000000000000000000000000",DATA_HASH_LENGTH-XCASH_WALLET_LENGTH);
     memcpy(data_hash+strlen(data_hash),message,XCASH_WALLET_LENGTH);
+  }
+  else if (strstr(COLLECTION,"delegates") != NULL && strstr(data2,"\"public_key\":\"") != NULL)
+  {
+    message = strstr(data2,"\"public_key\":\"") + 14;
+    memcpy(data_hash,"0000000000000000000000000000000000000000000000000000000000000000",DATA_HASH_LENGTH-VRF_PUBLIC_KEY_LENGTH);
+    memcpy(data_hash+strlen(data_hash),message,VRF_PUBLIC_KEY_LENGTH);
   }
   else
   {
@@ -317,12 +317,6 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
       message = strstr(data3,"\"reserve_bytes_data_hash\":\"") + 27;
       memcpy(data_hash,message,DATA_HASH_LENGTH);
     }
-    else if (strstr(COLLECTION,"delegates") != NULL && strstr(data3,"\"public_key\":\"") != NULL)
-    {
-      message = strstr(data3,"\"public_key\":\"") + 14;
-      memcpy(data_hash,"0000000000000000000000000000000000000000000000000000000000000000",DATA_HASH_LENGTH-VRF_PUBLIC_KEY_LENGTH);
-      memcpy(data_hash+strlen(data_hash),message,VRF_PUBLIC_KEY_LENGTH);
-    }
     else if (strstr(COLLECTION,"statistics") != NULL)
     {
       memcpy(data_hash,"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",DATA_HASH_LENGTH);
@@ -338,6 +332,12 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
       message = strstr(data2,"\"public_address\":\"") + 18;
       memcpy(data_hash,"000000000000000000000000000000",DATA_HASH_LENGTH-XCASH_WALLET_LENGTH);
       memcpy(data_hash+strlen(data_hash),message,XCASH_WALLET_LENGTH);
+    }
+    else if (strstr(COLLECTION,"delegates") != NULL && strstr(data3,"\"public_key\":\"") != NULL)
+    {
+      message = strstr(data3,"\"public_key\":\"") + 14;
+      memcpy(data_hash,"0000000000000000000000000000000000000000000000000000000000000000",DATA_HASH_LENGTH-VRF_PUBLIC_KEY_LENGTH);
+      memcpy(data_hash+strlen(data_hash),message,VRF_PUBLIC_KEY_LENGTH);
     }
     else
     {

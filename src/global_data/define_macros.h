@@ -202,6 +202,8 @@ Using define statements instead of constants for increased efficiency
 #define TOTAL_REMOTE_DATA_DATABASE_FIELDS 12
 #define TOTAL_REMOTE_DATA_DELEGATES_DATABASE_FIELDS 3
 #define REMOTE_DATA_DATABASE_TOTAL 2
+#define REMOTE_DATA_DELEGATES_DEFAULT_AMOUNT "1000000000" // The default amount for the delegate until they set their amount
+#define REMOTE_DATA_TEST_NAME "{\"name\":\"" TEST_REMOTE_DATA_NAME "\",\"address\":\"\",\"saddress\":\"\",\"paddress\":\"\",\"saddress_list\":\"\",\"paddress_list\":\"\",\"website\":\"\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"\",\"reserve_delegate_amount\":\"0\",\"tx_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\"}"
 
 
 #define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION "XCA1Sk2CRVQ9EoKzkv2mnzfAwgA4zvj2HfXJrzYYCtJAdLXDPuSr1UGEJPKSTGCan9fmNpqTGefkMGZ4JX3zUf357vm5VMzMir"
