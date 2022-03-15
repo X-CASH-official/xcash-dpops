@@ -203,7 +203,7 @@ Using define statements instead of constants for increased efficiency
 #define TOTAL_REMOTE_DATA_DELEGATES_DATABASE_FIELDS 5
 #define REMOTE_DATA_DATABASE_TOTAL 2
 #define REMOTE_DATA_DELEGATES_DEFAULT_AMOUNT "1000000000" // The default amount for the delegate until they set their amount
-#define REMOTE_DATA_TEST_NAME "{\"name\":\"" TEST_REMOTE_DATA_NAME "\",\"address\":\"\",\"saddress\":\"\",\"paddress\":\"\",\"saddress_list\":\"\",\"paddress_list\":\"\",\"website\":\"\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"\",\"reserve_delegate_amount\":\"0\",\"tx_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\"}"
+#define REMOTE_DATA_TEST_NAME "{\"name\":\"" TEST_REMOTE_DATA_NAME "\",\"address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress\":\"XCA1S1T6abaY3xy2K8bTdi3ZnpdtJmNAEWCB6SLxfFCTbRjn9ukRMGyaCgBa8BFf5B9HM4dyyEAhmL94ne7RqYQo6w3PuA4omv\",\"paddress\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress_list\":\"\",\"paddress_list\":\"\",\"website\":\"\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1sLyHMW23w238zJdZJVWVfMZMYyMxW9ypPVSLyduk7Ee4UtCbXMG7yJzqaT7vP24jq4ceC5F8PFTjPZEYTrKb6DdfbaLTAa\",\"reserve_delegate_amount\":\"0\",\"tx_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\"}"
 
 
 #define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION "XCA1Sk2CRVQ9EoKzkv2mnzfAwgA4zvj2HfXJrzYYCtJAdLXDPuSr1UGEJPKSTGCan9fmNpqTGefkMGZ4JX3zUf357vm5VMzMir"
