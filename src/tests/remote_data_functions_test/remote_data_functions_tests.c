@@ -418,13 +418,13 @@ int remote_data_functions_test(void)
   memset(data_test,0,sizeof(data_test));
   if (send_and_receive_data_socket(data_test,sizeof(data_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,"GET /remotedatagetstatistics HTTP/",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,"{\"total_registered_renewed_amount\":\"15\",\"total_amount\":\"115\"}",sizeof(data_test)) == 0)
   {
-    color_print("PASSED! Test for /remotedatagetaddresssettings","green");
+    color_print("PASSED! Test for /remotedatagetstatistics","green");
     count_test++;
   }
   else
   {
     color_print(data_test,"yellow");
-    color_print("FAILED! Test for /remotedatagetaddresssettings","red");
+    color_print("FAILED! Test for /remotedatagetstatistics","red");
   }
 
 

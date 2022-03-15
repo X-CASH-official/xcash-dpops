@@ -1285,6 +1285,10 @@ int validate_data(const char* MESSAGE)
     {
          
     }
+    else if (strncmp(MESSAGE,"GET /remotedatagetstatistics",28) == 0)
+    {
+         
+    }
     else if (strncmp(MESSAGE,"GET /remotedatagetblockproducerinformation",42) == 0)
     {
 
