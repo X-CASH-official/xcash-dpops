@@ -3078,36 +3078,36 @@ void sync_delegates_remote_data_databases(void)
   if (database_count == 0) \
   { \
     color_print("Syncing the remote data database","yellow"); \
-    sync_delegates_database(0,SYNCED_BLOCK_VERIFIER_STRING); \
+    sync_remote_data_database(0,SYNCED_BLOCK_VERIFIER_STRING); \
   } \
   else if (database_count == 1) \
   { \
     color_print("Syncing the remote data delegates database","yellow"); \
-    sync_statistics_database(0,SYNCED_BLOCK_VERIFIER_STRING); \
+    sync_remote_data_delegates_database(0,SYNCED_BLOCK_VERIFIER_STRING); \
   }
 
   #define SYNC_BLOCK_VERIFIERS_FROM_SPECIFIC_BLOCK_VERIFIER(BLOCK_VERIFIER) \
   if (database_count == 0) \
   { \
     color_print("Syncing the remote data database","yellow"); \
-    sync_delegates_database(0,BLOCK_VERIFIER); \
+    sync_remote_data_database(0,BLOCK_VERIFIER); \
   } \
   else if (database_count == 1) \
   { \
     color_print("Syncing the remote data delegates database","yellow"); \
-    sync_statistics_database(0,BLOCK_VERIFIER); \
+    sync_remote_data_delegates_database(0,BLOCK_VERIFIER); \
   }
 
   #define SYNC_BLOCK_VERIFIERS_FROM_RANDOM_NETWORK_DATA_NODE \
   if (database_count == 0) \
   { \
     color_print("Syncing the remote data database","yellow"); \
-    sync_delegates_database(2,""); \
+    sync_remote_data_database(2,""); \
   } \
   else if (database_count == 1) \
   { \
     color_print("Syncing the remote data delegates database","yellow"); \
-    sync_statistics_database(2,""); \
+    sync_remote_data_delegates_database(2,""); \
   }
 
   #define MAXIMUM_DATABASE_MAJORITY_SYNC_CONNECTIONS_ATTEMPTS 5

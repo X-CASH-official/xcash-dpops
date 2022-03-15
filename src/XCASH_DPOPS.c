@@ -763,7 +763,11 @@ int set_parameters(int parameters_count, char* parameters[])
       sync_delegates_database(2,"");
       color_print("Syncing the statistics database","yellow");
       sync_statistics_database(2,"");
-      color_print("Successfully synced all databases","yellow");
+      color_print("Syncing the remote data database","yellow");
+      sync_remote_data_database(2,"");
+      color_print("Syncing the remote data delegates database","yellow");
+      sync_remote_data_delegates_database(2,"");
+      color_print("Successfully synced all databases","yellow");      
       database_reset;
       exit(0);
     }
@@ -780,6 +784,10 @@ int set_parameters(int parameters_count, char* parameters[])
       sync_delegates_database(0,parameters[count+1]);
       color_print("Syncing the statistics database","yellow");
       sync_statistics_database(0,parameters[count+1]);
+      color_print("Syncing the remote data database","yellow");
+      sync_remote_data_database(0,parameters[count+1]);
+      color_print("Syncing the remote data delegates database","yellow");
+      sync_remote_data_delegates_database(0,parameters[count+1]);
       color_print("Successfully synced all databases","yellow");
       database_reset;
       exit(0);
