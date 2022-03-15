@@ -153,7 +153,6 @@ Using define statements instead of constants for increased efficiency
 #define DATABASE_CONNECTION "mongodb://localhost:27017" // The database connection string
 #define DATABASE_NAME "XCASH_PROOF_OF_STAKE" // The name of the database
 #define DATABASE_NAME_DELEGATES "XCASH_PROOF_OF_STAKE_DELEGATES" // The name of the database for the delegates
-#define DATABASE_NAME_REMOTE_DATA "XCASH_REMOTE_DATA" // The name of the database for the remote data
 #define DATABASE_EMPTY_STRING "empty_database_collection" // The database data to give when the database collection is empty
 #define MAXIMUM_DATABASE_WRITE_SIZE 48000000 // The maximum database write size
 #define MAXIMUM_DATABASE_COLLECTION_DOCUMENTS 10000 // The maximum amount of documents in a database collection
@@ -187,6 +186,7 @@ Using define statements instead of constants for increased efficiency
 // Remote data
 #define BLOCK_HEIGHT_REMOTE_DATA_DELEGATES 900885 // This is when both timer functions and most delegate server functions will work. Users will not be able to register names because delegates need time to set a price
 #define BLOCK_HEIGHT_REMOTE_DATA 900885 // all remote data functions work
+#define DATABASE_NAME_REMOTE_DATA "XCASH_REMOTE_DATA" // The name of the database for the remote data
 #define REMOTE_DATA_GET_ADDRESS_SETTINGS_PARAMETER_AMOUNT 2
 #define REMOTE_DATA_GET_ADDRESS_FROM_NAME_PARAMETER_AMOUNT 2
 #define REMOTE_DATA_UPDATE_DATA_PARAMETER_AMOUNT 5

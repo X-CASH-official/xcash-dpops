@@ -3949,7 +3949,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_d
   #define DATABASE_COLLECTION "remote_data"
   
   // Constants
-  const size_t DATABASE_COLLECTION_SIZE = get_database_collection_size(database_name,DATABASE_COLLECTION);
+  const size_t DATABASE_COLLECTION_SIZE = get_database_collection_size(remote_data_database_name,DATABASE_COLLECTION);
 
   if (DATABASE_COLLECTION_SIZE == 0)
   {
@@ -4122,7 +4122,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_d
   #define DATABASE_COLLECTION "remote_data_delegates"
   
   // Constants
-  const size_t DATABASE_COLLECTION_SIZE = get_database_collection_size(database_name,DATABASE_COLLECTION);
+  const size_t DATABASE_COLLECTION_SIZE = get_database_collection_size(remote_data_database_name,DATABASE_COLLECTION);
 
   if (DATABASE_COLLECTION_SIZE == 0)
   {
@@ -4315,17 +4315,17 @@ int sync_remote_data_database(int settings, const char* DELEGATES_IP_ADDRESS)
   }
 
   // delete the collection from the database
-  delete_collection_from_database(database_name,DATABASE_COLLECTION);
+  delete_collection_from_database(remote_data_database_name,DATABASE_COLLECTION);
 
   // if the database is empty dont add any data
   if (strncmp(data2,DATABASE_EMPTY_STRING,BUFFER_SIZE) != 0)
   {
     // add the data to the database
     //data2[strlen(data2)-2] = 0;
-    // insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data2,sizeof(data2));
+    // insert_multiple_documents_into_collection_json(remote_data_database_name,DATABASE_COLLECTION,data2,sizeof(data2));
     memset(data,0,strlen(data));
     memcpy(data,data2,strlen(data2)-2);
-    insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data,MAXIMUM_BUFFER_SIZE);
+    insert_multiple_documents_into_collection_json(remote_data_database_name,DATABASE_COLLECTION,data,MAXIMUM_BUFFER_SIZE);
   }  
 
   pointer_reset(data);
@@ -4444,17 +4444,17 @@ int sync_remote_data_delegates_database(int settings, const char* DELEGATES_IP_A
   }
 
   // delete the collection from the database
-  delete_collection_from_database(database_name,DATABASE_COLLECTION);
+  delete_collection_from_database(remote_data_database_name,DATABASE_COLLECTION);
 
   // if the database is empty dont add any data
   if (strncmp(data2,DATABASE_EMPTY_STRING,BUFFER_SIZE) != 0)
   {
     // add the data to the database
     //data2[strlen(data2)-2] = 0;
-    // insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data2,sizeof(data2));
+    // insert_multiple_documents_into_collection_json(remote_data_database_name,DATABASE_COLLECTION,data2,sizeof(data2));
     memset(data,0,strlen(data));
     memcpy(data,data2,strlen(data2)-2);
-    insert_multiple_documents_into_collection_json(database_name,DATABASE_COLLECTION,data,MAXIMUM_BUFFER_SIZE);
+    insert_multiple_documents_into_collection_json(remote_data_database_name,DATABASE_COLLECTION,data,MAXIMUM_BUFFER_SIZE);
   }  
 
   pointer_reset(data);

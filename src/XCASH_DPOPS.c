@@ -1314,11 +1314,11 @@ int main(int parameters_count, char* parameters[])
 
   // check if it should create the default database data for the remote data
   memset(data,0,sizeof(data));
-  if (count_documents_in_collection(database_name,"remote_data",MESSAGE_REMOTE_DATA) < 1)
+  if (count_documents_in_collection(remote_data_database_name,"remote_data",MESSAGE_REMOTE_DATA) < 1)
   {
-    delete_collection_from_database(database_name,"remote_data");
+    delete_collection_from_database(remote_data_database_name,"remote_data");
     RESET_ERROR_MESSAGES;
-    insert_document_into_collection_json(database_name,"remote_data",REMOTE_DATA_TEST_NAME); 
+    insert_document_into_collection_json(remote_data_database_name,"remote_data",REMOTE_DATA_TEST_NAME); 
   }
 
   print_settings();
