@@ -3302,7 +3302,7 @@ void sync_delegates_remote_data_databases(void)
       block_verifiers_sync_database_list.block_verifiers_previous_block_settings[count] = 1;
       
       // get the database data hash and send it to all other network data nodes
-      if (get_database_data_hash(block_verifiers_sync_database_list.block_verifiers_database_data_hash[0][count],database_name,"remote_data") == 0 || get_database_data_hash(block_verifiers_sync_database_list.block_verifiers_database_data_hash[1][count],database_name,"remote_data_delegates") == 0)
+      if (get_database_data_hash(block_verifiers_sync_database_list.block_verifiers_database_data_hash[0][count],remote_data_database_name,"remote_data") == 0 || get_database_data_hash(block_verifiers_sync_database_list.block_verifiers_database_data_hash[1][count],remote_data_database_name,"remote_data_delegates") == 0)
       {
         break;
       }
@@ -3405,7 +3405,7 @@ void sync_delegates_remote_data_databases(void)
             goto start2;
           }
           reset_count++;
-        } while ((database_count == 0 && (get_database_data_hash(data,database_name,"remote_data") == 0 || strncmp(data,database_data_hash_majority[database_count],sizeof(database_data_hash_majority[database_count])) != 0)) || (database_count == 1 && (get_database_data_hash(data,database_name,"remote_data_delegates") == 0 || strncmp(data,database_data_hash_majority[database_count],sizeof(database_data_hash_majority[database_count])) != 0)));      
+        } while ((database_count == 0 && (get_database_data_hash(data,remote_data_database_name,"remote_data") == 0 || strncmp(data,database_data_hash_majority[database_count],sizeof(database_data_hash_majority[database_count])) != 0)) || (database_count == 1 && (get_database_data_hash(data,remote_data_database_name,"remote_data_delegates") == 0 || strncmp(data,database_data_hash_majority[database_count],sizeof(database_data_hash_majority[database_count])) != 0)));      
       
         color_print("Successfully synced the database\n","yellow");
 
@@ -3634,7 +3634,7 @@ int sync_check_remote_data_database(int settings)
   if (settings == 1)
   {
     // get the database data hash for the delegates database
-    if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
+    if (get_database_data_hash(data,remote_data_database_name,DATABASE_COLLECTION) == 0)
     {
       SYNC_CHECK_REMOTE_DATA_DATABASE_ERROR("Could not get the database data hash for the remote_data database");
     }
@@ -3766,7 +3766,7 @@ int sync_check_majority_remote_data_database(void)
   reset_synced_block_verifiers_vote_settings;
 
   // get the database data hash for the reserve proofs database
-  if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
+  if (get_database_data_hash(data,remote_data_database_name,DATABASE_COLLECTION) == 0)
   {
     SYNC_CHECK_MAJORITY_REMOTE_DATA_DATABASE_ERROR("Could not get the database data hash for the remote_data database");
   }
@@ -3850,7 +3850,7 @@ int sync_check_remote_data_delegates_database(int settings)
   if (settings == 1)
   {
     // get the database data hash for the delegates database
-    if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
+    if (get_database_data_hash(data,remote_data_database_name,DATABASE_COLLECTION) == 0)
     {
       SYNC_CHECK_REMOTE_DATA_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the remote_data_delegates database");
     }
@@ -3982,7 +3982,7 @@ int sync_check_majority_remote_data_delegates_database(void)
   reset_synced_block_verifiers_vote_settings;
 
   // get the database data hash for the remote_data_delegates database
-  if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
+  if (get_database_data_hash(data,remote_data_database_name,DATABASE_COLLECTION) == 0)
   {
     SYNC_CHECK_MAJORITY_REMOTE_DATA_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the remote_data_delegates database");
   }
@@ -4050,7 +4050,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_d
   memset(data2,0,sizeof(data2));
 
   // get the database data hash for the delegates database
-  if (get_database_data_hash(data2,database_name,DATABASE_COLLECTION) == 0)
+  if (get_database_data_hash(data2,remote_data_database_name,DATABASE_COLLECTION) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the remote data database");
   }
@@ -4169,7 +4169,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_d
   }
 
   // get the database data for the reserve bytes database
-  if (get_database_data(data2,database_name,DATABASE_COLLECTION) == 0)
+  if (get_database_data(data2,remote_data_database_name,DATABASE_COLLECTION) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the remote_data database");
   }
@@ -4223,7 +4223,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_d
   memset(data2,0,sizeof(data2));
 
   // get the database data hash for the delegates database
-  if (get_database_data_hash(data2,database_name,DATABASE_COLLECTION) == 0)
+  if (get_database_data_hash(data2,remote_data_database_name,DATABASE_COLLECTION) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_SYNC_CHECK_UPDATE_ERROR("Could not get the database data hash for the remote data database");
   }
@@ -4342,7 +4342,7 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_d
   }
 
   // get the database data for the reserve bytes database
-  if (get_database_data(data2,database_name,DATABASE_COLLECTION) == 0)
+  if (get_database_data(data2,remote_data_database_name,DATABASE_COLLECTION) == 0)
   {
     SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_DOWNLOAD_FILE_UPDATE_ERROR("Could not get the database data hash for the remote_data_delegates database");
   }
@@ -4437,7 +4437,7 @@ int sync_remote_data_database(int settings, const char* DELEGATES_IP_ADDRESS)
     memcpy(data2+strlen(data2),"\n",sizeof(char));
     color_print(data2,"white");
   }
-  if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
+  if (get_database_data_hash(data,remote_data_database_name,DATABASE_COLLECTION) == 0)
   {
     SYNC_REMOTE_DATA_DATABASE_ERROR("Could not get the database data hash for the remote_data database from ");
   }
@@ -4566,7 +4566,7 @@ int sync_remote_data_delegates_database(int settings, const char* DELEGATES_IP_A
     memcpy(data2+strlen(data2),"\n",sizeof(char));
     color_print(data2,"white");
   }
-  if (get_database_data_hash(data,database_name,DATABASE_COLLECTION) == 0)
+  if (get_database_data_hash(data,remote_data_database_name,DATABASE_COLLECTION) == 0)
   {
     SYNC_REMOTE_DATA_DELEGATES_DATABASE_ERROR("Could not get the database data hash for the remote_data_delegates database from ");
   }
