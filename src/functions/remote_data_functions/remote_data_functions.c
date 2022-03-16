@@ -2542,7 +2542,7 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_renewal_sta
   // update the timestamp
   memset(data,0,sizeof(data));
   memcpy(data,"{\"timestamp\":\"",14);
-  snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%ld",time(NULL) + REMOTE_DATA_REGISTRATION_LENGTH);
+  snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%ld",time(NULL));
   memcpy(data+strlen(data),"\"}",2);
 
   if (update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,data2,data) == 0)
