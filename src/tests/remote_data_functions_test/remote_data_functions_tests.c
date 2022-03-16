@@ -81,7 +81,7 @@ int remote_data_functions_test(void)
   delegates_website = 1;
   network_functions_test_error_settings = 2;
 
- /* // validate_amount - valid amount
+  /*// validate_amount - valid amount
   if (validate_amount("1000") == 1)
   {
     fprintf(stderr,"\033[1;32mPASSED! Test for validate_amount - valid amount\033[0m\n");
@@ -423,9 +423,8 @@ int remote_data_functions_test(void)
   }
   else
   {
-    color_print(data_test,"yellow");
     color_print("FAILED! Test for /remotedatagetstatistics","red");
-  }*/
+  }
 
 
 
@@ -437,7 +436,7 @@ int remote_data_functions_test(void)
 
   // /remotedatagetnamestatus - can register
   delete_database(database_name);
-  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"TEST1\",\"address\":\"\",\"saddress\":\"\",\"paddress\":\"\",\"saddress_list\":\"\",\"paddress_list\":\"\",\"website\":\"\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"\"}");
+  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"TEST1\",\"address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress\":\"\",\"paddress\":\"\",\"saddress_list\":\"\",\"paddress_list\":\"\",\"website\":\"\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"\"}");
   memset(data_test,0,sizeof(data_test));
   if (send_and_receive_data_socket(data_test,sizeof(data_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,"GET /remotedatagetnamestatus?parameter1=" TEST_REMOTE_DATA_NAME " HTTP/",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,"{\"status\":\"can register\"}",sizeof(data_test)) == 0)
   {
@@ -451,7 +450,7 @@ int remote_data_functions_test(void)
 
   // /remotedatagetnamestatus - can renew
   delete_database(database_name);
-  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"" TEST_REMOTE_DATA_NAME "\",\"address\":\"\",\"saddress\":\"\",\"paddress\":\"\",\"saddress_list\":\"\",\"paddress_list\":\"\",\"website\":\"\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"\"}");
+  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"" TEST_REMOTE_DATA_NAME "\",\"address\":\"XCA1u5AWxhjCtRKzZiyUUmdHLnQFQdFcZGtuFxx9JW21hWJnzgf31AV2g58gUsN3aKSju1iL9RdzbHJqvUKjVYBh67e74Zc38v\",\"saddress\":\"\",\"paddress\":\"\",\"saddress_list\":\"\",\"paddress_list\":\"\",\"website\":\"\",\"smart_contract_hash\":\"\",\"timestamp\":\"" REMOTE_DATA_TIMESTAMP_DEFAULT_AMOUNT "\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"\"}");
   memset(data_test,0,sizeof(data_test));
   if (send_and_receive_data_socket(data_test,sizeof(data_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,"GET /remotedatagetnamestatus?parameter1=" TEST_REMOTE_DATA_NAME " HTTP/",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,"{\"status\":\"can renew\"}",sizeof(data_test)) == 0)
   {
@@ -958,7 +957,7 @@ int remote_data_functions_test(void)
   else
   {
     fprintf(stderr,"\033[1;31mFAILED! Test for update_remote_data - not in database\033[0m\n");
-  }
+  }*/
 
 
 
@@ -985,7 +984,7 @@ int remote_data_functions_test(void)
     fprintf(stderr,"\033[1;31mFAILED! Test for remote_data_save_name - save name\033[0m\n");
   }
 
-  // remote_data_save_name - name already in database
+  // remote_data_save_name - name already in database and cant renew
   delete_database(database_name);
   insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"" TEST_REMOTE_DATA_NAME "\",\"address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"paddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"paddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\"}");
   insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"delegate\",\"public_address\":\"" TEST_WALLET "\",\"amount\":\"100\",\"total_registered_renewed_amount\":\"0\",\"total_amount\":\"0\"}");
@@ -995,12 +994,30 @@ int remote_data_functions_test(void)
   send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
   if (strncmp(result_test,"Could not save the name}",BUFFER_SIZE) == 0)
   {
-    fprintf(stderr,"\033[1;32mPASSED! Test for remote_data_save_name - name already in database\033[0m\n");
+    fprintf(stderr,"\033[1;32mPASSED! Test for remote_data_save_name - name already in database and cant renew\033[0m\n");
     count_test++;
   }
   else
   {
-    fprintf(stderr,"\033[1;31mFAILED! Test for remote_data_save_name - name already in database\033[0m\n");
+    fprintf(stderr,"\033[1;31mFAILED! Test for remote_data_save_name - name already in database and cant renew\033[0m\n");
+  }
+
+  // remote_data_save_name - name already in database but can renew
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"" TEST_REMOTE_DATA_NAME "\",\"address\":\"\",\"saddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"paddress\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"paddress_list\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|\",\"website\":\"" TEST_REMOTE_DATA_ADDRESS_NAME "\",\"smart_contract_hash\":\"\",\"timestamp\":\"" REMOTE_DATA_TIMESTAMP_DEFAULT_AMOUNT "\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"\"}");
+  insert_document_into_collection_json(database_name,"remote_data_delegates","{\"name\":\"delegate\",\"public_address\":\"" TEST_WALLET "\",\"amount\":\"100\",\"total_registered_renewed_amount\":\"0\",\"total_amount\":\"0\"}");
+  memset(result_test,0,sizeof(result_test));
+  memset(data_test,0,sizeof(data_test));
+  memcpy(result_test,"NODES_TO_BLOCK_VERIFIERS_REMOTE_DATA_SAVE_NAME|" TEST_REMOTE_DATA_NAME "|XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP|SigV11cjRtG1krpsjHW5bgp9wZ6ZpeToieQ91HDHK3QTAX4drZXXzg8yzrMR4NUbTb5w8XpZwC8Ly9WcWVN8er8AkR4rm|",245);
+  send_and_receive_data_socket(result_test,sizeof(result_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,result_test,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS);
+  if (strncmp(result_test,"Could not save the name}",BUFFER_SIZE) == 0)
+  {
+    fprintf(stderr,"\033[1;32mPASSED! Test for remote_data_save_name - name already in database but can renew\033[0m\n");
+    count_test++;
+  }
+  else
+  {
+    fprintf(stderr,"\033[1;31mFAILED! Test for remote_data_save_name - name already in database but can renew\033[0m\n");
   }
 
   // remote_data_save_name - address is already in the database

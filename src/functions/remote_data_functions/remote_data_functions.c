@@ -789,7 +789,7 @@ int server_receive_data_socket_remote_data_get_name_status(const int CLIENT_SOCK
   else
   {
     // check if its expired and can be renewed
-    if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"tx_hash",message2) == 1 && read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"address",message3) == 1 && strncmp(message2,"",BUFFER_SIZE) == 0 && strncmp(message3,"",BUFFER_SIZE) == 0)
+    if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"timestamp",message2) == 1 && read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"tx_hash",message3) == 1 && strncmp(message2,REMOTE_DATA_TIMESTAMP_DEFAULT_AMOUNT,BUFFER_SIZE) == 0 && strncmp(message3,"",BUFFER_SIZE) == 0)
     {
       memset(message,0,strlen(message));
       memcpy(message,"{\"status\":\"can renew\"}",22);
@@ -1657,6 +1657,8 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_save_name(c
 {
   // Variables
   char data[BUFFER_SIZE];
+  char message2[BUFFER_SIZE];
+  char message3[BUFFER_SIZE];
   char public_address[XCASH_WALLET_LENGTH+1];
   char block_producer_delegate_address[XCASH_WALLET_LENGTH+1];
   char block_producer_delegate_amount[MAXIMUM_NUMBER_SIZE+1];
@@ -1666,6 +1668,7 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_save_name(c
   int count;
   int count2;
   size_t data_size;
+  int settings = 0;
 
   // define macros
   #define DATABASE_COLLECTION "remote_data"
@@ -1680,6 +1683,8 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_save_name(c
   return;
 
   memset(data,0,sizeof(data));
+  memset(message2,0,sizeof(message2));
+  memset(message3,0,sizeof(message3));
   memset(public_address,0,sizeof(public_address));
   memset(block_producer_delegate_address,0,sizeof(block_producer_delegate_address));
   memset(block_producer_delegate_amount,0,sizeof(block_producer_delegate_amount));
@@ -1735,7 +1740,15 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_save_name(c
 
   if (count_documents_in_collection(remote_data_database_name,DATABASE_COLLECTION,data) > 0)
   {
-    REMOTE_DATA_SAVE_NAME_ERROR;
+    // check if its expired and can be renewed
+    if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,"timestamp",message2) == 1 && read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,"tx_hash",message3) == 1 && strncmp(message2,REMOTE_DATA_TIMESTAMP_DEFAULT_AMOUNT,BUFFER_SIZE) == 0 && strncmp(message3,"",BUFFER_SIZE) == 0)
+    {
+      settings = 1;
+    }
+    else
+    {
+      REMOTE_DATA_SAVE_NAME_ERROR;
+    }
   }
 
   // check if the address is already in the database for another name on the address, saddress or paddress
@@ -1785,22 +1798,76 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_save_name(c
   }
 
   // save the name
-  memset(data,0,sizeof(data));
-  memcpy(data,"{\"name\":\"",9);
-  memcpy(data+strlen(data),name,strlen(name));
-  memcpy(data+strlen(data),"\",\"address\":\"",13);
-  memcpy(data+strlen(data),public_address,XCASH_WALLET_LENGTH);
-  memcpy(data+strlen(data),"\",\"saddress\":\"\",\"paddress\":\"\",\"saddress_list\":\"\",\"paddress_list\":\"\",\"website\":\"\",\"smart_contract_hash\":\"\",\"timestamp\":\"",119);
-  snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%ld",time(NULL));
-  memcpy(data+strlen(data),"\",\"reserve_delegate_address\":\"",30);
-  memcpy(data+strlen(data),block_producer_delegate_address,XCASH_WALLET_LENGTH);
-  memcpy(data+strlen(data),"\",\"reserve_delegate_amount\":\"",29);
-  memcpy(data+strlen(data),block_producer_delegate_amount,strlen(block_producer_delegate_amount));
-  memcpy(data+strlen(data),"\",\"tx_hash\":\"\"}",15);
-  
-  if (insert_document_into_collection_json(remote_data_database_name,DATABASE_COLLECTION,data) == 0)
+  if (settings == 0)
   {
-    REMOTE_DATA_SAVE_NAME_ERROR;
+    memset(data,0,sizeof(data));
+    memcpy(data,"{\"name\":\"",9);
+    memcpy(data+strlen(data),name,strlen(name));
+    memcpy(data+strlen(data),"\",\"address\":\"",13);
+    memcpy(data+strlen(data),public_address,XCASH_WALLET_LENGTH);
+    memcpy(data+strlen(data),"\",\"saddress\":\"\",\"paddress\":\"\",\"saddress_list\":\"\",\"paddress_list\":\"\",\"website\":\"\",\"smart_contract_hash\":\"\",\"timestamp\":\"",119);
+    snprintf(data+strlen(data),MAXIMUM_NUMBER_SIZE,"%ld",time(NULL));
+    memcpy(data+strlen(data),"\",\"reserve_delegate_address\":\"",30);
+    memcpy(data+strlen(data),block_producer_delegate_address,XCASH_WALLET_LENGTH);
+    memcpy(data+strlen(data),"\",\"reserve_delegate_amount\":\"",29);
+    memcpy(data+strlen(data),block_producer_delegate_amount,strlen(block_producer_delegate_amount));
+    memcpy(data+strlen(data),"\",\"tx_hash\":\"\"}",15);    
+  
+    if (insert_document_into_collection_json(remote_data_database_name,DATABASE_COLLECTION,data) == 0)
+    {
+      REMOTE_DATA_SAVE_NAME_ERROR;
+    }
+  }
+  else
+  {
+    memset(data,0,sizeof(data));
+    memcpy(data,"{\"name\":\"",9);
+    memcpy(data+strlen(data),name,strlen(name));
+    memcpy(data+strlen(data),"\"}",2);
+
+    memset(message2,0,sizeof(message2));
+    memcpy(message2,"{\"address\":\"",12);
+    memcpy(message2+strlen(message2),public_address,XCASH_WALLET_LENGTH);
+    memcpy(message2+strlen(message2),"\"}",2);
+
+    // update the delegate in the database
+    if (update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,message2) == 0)
+    {
+      REMOTE_DATA_SAVE_NAME_ERROR;
+    }
+
+    memset(message2,0,sizeof(message2));
+    memcpy(message2,"{\"timestamp\":\"",14);
+    snprintf(message2+strlen(message2),MAXIMUM_NUMBER_SIZE,"%ld",time(NULL));
+    memcpy(message2+strlen(message2),"\"}",2);
+
+    // update the delegate in the database
+    if (update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,message2) == 0)
+    {
+      REMOTE_DATA_SAVE_NAME_ERROR;
+    }
+
+    memset(message2,0,sizeof(message2));
+    memcpy(message2,"{\"reserve_delegate_address\":\"",29);
+    memcpy(message2+strlen(message2),block_producer_delegate_address,XCASH_WALLET_LENGTH);
+    memcpy(message2+strlen(message2),"\"}",2);
+
+    // update the delegate in the database
+    if (update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,message2) == 0)
+    {
+      REMOTE_DATA_SAVE_NAME_ERROR;
+    }
+
+    memset(message2,0,sizeof(message2));
+    memcpy(message2,"{\"reserve_delegate_amount\":\"",28);
+    memcpy(message2+strlen(message2),block_producer_delegate_amount,strlen(block_producer_delegate_amount));
+    memcpy(message2+strlen(message2),"\"}",2);
+
+    // update the delegate in the database
+    if (update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,data,message2) == 0)
+    {
+      REMOTE_DATA_SAVE_NAME_ERROR;
+    }
   }
 
   send_data(CLIENT_SOCKET,(unsigned char*)"Saved the name}",0,0,"");
@@ -2891,7 +2958,6 @@ void check_for_expired_names(void)
       update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,message2);
 
       // empty all other fields (set the timestamp in the future so it does not get checked again until someone renews it)
-      update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,"{\"address\":\"\"}");
       update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,"{\"saddress\":\"\"}");
       update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,"{\"paddress\":\"\"}");
       update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,"{\"website\":\"\"}");
@@ -2899,7 +2965,7 @@ void check_for_expired_names(void)
       update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,"{\"reserve_delegate_address\":\"\"}");
       update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,"{\"reserve_delegate_amount\":\"\"}");
       update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,"{\"tx_hash\":\"\"}");
-      update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,"{\"timestamp\":\"10000000000\"}");
+      update_document_from_collection(remote_data_database_name,DATABASE_COLLECTION,name,"{\"timestamp\":\"" REMOTE_DATA_TIMESTAMP_DEFAULT_AMOUNT "\"}");
     }
   }
   
