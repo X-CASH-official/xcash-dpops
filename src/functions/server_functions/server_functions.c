@@ -983,6 +983,14 @@ void socket_thread(const int CLIENT_SOCKET)
      server_receive_data_socket_remote_data_get_statistics(CLIENT_SOCKET);
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
+ } 
+ else if (strstr(buffer,"GET /remotedatagetnamestatus?parameter1=") != NULL && delegates_website == 1 && current_block_height_data >= BLOCK_HEIGHT_REMOTE_DATA)
+ {
+   if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
+   {
+     server_receive_data_socket_remote_data_get_name_status(CLIENT_SOCKET,(const char*)buffer);
+     server_limit_IP_addresses(0,(const char*)client_IP_address);
+   }
  }
  else if (strstr(buffer,"GET /remotedatagetaddresssettings?parameter1=") != NULL && delegates_website == 1 && current_block_height_data >= BLOCK_HEIGHT_REMOTE_DATA)
  {

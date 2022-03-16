@@ -15,6 +15,7 @@ int document_field_contains_string_from_collection(const char* DATABASE, const c
 int remote_data_update_delegates_statistics(const char* DELEGATE_NAME,const char* DELEGATE_AMOUNT);
 int remote_data_validate_tx_hash(const char* tx_hash,const char* public_address,const char* delegates_public_address,const char* delegates_amount);
 int server_receive_data_socket_remote_data_get_statistics(const int CLIENT_SOCKET);
+int server_receive_data_socket_remote_data_get_name_status(const int CLIENT_SOCKET, const char* MESSAGE);
 void server_receive_data_socket_nodes_to_network_data_nodes_remote_data_get_address_settings(const int CLIENT_SOCKET, const char* MESSAGE);
 int server_receive_data_socket_remote_data_get_address_settings(const int CLIENT_SOCKET, const char* DATA);
 void server_receive_data_socket_nodes_to_network_data_nodes_remote_data_get_address_from_name(const int CLIENT_SOCKET, const char* MESSAGE);

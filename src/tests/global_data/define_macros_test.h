@@ -1829,7 +1829,7 @@ memset(data_test,0,sizeof(data_test));
 
 
 // Remote data
-#define REMOTE_DATA_FUNCTIONS_TOTAL_TEST 90
+#define REMOTE_DATA_FUNCTIONS_TOTAL_TEST 93
 #define TEST_REMOTE_DATA_NAME "TEST" // the remote data name used for test
 #define TEST_REMOTE_DATA_ADDRESS_NAME "TEST.xcash" // the remote data name used for test
 #define TEST_REMOTE_DATA_PRIVATE_TRANSACTIONS_NAME "TEST.sxcash" // the remote data name used for test

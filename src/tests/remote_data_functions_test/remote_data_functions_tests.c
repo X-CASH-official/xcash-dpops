@@ -81,7 +81,7 @@ int remote_data_functions_test(void)
   delegates_website = 1;
   network_functions_test_error_settings = 2;
 
-  // validate_amount - valid amount
+ /* // validate_amount - valid amount
   if (validate_amount("1000") == 1)
   {
     fprintf(stderr,"\033[1;32mPASSED! Test for validate_amount - valid amount\033[0m\n");
@@ -425,6 +425,56 @@ int remote_data_functions_test(void)
   {
     color_print(data_test,"yellow");
     color_print("FAILED! Test for /remotedatagetstatistics","red");
+  }*/
+
+
+
+
+
+
+
+
+
+  // /remotedatagetnamestatus - can register
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"TEST1\",\"address\":\"\",\"saddress\":\"\",\"paddress\":\"\",\"saddress_list\":\"\",\"paddress_list\":\"\",\"website\":\"\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"\"}");
+  memset(data_test,0,sizeof(data_test));
+  if (send_and_receive_data_socket(data_test,sizeof(data_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,"GET /remotedatagetnamestatus?parameter1=" TEST_REMOTE_DATA_NAME " HTTP/",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,"{\"status\":\"can register\"}",sizeof(data_test)) == 0)
+  {
+    color_print("PASSED! Test for /remotedatagetnamestatus - can register","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for /remotedatagetnamestatus - can register","red");
+  }
+
+  // /remotedatagetnamestatus - can renew
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"" TEST_REMOTE_DATA_NAME "\",\"address\":\"\",\"saddress\":\"\",\"paddress\":\"\",\"saddress_list\":\"\",\"paddress_list\":\"\",\"website\":\"\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"\"}");
+  memset(data_test,0,sizeof(data_test));
+  if (send_and_receive_data_socket(data_test,sizeof(data_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,"GET /remotedatagetnamestatus?parameter1=" TEST_REMOTE_DATA_NAME " HTTP/",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,"{\"status\":\"can renew\"}",sizeof(data_test)) == 0)
+  {
+    color_print("PASSED! Test for /remotedatagetnamestatus - can renew","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for /remotedatagetnamestatus - can renew","red");
+  }
+
+  // /remotedatagetnamestatus - can not register or renew
+  delete_database(database_name);
+  insert_document_into_collection_json(database_name,"remote_data","{\"name\":\"" TEST_REMOTE_DATA_NAME "\",\"address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"saddress\":\"\",\"paddress\":\"\",\"saddress_list\":\"\",\"paddress_list\":\"\",\"website\":\"\",\"smart_contract_hash\":\"\",\"timestamp\":\"10000000000\",\"reserve_delegate_address\":\"XCA1pEWxj2q7gn7TJjae7JfsDhtnhydxsHhtADhDm4LbdE11rHVZqbX5MPGZ9tM7jQbDF4VKK89jSAqgL9Nxxjdh8RM5JEpZZP\",\"reserve_delegate_amount\":\"100\",\"tx_hash\":\"0000000000000000000000000000000000000000000000000000000000000000\"}");
+  memset(data_test,0,sizeof(data_test));
+  if (send_and_receive_data_socket(data_test,sizeof(data_test),XCASH_DPOPS_delegates_IP_address,SEND_DATA_PORT,"GET /remotedatagetnamestatus?parameter1=" TEST_REMOTE_DATA_NAME " HTTP/",SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) == 1 && parse_http_response(data_test) == 1 && strncmp(data_test,"{\"status\":\"can not register or renew\"}",sizeof(data_test)) == 0)
+  {
+    color_print("PASSED! Test for /remotedatagetnamestatus - can not register or renew","green");
+    count_test++;
+  }
+  else
+  {
+    color_print("FAILED! Test for /remotedatagetnamestatus - can not register or renew","red");
   }
 
 

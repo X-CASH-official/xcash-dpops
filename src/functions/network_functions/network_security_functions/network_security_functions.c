@@ -1277,6 +1277,10 @@ int validate_data(const char* MESSAGE)
     {
        
     }
+    else if (strncmp(MESSAGE,"GET /remotedatagetnamestatus?parameter1=",40) == 0)
+    {
+       
+    }
     else if (strncmp(MESSAGE,"GET /remotedatagetinformationfromname?parameter1=",49) == 0)
     {
        

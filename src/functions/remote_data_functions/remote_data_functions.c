@@ -723,6 +723,96 @@ int server_receive_data_socket_remote_data_get_statistics(const int CLIENT_SOCKE
 
 /*
 -----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_remote_data_get_name_status
+Description: Runs the code when the server receives /remotedatagetnamestatus
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  MESSAGE - The message
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_remote_data_get_name_status(const int CLIENT_SOCKET, const char* MESSAGE)
+{
+  // Variables
+  char name[BUFFER_SIZE];
+  char message[BUFFER_SIZE];
+  char message2[BUFFER_SIZE];
+  char message3[BUFFER_SIZE];
+  int count;
+
+  // define macros
+  #define DATABASE_COLLECTION "remote_data"
+  #define REMOTE_DATA_GET_NAME_STATUS_ERROR \
+  if (debug_settings == 1) \
+  { \
+    memcpy(error_message.function[error_message.total],"server_receive_data_socket_remote_data_get_name_status",54); \
+    memcpy(error_message.data[error_message.total],"Invalid parameters",18); \
+    error_message.total++; \
+  } \
+  memset(message,0,strlen(message)); \
+  memcpy(message,"{\"Error\":\"Could not get the name status\"}",41); \
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),400,"application/json"); \
+  return 0;
+
+  memset(name,0,sizeof(name));
+  memset(message,0,sizeof(message));
+  memset(message2,0,sizeof(message2));
+  memset(message3,0,sizeof(message3));
+
+  // get the parameter1
+  memcpy(name,&MESSAGE[40],(strnlen(MESSAGE,sizeof(name)) - strnlen(strstr(MESSAGE," HTTP/"),sizeof(name)))-40);  
+
+  // error check
+  if (strlen(name) > REMOTE_DATA_NAME_MAXIMUM_LENGTH)
+  {
+    REMOTE_DATA_GET_NAME_STATUS_ERROR;
+  } 
+
+  // create the message
+  memcpy(message,"{\"name\":\"",9);
+  memcpy(message+strlen(message),name,strlen(name));
+  memcpy(message+strlen(message),"\"}",2);
+
+  count = count_documents_in_collection(remote_data_database_name,DATABASE_COLLECTION,message);
+
+  if (count == -1)
+  {    
+    REMOTE_DATA_GET_NAME_STATUS_ERROR;
+  }
+  else if (count == 0)
+  {
+    memset(message,0,strlen(message));
+    memcpy(message,"{\"status\":\"can register\"}",25);
+    send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");
+  }
+  else
+  {
+    // check if its expired and can be renewed
+    if (read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"tx_hash",message2) == 1 && read_document_field_from_collection(remote_data_database_name,DATABASE_COLLECTION,message,"address",message3) == 1 && strncmp(message2,"",BUFFER_SIZE) == 0 && strncmp(message3,"",BUFFER_SIZE) == 0)
+    {
+      memset(message,0,strlen(message));
+      memcpy(message,"{\"status\":\"can renew\"}",22);
+      send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");
+    }
+    else
+    {
+      memset(message,0,strlen(message));
+      memcpy(message,"{\"status\":\"can not register or renew\"}",38);
+      send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");
+    }
+  }
+
+  return 1;
+
+  #undef DATABASE_COLLECTION
+  #undef REMOTE_DATA_GET_NAME_STATUS_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_nodes_to_network_data_nodes_remote_data_get_address_settings
 Description: Runs the code when the server receives the NODE_TO_NETWORK_DATA_NODES_REMOTE_DATA_GET_ADDRESS_SETTINGS message
 Parameters:
