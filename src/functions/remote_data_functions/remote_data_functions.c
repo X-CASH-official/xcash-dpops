@@ -3150,6 +3150,7 @@ void* remote_data_database_synchronization_timer_thread(void* parameters)
 
     if (current_UTC_date_and_time.tm_min == 0)
     {
+      color_print("syncing the remote data databases");
       sync_delegates_remote_data_databases();
     }
     sleep(60);
@@ -3193,14 +3194,17 @@ void* remote_data_maintenance_timer_thread(void* parameters)
 
     if (current_UTC_date_and_time.tm_hour == 0 && current_UTC_date_and_time.tm_min == 30)
     {
+      color_print("maintaining slist and plist");
       maintain_slist_and_plist();
     }
     else if (current_UTC_date_and_time.tm_hour == 1 && current_UTC_date_and_time.tm_min == 30)
     {
+      color_print("Adding delegates to the remote data database");
       add_delegates_to_remote_data_delegates();
     }
     else if (current_UTC_date_and_time.tm_min == 30 && current_UTC_date_and_time.tm_hour != 0 && current_UTC_date_and_time.tm_hour != 1)
     {
+      color_print("Checking for expired names");
       check_for_expired_names();
     }
     sleep(60);
