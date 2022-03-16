@@ -103,7 +103,7 @@ int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, cons
     memcpy(message,&str1[start],LENGTH);
 
     // remove all the formating from the result, if it is not a database document
-    if (strstr(message,"username") == NULL && strstr(message,"total_vote_count") == NULL && strstr(message,"public_address_created_reserve_proof") == NULL && strstr(message,"reserve_bytes_data_hash") == NULL)
+    if (strstr(message,"username") == NULL && strstr(message,"total_vote_count") == NULL && strstr(message,"public_address_created_reserve_proof") == NULL && strstr(message,"reserve_bytes_data_hash") == NULL && strstr(message,"saddress") == NULL && strstr(message,"total_registered_renewed_amount") == NULL)
     {
       string_replace(message,MAXIMUM_AMOUNT,"\"","");
       string_replace(message,MAXIMUM_AMOUNT,",","");
