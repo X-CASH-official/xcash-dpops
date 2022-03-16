@@ -3148,7 +3148,7 @@ void* remote_data_database_synchronization_timer_thread(void* parameters)
   {
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
-    if (current_UTC_date_and_time.tm_min == 0)
+    if (current_UTC_date_and_time.tm_min == 3)
     {
       color_print("syncing the remote data databases","yellow");
       sync_delegates_remote_data_databases();
@@ -3295,7 +3295,7 @@ void sync_delegates_remote_data_databases(void)
   }
 
   // wait so all block verifiers start at the same time, this way one is not reseting the variables as another one is sending them data
-  sync_block_verifiers_minutes_and_seconds(0,40);
+  sync_block_verifiers_minutes_and_seconds(3,40);
 
   // get the data and send it to the other block verifiers
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -3330,7 +3330,7 @@ void sync_delegates_remote_data_databases(void)
   }
 
   // wait for all of the block verifiers to process the data
-  sync_block_verifiers_minutes_and_seconds(1,15);
+  sync_block_verifiers_minutes_and_seconds(4,15);
 
   // get the majority database data hash, and every block verifier that is in the majority
   for (database_count = 0; database_count < REMOTE_DATA_DATABASE_TOTAL; database_count++)
