@@ -3275,7 +3275,7 @@ void sync_delegates_remote_data_databases(void)
   memset(data,0,sizeof(data));
 
   // reset the variables
-  for (database_count = 0; database_count < REMOTE_DATA_DATABASE_TOTAL; database_count++)
+  for (database_count = 0; database_count < DATABASE_TOTAL; database_count++)
   {
     memset(database_data_hash_majority[database_count],0,sizeof(database_data_hash_majority[database_count]));
     for (count3 = 0; count3 < BLOCK_VERIFIERS_AMOUNT; count3++)
@@ -3295,7 +3295,7 @@ void sync_delegates_remote_data_databases(void)
   }
 
   // wait so all block verifiers start at the same time, this way one is not reseting the variables as another one is sending them data
-  sync_block_verifiers_minutes_and_seconds(3,40);
+  sync_block_verifiers_minutes_and_seconds(2,40);
 
   // get the data and send it to the other block verifiers
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
@@ -3330,7 +3330,7 @@ void sync_delegates_remote_data_databases(void)
   }
 
   // wait for all of the block verifiers to process the data
-  sync_block_verifiers_minutes_and_seconds(4,15);
+  sync_block_verifiers_minutes_and_seconds(3,15);
 
   // get the majority database data hash, and every block verifier that is in the majority
   for (database_count = 0; database_count < REMOTE_DATA_DATABASE_TOTAL; database_count++)
@@ -3427,7 +3427,7 @@ void sync_delegates_remote_data_databases(void)
     else
     {
       // there is not a majority, sync from a block verifier that has the previous blocks reserve bytes data
-      color_print("A majority could not be reached between block verifiers for the database sync. Syncing the database from a block verifier with the previous blocks reserve bytes\n","yellow");
+      color_print("A majority could not be reached between block verifiers for the database sync. Syncing the database from a block verifier\n","yellow");
     
       for (count = 0, settings = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
       {
@@ -3517,39 +3517,21 @@ void server_receive_data_socket_network_data_nodes_to_network_data_nodes_databas
   }
 
   // parse the message
-  if (registration_settings == 0)
+  if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || parse_json_data(MESSAGE,"data_hash_remote_data",data_hash[0],DATA_HASH_LENGTH) == 0 || parse_json_data(MESSAGE,"data_hash_remote_data_delegates",data_hash[1],DATA_HASH_LENGTH) == 0)
   {
-    if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || parse_json_data(MESSAGE,"data_hash_remote_data",data_hash[0],DATA_HASH_LENGTH) == 0 || parse_json_data(MESSAGE,"data_hash_remtoe_data_delegates",data_hash[1],DATA_HASH_LENGTH) == 0)
-    {
-      SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_REMOTE_DATA_ERROR("Could not parse the message");
-    }
+    SERVER_RECEIVE_DATA_SOCKET_NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_REMOTE_DATA_ERROR("Could not parse the message");
   }
 
-  if (registration_settings == 0)
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
-    for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+    if (strncmp(block_verifiers_sync_database_list.block_verifiers_public_address[count],public_address,sizeof(public_address)) == 0)
     {
-      if (strncmp(block_verifiers_sync_database_list.block_verifiers_public_address[count],public_address,sizeof(public_address)) == 0)
+      for (count2 = 0; count2 < REMOTE_DATA_DATABASE_TOTAL; count2++)
       {
-        for (count2 = 0; count2 < REMOTE_DATA_DATABASE_TOTAL; count2++)
-        {
-          memset(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count2][count],0,sizeof(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count2][count]));
-          memcpy(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count2][count],data_hash[count2],DATA_HASH_LENGTH);
-        }
-        block_verifiers_sync_database_list.block_verifiers_previous_block_settings[count] = 1;
+        memset(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count2][count],0,sizeof(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count2][count]));
+        memcpy(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count2][count],data_hash[count2],DATA_HASH_LENGTH);
       }
-    }
-  }
-  else
-  {
-    for (count = 0; count < NETWORK_DATA_NODES_AMOUNT; count++)
-    {
-      if (strncmp(network_data_nodes_sync_database_list.network_data_node_public_address[count],public_address,sizeof(public_address)) == 0)
-      {
-        memset(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count],0,sizeof(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count]));
-        memcpy(network_data_nodes_sync_database_list.network_data_nodes_database_data_hash[count],data_hash[0],DATA_HASH_LENGTH);
-        network_data_nodes_sync_database_list.network_data_nodes_previous_block_settings[count] = 1;
-      }
+      block_verifiers_sync_database_list.block_verifiers_previous_block_settings[count] = 1;
     }
   }
   
