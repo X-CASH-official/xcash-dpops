@@ -877,7 +877,6 @@ int validate_data(const char* MESSAGE)
   error_message.total++; \
   print_error_message(current_date_and_time,current_UTC_date_and_time,data); \
   } \
-  color_print(settings,"green"); \
   return 0;
 
   memset(data,0,sizeof(data));
