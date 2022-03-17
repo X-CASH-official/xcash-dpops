@@ -108,15 +108,15 @@ int insert_document_into_collection_json(const char* DATABASE, const char* COLLE
   {
     memcpy(data_hash,"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",DATA_HASH_LENGTH);
   }
-  else if (strstr(COLLECTION,"remote_data") != NULL && strstr(data2,"\"address\":\"") != NULL)
-  {
-    message = strstr(data2,"\"address\":\"") + 11;
-    memcpy(data_hash,"000000000000000000000000000000",DATA_HASH_LENGTH-XCASH_WALLET_LENGTH);
-    memcpy(data_hash+strlen(data_hash),message,XCASH_WALLET_LENGTH);
-  }
   else if (strstr(COLLECTION,"remote_data_delegates") != NULL && strstr(data2,"\"public_address\":\"") != NULL)
   {
     message = strstr(data2,"\"public_address\":\"") + 18;
+    memcpy(data_hash,"000000000000000000000000000000",DATA_HASH_LENGTH-XCASH_WALLET_LENGTH);
+    memcpy(data_hash+strlen(data_hash),message,XCASH_WALLET_LENGTH);
+  }
+  else if (strstr(COLLECTION,"remote_data") != NULL && strstr(data2,"\"address\":\"") != NULL)
+  {
+    message = strstr(data2,"\"address\":\"") + 11;
     memcpy(data_hash,"000000000000000000000000000000",DATA_HASH_LENGTH-XCASH_WALLET_LENGTH);
     memcpy(data_hash+strlen(data_hash),message,XCASH_WALLET_LENGTH);
   }
@@ -321,15 +321,15 @@ int insert_multiple_documents_into_collection_json(const char* DATABASE, const c
     {
       memcpy(data_hash,"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",DATA_HASH_LENGTH);
     }
-    else if (strstr(COLLECTION,"remote_data") != NULL && strstr(data2,"\"address\":\"") != NULL)
+    else if (strstr(COLLECTION,"remote_data_delegates") != NULL && strstr(data3,"\"public_address\":\"") != NULL)
     {
-      message = strstr(data2,"\"address\":\"") + 11;
+      message = strstr(data2,"\"public_address\":\"") + 18;
       memcpy(data_hash,"000000000000000000000000000000",DATA_HASH_LENGTH-XCASH_WALLET_LENGTH);
       memcpy(data_hash+strlen(data_hash),message,XCASH_WALLET_LENGTH);
     }
-    else if (strstr(COLLECTION,"remote_data_delegates") != NULL && strstr(data2,"\"public_address\":\"") != NULL)
+    else if (strstr(COLLECTION,"remote_data") != NULL && strstr(data3,"\"address\":\"") != NULL)
     {
-      message = strstr(data2,"\"public_address\":\"") + 18;
+      message = strstr(data2,"\"address\":\"") + 11;
       memcpy(data_hash,"000000000000000000000000000000",DATA_HASH_LENGTH-XCASH_WALLET_LENGTH);
       memcpy(data_hash+strlen(data_hash),message,XCASH_WALLET_LENGTH);
     }
