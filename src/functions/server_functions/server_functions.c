@@ -936,7 +936,7 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }
- else if (strstr(buffer,"\"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_REMOTE_DATA\"") != NULL && current_block_height_data >= BLOCK_HEIGHT_REMOTE_DATA_DELEGATES)
+ else if (strstr(buffer,"\"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_REMOTE_DATA_DATABASE_SYNC_CHECK\"") != NULL && current_block_height_data >= BLOCK_HEIGHT_REMOTE_DATA_DELEGATES)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
    {

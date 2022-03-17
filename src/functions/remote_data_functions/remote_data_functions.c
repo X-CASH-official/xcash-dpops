@@ -3312,18 +3312,18 @@ void sync_delegates_remote_data_databases(void)
       }
 
       // create the message
-      memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_REMOTE_DATA\",\r\n \"data_hash_remote_data\": \"",128);
+      memcpy(data,"{\r\n \"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_REMOTE_DATA_DATABASE_SYNC_CHECK\",\r\n \"data_hash_remote_data\": \"",128);
       memcpy(data+strlen(data),block_verifiers_sync_database_list.block_verifiers_database_data_hash[0][count],DATA_HASH_LENGTH);
       memcpy(data+strlen(data),"\",\r\n \"data_hash_remote_data_delegates\": \"",41);
       memcpy(data+strlen(data),block_verifiers_sync_database_list.block_verifiers_database_data_hash[1][count],DATA_HASH_LENGTH);
       memcpy(data+strlen(data),"\",\r\n}",5);
-fprintf(stderr,"Sending this message = %s",data);
+fprintf(stderr,"Sending this message = %s\n\n",data);
       // sign_data
       if (sign_data(data) == 0)
       { 
         break;
       }
-fprintf(stderr,"Sending this message = %s",data);
+fprintf(stderr,"Sending this message = %s\n\n",data);
       // send the data to the other network data nodes
       block_verifiers_send_data_socket((const char*)data);
     }
@@ -3435,7 +3435,7 @@ fprintf(stderr,"Sending this message = %s",data);
         {
           settings = 1;
           if (strncmp(block_verifiers_sync_database_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
-          {fprintf(stderr,"syncing from %s",block_verifiers_sync_database_list.block_verifiers_IP_address[count]);
+          {fprintf(stderr,"syncing from %s\n\n",block_verifiers_sync_database_list.block_verifiers_IP_address[count]);
             SYNC_BLOCK_VERIFIERS_FROM_SPECIFIC_BLOCK_VERIFIER(block_verifiers_sync_database_list.block_verifiers_IP_address[count]);
             if (database_count == REMOTE_DATA_DATABASE_TOTAL-1)
             {
@@ -3483,7 +3483,7 @@ fprintf(stderr,"Sending this message = %s",data);
 /*
 -----------------------------------------------------------------------------------------------------------
 Name: server_receive_data_socket_network_data_nodes_to_network_data_nodes_database_sync_check_remote_data
-Description: Runs the code when the server receives the NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK_REMOTE_DATA message
+Description: Runs the code when the server receives the NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_REMOTE_DATA_DATABASE_SYNC_CHECK message
 Parameters:
   MESSAGE - The message
 -----------------------------------------------------------------------------------------------------------
@@ -3510,7 +3510,7 @@ void server_receive_data_socket_network_data_nodes_to_network_data_nodes_databas
 
   memset(data,0,sizeof(data));
   memset(public_address,0,sizeof(public_address));
-fprintf(stderr,"recived this message = %s",MESSAGE);
+fprintf(stderr,"recived this message = %s\n\n",MESSAGE);
 
   for (count = 0; count < REMOTE_DATA_DATABASE_TOTAL; count++)
   {
@@ -3526,7 +3526,7 @@ fprintf(stderr,"recived this message = %s",MESSAGE);
   for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
   {
     if (strncmp(block_verifiers_sync_database_list.block_verifiers_public_address[count],public_address,sizeof(public_address)) == 0)
-    {fprintf(stderr,"Adding and parsed this message = %s",MESSAGE);
+    {fprintf(stderr,"Adding and parsed this message = %s\n\n",MESSAGE);
       for (count2 = 0; count2 < REMOTE_DATA_DATABASE_TOTAL; count2++)
       {
         memset(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count2][count],0,sizeof(block_verifiers_sync_database_list.block_verifiers_database_data_hash[count2][count]));
