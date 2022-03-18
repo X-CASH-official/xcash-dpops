@@ -208,12 +208,15 @@ int get_database_data_hash(char *data_hash, const char* DATABASE, const char* CO
     return 0;
   }
 
-  // // get cached result, of recalculate only needed 
-  int cach_request_result = get_multi_hash(database_client_thread, COLLECTION, data_hash);
-  mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
+  if (strncmp(COLLECTION,"remote_data_delegates",BUFFER_SIZE) != 0 && strncmp(COLLECTION,"remote_data",BUFFER_SIZE) != 0)
+  {
+    // // get cached result, of recalculate only needed 
+    int cach_request_result = get_multi_hash(database_client_thread, COLLECTION, data_hash);
+    mongoc_client_pool_push(database_client_thread_pool, database_client_thread);
 
-  return cach_request_result < 0? 0:1;
-  // end caching replace 
+    return cach_request_result < 0? 0:1;
+    // end caching replace 
+  }
 
   // set the collection
   collection = mongoc_client_get_collection(database_client_thread, DATABASE, COLLECTION);
