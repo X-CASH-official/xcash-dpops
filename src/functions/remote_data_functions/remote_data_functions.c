@@ -3152,6 +3152,7 @@ void* remote_data_database_synchronization_timer_thread(void* parameters)
     {
       color_print("syncing the remote data databases","yellow");
       sync_delegates_remote_data_databases();
+      sleep(60);
     }
     nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);
   }
@@ -3196,16 +3197,19 @@ void* remote_data_maintenance_timer_thread(void* parameters)
     {
       color_print("maintaining slist and plist","yellow");
       maintain_slist_and_plist();
+      sleep(60);
     }
     else if (current_UTC_date_and_time.tm_hour == 1 && current_UTC_date_and_time.tm_min == 30)
     {
       color_print("Adding delegates to the remote data database","yellow");
       add_delegates_to_remote_data_delegates();
+      sleep(60);
     }
     else if (current_UTC_date_and_time.tm_min == 30 && current_UTC_date_and_time.tm_hour != 0 && current_UTC_date_and_time.tm_hour != 1)
     {
       color_print("Checking for expired names","yellow");
       check_for_expired_names();
+      sleep(60);
     }
     nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);
   }
