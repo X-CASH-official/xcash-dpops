@@ -3141,7 +3141,7 @@ void* remote_data_database_synchronization_timer_thread(void* parameters)
   while (count < BLOCK_HEIGHT_REMOTE_DATA_DELEGATES)
   {
     sscanf(current_block_height,"%zu", &count);
-    sleep(60);
+    sleep(1);
   }
 
   for (;;)
@@ -3153,7 +3153,7 @@ void* remote_data_database_synchronization_timer_thread(void* parameters)
       color_print("syncing the remote data databases","yellow");
       sync_delegates_remote_data_databases();
     }
-    sleep(60);
+    nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);
   }
   pthread_exit((void *)(intptr_t)1);
 }
@@ -3184,7 +3184,7 @@ void* remote_data_maintenance_timer_thread(void* parameters)
   while (count < BLOCK_HEIGHT_REMOTE_DATA_DELEGATES)
   {
     sscanf(current_block_height,"%zu", &count);
-    sleep(60);
+    sleep(1);
   }
 
 
@@ -3207,7 +3207,7 @@ void* remote_data_maintenance_timer_thread(void* parameters)
       color_print("Checking for expired names","yellow");
       check_for_expired_names();
     }
-    sleep(60);
+    nanosleep((const struct timespec[]){{0, 200000000L}}, NULL);
   }
   pthread_exit((void *)(intptr_t)1);
 }
