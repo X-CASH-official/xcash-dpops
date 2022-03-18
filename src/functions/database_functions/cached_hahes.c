@@ -129,7 +129,7 @@ int calc_db_hashes(mongoc_client_t *client, const char *db_name, char *hash, cha
 
     int result = 0;
 
-    collection = mongoc_client_get_collection(client, database_name, db_name);
+    collection = strncmp(db_name,"remote_data_delegates",BUFFER_SIZE) != 0 && strncmp(db_name,"remote_data",BUFFER_SIZE) != 0 ? mongoc_client_get_collection(client, database_name, db_name) : mongoc_client_get_collection(client, remote_data_database_name, db_name);
 
     command = BCON_NEW("dbHash",
                        BCON_INT32(1),
@@ -197,7 +197,7 @@ int update_hashes(mongoc_client_t *client, const char *db_name, const char *hash
     bson_error_t error;
     int result = 0;
 
-    collection = mongoc_client_get_collection(client, database_name, "hashes");
+    collection = strncmp(db_name,"remote_data_delegates",BUFFER_SIZE) != 0 && strncmp(db_name,"remote_data",BUFFER_SIZE) != 0 ? mongoc_client_get_collection(client, database_name, "hashes") : mongoc_client_get_collection(client, remote_data_database_name, "hashes");
 
     filter = BCON_NEW("db_name", db_name);
 
