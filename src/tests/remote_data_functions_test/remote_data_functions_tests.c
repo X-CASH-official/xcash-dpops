@@ -81,7 +81,7 @@ int remote_data_functions_test(void)
   delegates_website = 1;
   network_functions_test_error_settings = 2;
 
-  /*// validate_amount - valid amount
+  // validate_amount - valid amount
   if (validate_amount("1000") == 1)
   {
     fprintf(stderr,"\033[1;32mPASSED! Test for validate_amount - valid amount\033[0m\n");
@@ -957,7 +957,7 @@ int remote_data_functions_test(void)
   else
   {
     fprintf(stderr,"\033[1;31mFAILED! Test for update_remote_data - not in database\033[0m\n");
-  }*/
+  }
 
 
 
