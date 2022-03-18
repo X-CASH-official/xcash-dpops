@@ -1320,7 +1320,7 @@ int main(int parameters_count, char* parameters[])
     RESET_ERROR_MESSAGES;
     insert_document_into_collection_json(remote_data_database_name,"remote_data",REMOTE_DATA_TEST_NAME); 
   }
-
+add_delegates_to_remote_data_delegates();
   print_settings();
 
   // check if the wallets public address is loaded

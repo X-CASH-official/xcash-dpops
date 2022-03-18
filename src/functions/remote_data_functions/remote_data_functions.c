@@ -3148,7 +3148,7 @@ void* remote_data_database_synchronization_timer_thread(void* parameters)
   {
     get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
-    if (current_UTC_date_and_time.tm_min % 10 == 2)
+    if (current_UTC_date_and_time.tm_min % 20 == 2)
     {
       color_print("syncing the remote data databases","yellow");
       sync_delegates_remote_data_databases();
