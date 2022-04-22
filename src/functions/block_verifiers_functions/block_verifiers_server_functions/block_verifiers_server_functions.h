@@ -16,4 +16,5 @@ void server_receive_data_socket_node_to_node_majority(const char* MESSAGE);
 void server_receive_data_socket_node_to_node(const char* MESSAGE);
 void server_receive_data_socket_block_verifiers_to_block_verifiers_vrf_data(const char* MESSAGE);
 void server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature(const char* MESSAGE);
+void server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature_turbo_tx(const char* MESSAGE);
 #endif

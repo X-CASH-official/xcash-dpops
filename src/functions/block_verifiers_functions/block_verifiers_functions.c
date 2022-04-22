@@ -26,6 +26,7 @@
 #include "block_verifiers_synchronize_functions.h"
 #include "block_verifiers_thread_server_functions.h"
 #include "block_verifiers_update_functions.h"
+#include "turbo_tx_functions.h"
 #include "database_functions.h"
 #include "count_database_functions.h"
 #include "insert_database_functions.h"
@@ -993,11 +994,34 @@ int block_verifiers_create_block_signature(char* message)
     }
   }
 
-  // create the message
-  memset(message,0,strlen(message));
-  memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\",\r\n \"block_blob_signature\": \"",110);
-  memcpy(message+110,data,strnlen(data,BUFFER_SIZE));
-  memcpy(message+strlen(message),"\",\r\n}",5);
+  sscanf(current_block_height,"%zu", &count);
+
+  if (count >= BLOCK_HEIGHT_TURBO_TX)
+  {
+    // create the message
+    memset(message,0,strlen(message));
+    memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\",\r\n \"block_blob_signature\": \"",110);
+    memcpy(message+110,data,strnlen(data,BUFFER_SIZE));
+    memcpy(message+strlen(message),"\",\r\n \"tx_list\": \"",17);
+    for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
+    {
+      if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count2],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
+      {
+        // get the turbo tx
+        get_block_verifiers_transactions(turbo_tx_list[count2]);
+        memcpy(message+strlen(message),turbo_tx_list[count2],strlen(turbo_tx_list[count2]));
+      }
+    }
+    memcpy(message+strlen(message),"\",\r\n}",5);
+  }
+  else
+  {
+    // create the message
+    memset(message,0,strlen(message));
+    memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\",\r\n \"block_blob_signature\": \"",110);
+    memcpy(message+110,data,strnlen(data,BUFFER_SIZE));
+    memcpy(message+strlen(message),"\",\r\n}",5);
+  }
   return 1;
 
   #undef BLOCK_VERIFIERS_CREATE_BLOCK_SIGNATURE_ERROR
@@ -1627,6 +1651,8 @@ int block_verifiers_create_block(void)
   struct tm current_UTC_date_and_time;
   size_t count;
   size_t count2;
+  size_t block_height;
+  size_t turbo_tx_list_count;
   int count3;
 
   // define macros  
@@ -1719,6 +1745,14 @@ int block_verifiers_create_block(void)
   }
 
   start:
+
+    sscanf(current_block_height,"%zu", &block_height);
+
+    // reset the turbo tx list
+    for (turbo_tx_list_count = 0; turbo_tx_list_count < BLOCK_VERIFIERS_AMOUNT; turbo_tx_list_count++)
+    {
+      memset(turbo_tx_list[turbo_tx_list_count],0,strlen(turbo_tx_list[turbo_tx_list_count]));
+    }
 
     print_block_producer();
     
@@ -1970,17 +2004,32 @@ count = BLOCK_VERIFIERS_AMOUNT;
 
     color_print("Added the VRF data to the block template and signed the block template\n","green");
 
-    color_print("Part 13 - Send the block template signature to all block verifier","yellow");
-
-    // send the message to all block verifiers
-    if (block_verifiers_send_data_socket((const char*)data) == 0)
+    if (block_height >= BLOCK_HEIGHT_TURBO_TX)
     {
-      RESTART_ROUND("Could not send the block template signature to all block verifier");
+      color_print("Part 13 - Send the block template signature and turbo tx list to all block verifier","yellow");
+      // send the message to all block verifiers
+      if (block_verifiers_send_data_socket((const char*)data) == 0)
+      {
+        RESTART_ROUND("Could not send the block template signature and turbo tx list to all block verifier");
+      }
+      color_print("Sent the block template signature and turbo tx list to all block verifiers\n","green");
+      color_print("Part 14 - Wait for all block verifiers to receive the block template signatures and turbo tx list\n","yellow");
+    }
+    else
+    {      
+      color_print("Part 13 - Send the block template signature to all block verifier","yellow");
+      // send the message to all block verifiers
+      if (block_verifiers_send_data_socket((const char*)data) == 0)
+      {
+        RESTART_ROUND("Could not send the block template signature to all block verifier");
+      }
+      color_print("Sent the block template signature to all block verifiers\n","green");
+      color_print("Part 14 - Wait for all block verifiers to receive the block template signatures\n","yellow");
     }
 
-    color_print("Sent the block template signature to all block verifiers\n","green");
+    
 
-    color_print("Part 14 - Wait for all block verifiers to receive the block template signatures\n","yellow");
+    
     
     strncmp(current_round_part_backup_node,"0",1) == 0 ? sync_block_verifiers_minutes_and_seconds(2,30) : sync_block_verifiers_minutes_and_seconds(3,45);
 

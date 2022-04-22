@@ -11,6 +11,7 @@
 #include "define_macros_test.h"
 
 #include "blockchain_functions.h"
+#include "turbo_tx_functions.h"
 #include "string_functions.h"
 #include "network_daemon_functions.h"
 #include "network_wallet_functions.h"
@@ -1059,6 +1060,7 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   size_t count;
   size_t count2;
   size_t number;
+  size_t block_height_data;
 
   // define macros
   #define VERIFY_NETWORK_BLOCK_DATA_ERROR(settings) \
@@ -1116,6 +1118,9 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   {
     sscanf(BLOCK_HEIGHT, "%zu", &number);    
   }
+  block_height_data = number;
+
+
   if ((blockchain_data.unlock_block <= (VARINT_DECODED_VALUE_END_2_BYTE-UNLOCK_BLOCK_AMOUNT) && blockchain_data.unlock_block_data_length != 6) || (blockchain_data.unlock_block > (VARINT_DECODED_VALUE_END_2_BYTE-UNLOCK_BLOCK_AMOUNT) && blockchain_data.unlock_block_data_length != 8) || blockchain_data.unlock_block != (number + UNLOCK_BLOCK_AMOUNT))
   { 
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid unlock_block");
@@ -1463,6 +1468,17 @@ int verify_network_block_data(const int BLOCK_VALIDATION_SIGNATURES_SETTINGS, co
   if ((blockchain_data.transaction_amount <= 255 && blockchain_data.transaction_amount_data_length != 2) || (blockchain_data.transaction_amount > 255 && blockchain_data.transaction_amount <= VARINT_DECODED_VALUE_END_1_BYTE && blockchain_data.transaction_amount_data_length != 4) || (blockchain_data.transaction_amount > VARINT_DECODED_VALUE_END_1_BYTE && blockchain_data.transaction_amount_data_length != 6))
   {
     VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid transaction_amount");
+  }
+
+
+
+
+
+
+  // turbo tx protocol
+  if (block_height_data >= BLOCK_HEIGHT_TURBO_TX && blockchain_data.transaction_amount > 0 && verify_block_verifiers_transactions() == 0)
+  {
+    VERIFY_NETWORK_BLOCK_DATA_ERROR("Invalid transactions for turbo tx protocol");
   }
   return 1;
 

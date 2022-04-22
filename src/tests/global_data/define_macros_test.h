@@ -2081,4 +2081,37 @@ memset(data_test,0,sizeof(data_test));
   #define BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_DOWNLOAD_FILE_DOWNLOAD "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_REMOTE_DATA_DELEGATES_DATABASE_DOWNLOAD_FILE_DOWNLOAD\",\r\n \"delegates_database\": \"true\",\r\n \"public_address\": \"" TEST_WALLET "\",\r\n \"previous_block_hash\": \"0000000000000000000000000000000000000000000000000000000000000000\",\r\n \"current_round_part\": \"1\",\r\n \"current_round_part_backup_node\": \"0\",\r\n \"data\": \"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"XCASH_DPOPS_signature\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// turbo tx
+/*
+  The purpose of this message is for the block verifiers to send the block verifiers their block blob signature
+ 
+  message_settings - The type of the message
+  block_blob_signature - The block blob signature
+  tx_list - The list of all tx for the delegate
+  public_address - The public address of the node that is sending the data.
+  previous_block_hash - The previous block hash.
+  current_round_part - The current round part (always 1)
+  current_round_part_backup_node - The current main node in the current round part (0-2)
+  data - A random 100 character string. This is the data that the XCASH_DPOPS_signature is used for. The random data  will create a different XCASH_DPOPS_signature for every message, even if the message data is the same.
+  XCASH_DPOPS_signature - The XCASH_DPOPS_signature of the data, used for verifying that the sender of the message is the sender.
+  */
+  #define BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_TURBO_TX "{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_TURBO_TX\",\r\n \"block_blob_signature\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"tx_list\": \"TX1|TX2|\",\r\n \"public_address\": \"" TEST_WALLET "\",\r\n \"previous_block_hash\": \"0000000000000000000000000000000000000000000000000000000000000000\",\r\n \"current_round_part\": \"1\",\r\n \"current_round_part_backup_node\": \"0\",\r\n \"data\": \"0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n \"XCASH_DPOPS_signature\": \"000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\",\r\n}"
+
+
 #endif

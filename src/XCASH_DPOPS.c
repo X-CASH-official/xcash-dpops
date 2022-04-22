@@ -124,6 +124,7 @@ int backup_network_data_node_settings; // The network data node that will attemp
 int replayed_round_settings; // 1 if the round is a replayed round, 0 if not
 char delegates_error_list[(MAXIMUM_BUFFER_SIZE_DELEGATES_NAME * 100) + 5000]; // Holds the list of delegates that did not complete a part of the round
 int delegates_error_list_settings; // 1 if showing the delegates that error, 0 if not
+char* turbo_tx_list[BLOCK_VERIFIERS_AMOUNT]; // The tx list for each block verifier
 
 int delegates_website; // 1 if the running the delegates websites, 0 if not
 int shared_delegates_website; // 1 if the running the shared delegates websites, 0 if not
@@ -223,6 +224,12 @@ void initialize_data(int parameters_count, char* parameters[])
   if (server_limit_IP_address_list == NULL || server_limit_public_address_list == NULL)
   {
     INITIALIZE_DATA_ERROR;
+  }
+
+  // initialize the turbo tx list
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    turbo_tx_list[count] = (char*)calloc(MAXIMUM_TRANSACATIONS_PER_BLOCK * TRANSACTION_HASH_LENGTH,sizeof(char));
   }
 
   // initialize the error_message struct

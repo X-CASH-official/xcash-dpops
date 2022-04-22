@@ -563,3 +563,59 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_si
 
   #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_ERROR
 }
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature_turbo_tx
+Description: Runs the code when the server receives the BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_TURBO_TX message
+Parameters:
+  MESSAGE - The message
+-----------------------------------------------------------------------------------------------------------
+*/
+
+void server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature_turbo_tx(const char* MESSAGE)
+{
+  // Variables
+  char data[VRF_PROOF_LENGTH+VRF_BETA_LENGTH+1]; 
+  char data2[XCASH_WALLET_LENGTH+1];
+  char tx_list[(MAXIMUM_TRANSACATIONS_PER_BLOCK * TRANSACTION_HASH_LENGTH)+1];
+  int count;
+
+  // define macros
+  #define SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_TURBO_TX_ERROR(settings) \
+  if (debug_settings == 1) \
+  { \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature",82); \
+  memcpy(error_message.data[error_message.total],settings,sizeof(settings)-1); \
+  error_message.total++; \
+  } \
+  return;
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memset(tx_list,0,sizeof(tx_list));
+
+  // parse the message
+  if (parse_json_data(MESSAGE,"block_blob_signature",data,sizeof(data)) == 0 || strlen(data) != VRF_PROOF_LENGTH+VRF_BETA_LENGTH || parse_json_data(MESSAGE,"tx_list",tx_list,sizeof(tx_list)) == 0 || parse_json_data(MESSAGE,"public_address",data2,sizeof(data2)) == 0 || strlen(data2) != XCASH_WALLET_LENGTH || strncmp(data2,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_TURBO_TX_ERROR("Could not parse the data");
+  }
+
+  // process the vote data
+  for (count = 0; count < BLOCK_VERIFIERS_AMOUNT; count++)
+  {
+    if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],data2,XCASH_WALLET_LENGTH) == 0 && strncmp(VRF_data.block_blob_signature[count],"",1) == 0)
+    {
+      memcpy(VRF_data.block_blob_signature[count],data,VRF_PROOF_LENGTH+VRF_BETA_LENGTH);
+      memcpy(turbo_tx_list[count],tx_list,strlen(tx_list));
+      color_print("adding tx list","yellow");
+      color_print(current_block_verifiers_list.block_verifiers_name[count],"yellow");
+      color_print(turbo_tx_list[count],"yellow");
+    }
+  }
+  return;
+
+  #undef SERVER_RECEIVE_DATA_SOCKET_BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_TURBO_TX_ERROR
+}
