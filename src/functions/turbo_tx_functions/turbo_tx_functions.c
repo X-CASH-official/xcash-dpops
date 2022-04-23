@@ -81,9 +81,6 @@ int get_block_verifiers_transactions(char *data)
       memcpy(data+strlen(data),message,strlen(message));
     }
   }
-
-  color_print("tx list","yellow");
-  color_print(data,"yellow");
   
   pointer_reset(data3);
   return 1;
@@ -133,5 +130,6 @@ int verify_block_verifiers_transactions(void)
       fprintf(stderr,"\033[1;31m%zu / %d block verifiers validate tx %s\033[0m\n",valid_tx_count,BLOCK_VERIFIERS_VALID_AMOUNT,blockchain_data.transactions[count]);
     }
   }
+  fprintf(stderr,"\n");
   return settings;
 }

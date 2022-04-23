@@ -610,9 +610,6 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_si
     {
       memcpy(VRF_data.block_blob_signature[count],data,VRF_PROOF_LENGTH+VRF_BETA_LENGTH);
       memcpy(turbo_tx_list[count],tx_list,strlen(tx_list));
-      color_print("adding tx list","yellow");
-      color_print(current_block_verifiers_list.block_verifiers_name[count],"yellow");
-      color_print(turbo_tx_list[count],"yellow");
     }
   }
   return;
