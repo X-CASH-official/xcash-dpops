@@ -47,6 +47,7 @@ int get_block_verifiers_transactions(char *data)
   char* data2 = (char*)calloc(15728640,sizeof(char)); // 15 MB
   // since were going to be changing where data2 is referencing, we need to create a copy to pointer_reset
   char* data3 = data2;
+  char message[BUFFER_SIZE];
 
   // define macros
   #define MESSAGE "\"double_spend_seen\": false,"
@@ -69,13 +70,15 @@ int get_block_verifiers_transactions(char *data)
   {
     // get the tx id
     data2 = strstr(data2, "\"id_hash\": \"") + 12;
+    memset(message,0,sizeof(message));
+    memcpy(message,data2,TRANSACTION_HASH_LENGTH);
+    memcpy(message+strlen(message),"|",1);
 
     // make sure the tx is not already in the tx list
-    if (strstr(data, data2) == NULL)
+    if (strstr(data, message) == NULL)
     {
-      // add the tx to the tx list
-      memcpy(data+strlen(data),data2,TRANSACTION_HASH_LENGTH);
-      memcpy(data+strlen(data),"|",1);
+      // add the tx to the tx list      
+      memcpy(data+strlen(data),message,strlen(message));
     }
   }
 
