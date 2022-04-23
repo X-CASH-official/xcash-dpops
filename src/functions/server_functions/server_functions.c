@@ -623,6 +623,30 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  } 
+
+
+
+
+
+
+  // turbo tx
+ else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_TURBO_TX\"") != NULL && current_block_height_data >= BLOCK_HEIGHT_TURBO_TX)
+ {
+   if (server_limit_public_addresses(1,(const char*)buffer) == 1)
+   {
+     server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature_turbo_tx((const char*)buffer);
+     server_limit_public_addresses(3,(const char*)buffer);
+   }
+ }
+
+
+
+
+
+
+
+
+
  else if (strstr(buffer,"\"message_settings\": \"GET_CURRENT_BLOCK_HEIGHT\"") != NULL)
  {
    if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
@@ -1039,15 +1063,7 @@ void socket_thread(const int CLIENT_SOCKET)
 
 
 
- // turbo tx
- else if (strstr(buffer,"\"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_TURBO_TX\"") != NULL && current_block_height_data >= BLOCK_HEIGHT_TURBO_TX)
- {
-   if (server_limit_public_addresses(1,(const char*)buffer) == 1)
-   {
-     server_receive_data_socket_block_verifiers_to_block_verifiers_block_blob_signature_turbo_tx((const char*)buffer);
-     server_limit_public_addresses(3,(const char*)buffer);
-   }
- }
+ 
  
 
 

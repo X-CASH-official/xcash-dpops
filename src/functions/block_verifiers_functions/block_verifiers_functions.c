@@ -1000,15 +1000,18 @@ int block_verifiers_create_block_signature(char* message)
   {
     // create the message
     memset(message,0,strlen(message));
-    memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE\",\r\n \"block_blob_signature\": \"",110);
-    memcpy(message+110,data,strnlen(data,BUFFER_SIZE));
+    memcpy(message,"{\r\n \"message_settings\": \"BLOCK_VERIFIERS_TO_BLOCK_VERIFIERS_BLOCK_BLOB_SIGNATURE_TURBO_TX\",\r\n \"block_blob_signature\": \"",119);
+    memcpy(message+119,data,strnlen(data,BUFFER_SIZE));
     memcpy(message+strlen(message),"\",\r\n \"tx_list\": \"",17);
     for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
     {
       if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count2],xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0)
       {
         // get the turbo tx
-        get_block_verifiers_transactions(turbo_tx_list[count2]);
+        if (get_block_verifiers_transactions(turbo_tx_list[count2]) == 0)
+        {
+          BLOCK_VERIFIERS_CREATE_BLOCK_SIGNATURE_ERROR("Could not get the tx list");
+        }
         memcpy(message+strlen(message),turbo_tx_list[count2],strlen(turbo_tx_list[count2]));
       }
     }

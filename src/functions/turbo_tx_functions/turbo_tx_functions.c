@@ -70,8 +70,13 @@ int get_block_verifiers_transactions(char *data)
     // get the tx id
     data2 = strstr(data2, "\"id_hash\": \"") + 12;
 
-    memcpy(data+strlen(data),data2,TRANSACTION_HASH_LENGTH);
-    memcpy(data+strlen(data),"|",1);
+    // make sure the tx is not already in the tx list
+    if (strstr(data, data2) == NULL)
+    {
+      // add the tx to the tx list
+      memcpy(data+strlen(data),data2,TRANSACTION_HASH_LENGTH);
+      memcpy(data+strlen(data),"|",1);
+    }
   }
 
   color_print("tx list","yellow");
