@@ -474,6 +474,10 @@ int read_document_all_fields_from_collection(const char* DATABASE, const char* C
   {
     result->count = TOTAL_REMOTE_DATA_DATABASE_FIELDS;
   }
+  else if (strstr(COLLECTION,"remote_data_names_processed") != NULL)
+  {
+    result->count = TOTAL_REMOTE_DATA_NAMES_PROCESSED_DATABASE_FIELDS;
+  }
   else if (strstr(COLLECTION,"delegates") != NULL)
   {
     result->count = TOTAL_DELEGATES_DATABASE_FIELDS;
@@ -624,6 +628,10 @@ int read_multiple_documents_all_fields_from_collection(const char* DATABASE, con
   else if (strstr(COLLECTION,"remote_data") != NULL)
   {
     result->database_fields_count = TOTAL_REMOTE_DATA_DATABASE_FIELDS;
+  }
+  else if (strstr(COLLECTION,"remote_data_names_processed") != NULL)
+  {
+    result->database_fields_count = TOTAL_REMOTE_DATA_NAMES_PROCESSED_DATABASE_FIELDS;
   }
   else if (strstr(COLLECTION,"delegates") != NULL)
   {

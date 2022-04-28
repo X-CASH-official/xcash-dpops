@@ -47,4 +47,6 @@ void server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_d
 void server_receive_data_socket_block_verifiers_to_block_verifiers_remote_data_delegates_database_download_file_update(const int CLIENT_SOCKET);
 int sync_remote_data_database(int settings, const char* DELEGATES_IP_ADDRESS);
 int sync_remote_data_delegates_database(int settings, const char* DELEGATES_IP_ADDRESS);
+int remote_data_shared_delegates_update_database_and_rewards(const char* NAME,const char* ACTION, const char* AMOUNT, const long int TIMESTAMP);
+int server_receive_data_socket_get_remote_data_processed_names(const int CLIENT_SOCKET,const char* DATA);
 #endif

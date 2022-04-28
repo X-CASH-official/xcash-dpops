@@ -29,6 +29,7 @@
 #include "block_verifiers_synchronize_functions.h"
 #include "database_functions.h"
 #include "shared_delegate_website_thread_server_functions.h"
+#include "shared_delegates_website_functions.h"
 #include "insert_database_functions.h"
 #include "read_database_functions.h"
 #include "update_database_functions.h"
@@ -2155,6 +2156,16 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_na
     REMOTE_DATA_PURCHASE_NAME_ERROR;
   }
 
+  // if running a shared delegate, add this to the shared delegates db and split the rewards to voters
+  if (shared_delegates_website == 1 && remote_data_shared_delegates_update_database_and_rewards((const char*)name,"register",(const char*)delegates_amount,(const long int)time(NULL)) == 0)
+  {
+    // process the data, but log this so the delegate can manually fix it
+    memcpy(error_message.function[error_message.total],"purchase name",13);
+    memcpy(error_message.data[error_message.total],"Could not process the shared delegates data",43);
+    error_message.total++;
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data);
+  }
+
   // log the data that the purchase was made to the network
   memset(data2,0,sizeof(data2));
   memcpy(data2,"Remote Data Protocol: Added ",28);
@@ -2754,6 +2765,16 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_renewal_end
   if (remote_data_update_delegates_statistics(delegate_name,delegates_amount) == 0)
   {
     REMOTE_DATA_RENEWAL_END_ERROR;
+  }
+
+  // if running a shared delegate, add this to the shared delegates db and split the rewards to voters
+  if (shared_delegates_website == 1 && remote_data_shared_delegates_update_database_and_rewards((const char*)name,"renew",(const char*)delegates_amount,(const long int)time(NULL)) == 0)
+  {
+    // process the data, but log this so the delegate can manually fix it
+    memcpy(error_message.function[error_message.total],"purchase name",13);
+    memcpy(error_message.data[error_message.total],"Could not process the shared delegates data",43);
+    error_message.total++;
+    print_error_message(current_date_and_time,current_UTC_date_and_time,data);
   }
 
   // log the data that the purchase was made to the network
@@ -4610,3 +4631,195 @@ int sync_remote_data_delegates_database(int settings, const char* DELEGATES_IP_A
   #undef MESSAGE
   #undef SYNC_REMOTE_DATA_DELEGATES_DATABASE_ERROR   
 }
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: remote_data_shared_delegates_update_database_and_rewards
+Description: Updates the shared delegate for the remote data
+Paramters:
+  settings - 1 to sync from a random block verifier, 2 to sync from a random network data node, otherwise the index of the network data node to sync from + 3
+  DELEGATES_IP_ADDRESS - The specific delegates IP address, if you are syncing directly from a delegate, otherwise an empty string
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int remote_data_shared_delegates_update_database_and_rewards(const char* NAME,const char* ACTION, const char* AMOUNT, const long int TIMESTAMP)
+{
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+  long long int reward_amount;
+
+  // define macros
+  #define DATABASE_COLLECTION "remote_data_processed_names"
+
+  // load the private group configuration
+  if (private_group.private_group_settings == 1 && load_private_group_configuration() == 0)
+  {
+    return 0;
+  } 
+
+  // update the shared delegates database
+  memset(data,0,sizeof(data));
+  memcpy(data,"{\"name\":\"",9);
+  memcpy(data+strlen(data),NAME,strlen(NAME));
+  memcpy(data+strlen(data),"\",\"action\":\"",12);
+  memcpy(data+strlen(data),ACTION,strlen(ACTION));
+  memcpy(data+strlen(data),"\",\"amount\":\"",12);
+  memcpy(data+strlen(data),AMOUNT,strlen(AMOUNT));
+  memcpy(data+strlen(data),"\",\"timestamp\":\"",15);
+  snprintf(data+strlen(data),TIMESTAMP,"%ld",time(NULL));
+  memcpy(data+strlen(data),"\"}",2);
+
+  if (insert_document_into_collection_json(shared_delegates_database_name,DATABASE_COLLECTION,data) == 0)
+  {
+    return 0;
+  }
+
+  sscanf(AMOUNT,"%lld", &reward_amount);
+
+  // update the shared delegates rewards
+  if (calculate_block_reward_for_each_delegate(reward_amount) == 0)
+  {
+    return 0;
+  }
+
+  #undef DATABASE_COLLECTION
+
+  return 1;  
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: server_receive_data_socket_get_remote_data_processed_names
+Description: Runs the code when the server receives /getremotedataprocessednames
+Parameters:
+  CLIENT_SOCKET - The socket to send data to
+  DATA - The data
+Return: 0 if an error has occured, 1 if successfull
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int server_receive_data_socket_get_remote_data_processed_names(const int CLIENT_SOCKET,const char* DATA)
+{
+  // Variables
+  char buffer[1024];
+  char start[MAXIMUM_NUMBER_SIZE+1];
+  char amount[MAXIMUM_NUMBER_SIZE+1];
+  time_t current_date_and_time;
+  struct tm current_UTC_date_and_time;
+  int count = 0;
+  size_t counter = 0;
+  size_t start_number;
+  size_t amount_number;
+  struct database_multiple_documents_fields database_multiple_documents_fields;
+  int document_count = 0;
+
+  // define macros
+  #define DATABASE_COLLECTION "remote_data_processed_names"
+
+  #define SERVER_RECEIVE_DATA_SOCKET_GET_REMOTE_DATA_PROCESSED_NAMES_ERROR(settings,MESSAGE) \
+  if (debug_settings == 1) \
+  { \
+  memcpy(error_message.function[error_message.total],"server_receive_data_socket_get_remote_data_processed_names",58); \
+  memcpy(error_message.data[error_message.total],MESSAGE,sizeof(MESSAGE)-1); \
+  error_message.total++; \
+  } \
+  memset(buffer,0,strlen(buffer)); \
+  memcpy(buffer,"{\"Error\":\"Could not get the delegates processed names\"}",55); \
+  send_data(CLIENT_SOCKET,(unsigned char*)buffer,strlen(buffer),400,"application/json"); \
+  if ((settings) == 0) \
+  { \
+    POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS); \
+  } \
+  return 0;
+
+  memset(start,0,sizeof(start));
+  memset(amount,0,sizeof(amount));
+
+  // get the total processed names
+  if ((document_count = count_all_documents_in_collection(shared_delegates_database_name,DATABASE_COLLECTION)) <= 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_REMOTE_DATA_PROCESSED_NAMES_ERROR(1,"The delegate has not processed any names");
+  }
+
+  // make sure their is a start and amount in the parameters
+  if (strstr(DATA,"start=") == NULL || strstr(DATA,"&amount=") == NULL)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_REMOTE_DATA_PROCESSED_NAMES_ERROR(1,"Invalid parameters");
+  }
+
+  // get the start and amount
+  memcpy(start,&DATA[39],(strlen(DATA) - strlen(strstr(DATA,"&amount")))-39);
+  memcpy(amount,&DATA[strlen(DATA) - strlen(strstr(DATA,"&amount="))+8],(strlen(DATA) - strlen(strstr(DATA," HTTP/")))-(((strlen(DATA) - strlen(strstr(DATA,"&amount="))))+8));
+
+  // if the start is 0 change it to 1
+  if (strncmp(start,"0",1) == 0)
+  {
+    memset(start,0,sizeof(start));
+    memcpy(start,"1",1);
+  }  
+
+  // if the amount says all change it to the total number it has
+  if (strncmp(amount,"all",3) == 0)
+  {
+    memset(amount,0,sizeof(amount));
+    snprintf(amount,MAXIMUM_NUMBER_SIZE,"%d",document_count);
+  }  
+
+  // check if the start and amount string is valid
+  if (check_for_valid_start_and_amount_parameters(start,amount) == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_REMOTE_DATA_PROCESSED_NAMES_ERROR(1,"Invalid parameters");
+  }
+
+  // convert the start and amount to a number
+  sscanf(start,"%zu", &start_number);
+  sscanf(amount,"%zu", &amount_number);  
+
+  memset(buffer,0,sizeof(buffer));
+
+  // initialize the database_multiple_documents_fields struct
+  INITIALIZE_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,document_count,TOTAL_REMOTE_DATA_NAMES_PROCESSED_DATABASE_FIELDS,"server_receive_data_socket_get_remote_data_processed_names",buffer,current_date_and_time,current_UTC_date_and_time);
+
+  if (read_multiple_documents_all_fields_from_collection(shared_delegates_database_name,DATABASE_COLLECTION,"",&database_multiple_documents_fields,start_number,amount_number,0,"") == 0)
+  {
+    SERVER_RECEIVE_DATA_SOCKET_GET_REMOTE_DATA_PROCESSED_NAMES_ERROR(0,"Could not get the delegates blocks found data");
+  }
+
+  // count how many bytes to allocate for the json data
+  for (count = 0, counter = BUFFER_SIZE; count < document_count; count++)
+  {
+    counter += 16; // 16 is for quotes for the items and values
+    counter += strlen(database_multiple_documents_fields.item[count][0]);
+    counter += strlen(database_multiple_documents_fields.item[count][1]);
+    counter += strlen(database_multiple_documents_fields.item[count][2]);
+    counter += strlen(database_multiple_documents_fields.item[count][3]);
+    counter += strlen(database_multiple_documents_fields.value[count][0]);
+    counter += strlen(database_multiple_documents_fields.value[count][1]);
+    counter += strlen(database_multiple_documents_fields.value[count][2]);
+    counter += strlen(database_multiple_documents_fields.value[count][3]);
+  }
+
+  char* message = (char*)calloc(counter,sizeof(char)); 
+  
+  if (create_json_data_from_database_multiple_documents_array(&database_multiple_documents_fields,message,"") == 0)
+  {
+    pointer_reset(message);
+    SERVER_RECEIVE_DATA_SOCKET_GET_REMOTE_DATA_PROCESSED_NAMES_ERROR(0,"Could not create the json data");
+  }  
+  send_data(CLIENT_SOCKET,(unsigned char*)message,strlen(message),200,"application/json");
+  
+  pointer_reset(message);
+  POINTER_RESET_DATABASE_MULTIPLE_DOCUMENTS_FIELDS_STRUCT(count,counter,TOTAL_BLOCKS_FOUND_DATABASE_FIELDS);
+  return 1;
+
+  #undef DATABASE_COLLECTION
+  #undef SERVER_RECEIVE_DATA_SOCKET_GET_REMOTE_DATA_PROCESSED_NAMES_ERROR
+}
+
+
+

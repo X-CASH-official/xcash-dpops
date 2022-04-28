@@ -1056,6 +1056,14 @@ void socket_thread(const int CLIENT_SOCKET)
      server_limit_IP_addresses(0,(const char*)client_IP_address);
    }
  }
+ else if (strstr(buffer,"GET /getremotedataprocessednames?start") != NULL && shared_delegates_website == 1)
+ {
+   if (server_limit_IP_addresses(1,(const char*)client_IP_address) == 1)
+   {
+     server_receive_data_socket_get_remote_data_processed_names(CLIENT_SOCKET,(const char*)buffer);
+     server_limit_IP_addresses(0,(const char*)client_IP_address);
+   }
+ } 
 
 
 

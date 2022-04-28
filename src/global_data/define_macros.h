@@ -201,6 +201,7 @@ Using define statements instead of constants for increased efficiency
 #define PUBLIC_TRANSACTION_VERIFICATION "2227c"
 #define TOTAL_REMOTE_DATA_DATABASE_FIELDS 12
 #define TOTAL_REMOTE_DATA_DELEGATES_DATABASE_FIELDS 5
+#define TOTAL_REMOTE_DATA_NAMES_PROCESSED_DATABASE_FIELDS 4
 #define REMOTE_DATA_DATABASE_TOTAL 2
 #define REMOTE_DATA_DELEGATES_DEFAULT_AMOUNT "1000000000" // The default amount for the delegate until they set their amount
 #define REMOTE_DATA_TIMESTAMP_DEFAULT_AMOUNT "10000000000" // The default timestamp after an expired domain is reset

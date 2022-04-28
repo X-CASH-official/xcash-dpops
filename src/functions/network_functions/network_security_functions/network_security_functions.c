@@ -1356,6 +1356,13 @@ int validate_data(const char* MESSAGE)
         VALIDATE_DATA_ERROR("Invalid message");
       } 
     }
+    else if (strncmp(MESSAGE,"GET /getremotedataprocessednames?start=",39) == 0)
+    {
+      if (strlen(&MESSAGE[39]) < XCASH_WALLET_LENGTH || strstr(&MESSAGE[39]," HTTP/") == NULL)
+      {
+        VALIDATE_DATA_ERROR("Invalid message");
+      } 
+    }
   }
   else
   {
