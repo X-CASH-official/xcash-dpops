@@ -884,6 +884,13 @@ int calculate_main_nodes_roles(void)
         goto start;
       }
 
+      // check if the delegate is offline and if so skip it
+      if (check_current_online_status(current_block_verifiers_list.block_verifiers_public_address[count2]) == 0)
+      {
+        goto start;
+      }
+      
+
       if (main_nodes_count == 0)
       {
         // calculate the block_producer
@@ -1305,4 +1312,47 @@ int get_delegates_online_status(void)
   #undef DATABASE_COLLECTION
   #undef MESSAGE
   #undef GET_DELEGATES_ONLINE_STATUS_ERROR
+}
+
+
+
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: check_current_online_status
+Description: Checks the current online status for selecting the block producer
+Parameters:
+  DELEGATES_PUBLIC_ADDRESS - The delegates public address
+Return: 0 if an error has occured or the delegate is offline, 1 if the delegate is online
+-----------------------------------------------------------------------------------------------------------
+*/
+
+int check_current_online_status(const char* DELEGATES_PUBLIC_ADDRESS)
+{
+  // Variables
+  char data[SMALL_BUFFER_SIZE];
+  char data2[SMALL_BUFFER_SIZE];
+
+  // define macros
+  #define DATABASE_COLLECTION "delegates"
+
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+
+  memcpy(data2,"{\"public_address\":\"",19);
+  memcpy(data2+19,DELEGATES_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
+  memcpy(data2+117,"\"}",2);
+
+  if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,data2,"online_status",data) == 0 || strncmp(data,"offline",BUFFER_SIZE) == 0)
+  {
+    return 0;
+  }
+  
+  if (strncmp(data,"online",BUFFER_SIZE) == 0)
+  {
+    return 1;
+  }
+  
+  return 0;
+
+  #undef DATABASE_COLLECTION
 }

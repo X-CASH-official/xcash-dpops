@@ -15,4 +15,5 @@ int add_round_statistics(void);
 int calculate_main_nodes_roles(void);
 void check_for_updates(void);
 int get_delegates_online_status(void);
+int check_current_online_status(const char* DELEGATES_PUBLIC_ADDRESS);
 #endif
