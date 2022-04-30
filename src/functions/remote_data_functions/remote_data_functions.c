@@ -2156,8 +2156,8 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_na
     REMOTE_DATA_PURCHASE_NAME_ERROR;
   }
 
-  // if running a shared delegate, add this to the shared delegates db and split the rewards to voters
-  if (shared_delegates_website == 1 && remote_data_shared_delegates_update_database_and_rewards((const char*)name,"register",(const char*)delegates_amount,(const long int)time(NULL)) == 0)
+  // if running a shared delegate, add this to the shared delegates db and split the rewards to voters if your delegate processed the name
+  if (shared_delegates_website == 1 && strncmp(delegates_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 && remote_data_shared_delegates_update_database_and_rewards((const char*)name,"register",(const char*)delegates_amount,(const long int)time(NULL)) == 0)
   {
     // process the data, but log this so the delegate can manually fix it
     memcpy(error_message.function[error_message.total],"purchase name",13);
@@ -2767,11 +2767,11 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_renewal_end
     REMOTE_DATA_RENEWAL_END_ERROR;
   }
 
-  // if running a shared delegate, add this to the shared delegates db and split the rewards to voters
-  if (shared_delegates_website == 1 && remote_data_shared_delegates_update_database_and_rewards((const char*)name,"renew",(const char*)delegates_amount,(const long int)time(NULL)) == 0)
+  // if running a shared delegate, add this to the shared delegates db and split the rewards to voters if your delegate processed the name
+  if (shared_delegates_website == 1 && strncmp(delegates_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 && remote_data_shared_delegates_update_database_and_rewards((const char*)name,"register",(const char*)delegates_amount,(const long int)time(NULL)) == 0)
   {
     // process the data, but log this so the delegate can manually fix it
-    memcpy(error_message.function[error_message.total],"purchase name",13);
+    memcpy(error_message.function[error_message.total],"renew name",10);
     memcpy(error_message.data[error_message.total],"Could not process the shared delegates data",43);
     error_message.total++;
     print_error_message(current_date_and_time,current_UTC_date_and_time,data);
