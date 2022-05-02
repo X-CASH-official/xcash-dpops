@@ -1119,6 +1119,7 @@ int get_delegates_online_status(void)
 
   struct epoll_event events[total_delegates];
   struct block_verifiers_send_data_socket block_verifiers_send_data_socket[total_delegates];
+  memset(&block_verifiers_send_data_socket, 0, sizeof(block_verifiers_send_data_socket));
 
   // reset the struct delegates_online_status and struct block_verifiers_send_data_socket
   for (count = 0; count < total_delegates; count++)
@@ -1127,7 +1128,6 @@ int get_delegates_online_status(void)
     memcpy(delegates_online_status[count].public_address,delegates[count].public_address,strnlen(delegates[count].public_address,sizeof(delegates_online_status[count].public_address)));
     delegates_online_status[count].settings = 0;
 
-    memset(block_verifiers_send_data_socket[count].IP_address,0,sizeof(block_verifiers_send_data_socket[count].IP_address));
     memcpy(block_verifiers_send_data_socket[count].IP_address,delegates[count].IP_address,strnlen(delegates[count].IP_address,sizeof(block_verifiers_send_data_socket[count].IP_address)));
     block_verifiers_send_data_socket[count].settings = 0;
   }
@@ -1303,8 +1303,11 @@ int get_delegates_online_status(void)
     update_document_from_collection(database_name,DATABASE_COLLECTION,data2,data);
 
     // remove all of the sockets from the epoll file descriptor and close all of the sockets
-    epoll_ctl(epoll_fd_copy, EPOLL_CTL_DEL, block_verifiers_send_data_socket[count].socket, &events[count]);
-    close(block_verifiers_send_data_socket[count].socket);
+    if (block_verifiers_send_data_socket[count].socket > -1)
+    {
+      epoll_ctl(epoll_fd_copy, EPOLL_CTL_DEL, block_verifiers_send_data_socket[count].socket, &events[count]);
+      close(block_verifiers_send_data_socket[count].socket);
+    }
   }
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
   return total_delegates_online;

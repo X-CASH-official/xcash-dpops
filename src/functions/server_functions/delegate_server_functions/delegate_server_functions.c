@@ -234,7 +234,7 @@ int add_reserve_proof_remove_previous_vote(const char* PUBLIC_ADDRESS_CREATE_RES
     for (count3 = 0; count3 < count2; count3++)
     {
       memset(data2,0,sizeof(data2));
-      memset(data2,0,sizeof(data3));
+      memset(data3,0,sizeof(data3));
 
       // get the reserve proof amount, and the public address voted for
       if (read_document_field_from_collection(database_name,data,PUBLIC_ADDRESS_CREATE_RESERVE_PROOF_DATA,"public_address_voted_for",data2) == 0 || read_document_field_from_collection(database_name,data,PUBLIC_ADDRESS_CREATE_RESERVE_PROOF_DATA,"total",data3) == 0)
@@ -328,11 +328,7 @@ void server_receive_data_socket_node_to_block_verifiers_add_reserve_proof(const 
   return;
 
   // initialize the reserve_proof struct
-  memset(reserve_proof.block_verifier_public_address,0,sizeof(reserve_proof.block_verifier_public_address));
-  memset(reserve_proof.public_address_created_reserve_proof,0,sizeof(reserve_proof.public_address_created_reserve_proof));
-  memset(reserve_proof.public_address_voted_for,0,sizeof(reserve_proof.public_address_voted_for));
-  memset(reserve_proof.reserve_proof_amount,0,sizeof(reserve_proof.reserve_proof_amount));
-  memset(reserve_proof.reserve_proof,0,sizeof(reserve_proof.reserve_proof));
+  memset(&reserve_proof,0,sizeof(reserve_proof));
 
   memset(message,0,sizeof(message));
   memset(message2,0,sizeof(message2));

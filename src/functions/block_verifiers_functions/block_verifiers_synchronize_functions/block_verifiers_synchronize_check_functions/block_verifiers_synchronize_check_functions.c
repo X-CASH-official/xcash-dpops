@@ -177,7 +177,7 @@ int sync_check_reserve_proofs_database(int settings)
   error_message.total++; \
   return 0;
 
-  memset(data2,0,sizeof(data2));
+  memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
   memset(message,0,sizeof(message));
 

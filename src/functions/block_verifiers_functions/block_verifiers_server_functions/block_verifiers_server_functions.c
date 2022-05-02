@@ -348,6 +348,7 @@ void server_receive_data_socket_node_to_node_majority(const char* MESSAGE)
   return;
 
   memset(data,0,sizeof(data));
+  memset(public_address,0,sizeof(public_address));
 
   // parse the public address
   if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0)
@@ -410,6 +411,7 @@ void server_receive_data_socket_node_to_node(const char* MESSAGE)
 
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
+  memset(public_address,0,sizeof(public_address));
 
   // parse the message
   if (parse_json_data(MESSAGE,"public_address",public_address,sizeof(public_address)) == 0 || parse_json_data(MESSAGE,"vote_settings",data,sizeof(data)) == 0 || parse_json_data(MESSAGE,"vote_data",data2,sizeof(data2)) == 0 || strlen(data2) != DATA_HASH_LENGTH)
