@@ -2768,7 +2768,7 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_renewal_end
   }
 
   // if running a shared delegate, add this to the shared delegates db and split the rewards to voters if your delegate processed the name
-  if (shared_delegates_website == 1 && strncmp(delegates_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 && remote_data_shared_delegates_update_database_and_rewards((const char*)name,"register",(const char*)delegates_amount,(const long int)time(NULL)) == 0)
+  if (shared_delegates_website == 1 && strncmp(delegates_public_address,xcash_wallet_public_address,XCASH_WALLET_LENGTH) == 0 && remote_data_shared_delegates_update_database_and_rewards((const char*)name,"renew",(const char*)delegates_amount,(const long int)time(NULL)) == 0)
   {
     // process the data, but log this so the delegate can manually fix it
     memcpy(error_message.function[error_message.total],"renew name",10);
