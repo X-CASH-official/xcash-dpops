@@ -462,36 +462,21 @@ Return: The number of occurences of the substring in the string, otherwise 0 if 
 size_t string_count(const char* DATA, const char* STRING)
 {  
   // Constants
-  const size_t MAXIMUM_AMOUNT = strlen(DATA) >= MAXIMUM_BUFFER_SIZE ? MAXIMUM_BUFFER_SIZE : strlen(DATA)+SMALL_BUFFER_SIZE;
+  const size_t str_len = strlen(STRING);
+  const size_t comp_range = strlen(DATA) - str_len;
 
   // Variables
-  char buffer[1024];
-  char* datacopy1 = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char)); 
-  // since were going to be changing where datacopy1 is referencing, we need to create a copy to pointer_reset
-  char* datacopy2 = datacopy1; 
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
   size_t count = 0;
+  size_t pos = 0;
 
-  // check if the memory needed was allocated on the heap successfully
-  if (datacopy1 == NULL)
+  for (pos = 0; pos < comp_range; pos++)
   {
-    memcpy(error_message.function[error_message.total],"string_count",12);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
-    exit(0);
+    if (memcmp(&DATA[pos], STRING, str_len) == 0)
+    {
+      count ++;
+      pos += str_len;
+    }
   }
-
-  // get the occurences of the string 
-  memcpy(datacopy1,DATA,strnlen(DATA,MAXIMUM_AMOUNT));
-  while((datacopy1 = strstr(datacopy1, STRING)) != NULL)
-  {
-    count++;
-    datacopy1+= strlen(STRING);
-  } 
-
-  pointer_reset(datacopy2);
   return count;
 }
 
