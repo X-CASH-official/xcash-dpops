@@ -1345,12 +1345,12 @@ int check_current_online_status(const char* DELEGATES_PUBLIC_ADDRESS)
   memcpy(data2+19,DELEGATES_PUBLIC_ADDRESS,XCASH_WALLET_LENGTH);
   memcpy(data2+117,"\"}",2);
 
-  if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,data2,"online_status",data) == 0 || strncmp(data,"offline",BUFFER_SIZE) == 0)
+  if (read_document_field_from_collection(database_name,DATABASE_COLLECTION,data2,"online_status",data) == 0 || strncmp(data,"false",BUFFER_SIZE) == 0)
   {
     return 0;
   }
   
-  if (strncmp(data,"online",BUFFER_SIZE) == 0)
+  if (strncmp(data,"true",BUFFER_SIZE) == 0)
   {
     return 1;
   }
