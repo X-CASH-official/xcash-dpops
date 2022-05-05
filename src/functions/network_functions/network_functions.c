@@ -725,7 +725,7 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
       // if the final message has the SOCKET_END_STRING in the message, remove it
       if (strstr(buffer,SOCKET_END_STRING) != NULL)
       {
-        string_replace(message,MAXIMUM_BUFFER_SIZE,SOCKET_END_STRING,"");
+        string_replace(message,LENGTH,SOCKET_END_STRING,"");
         //message[strlen(message)-(sizeof(SOCKET_END_STRING)-1)] = 0;
       }
       pointer_reset(buffer);
