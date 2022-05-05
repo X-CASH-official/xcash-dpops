@@ -460,23 +460,28 @@ Return: The number of occurences of the substring in the string, otherwise 0 if 
 */
 
 size_t string_count(const char* DATA, const char* STRING)
-{  
-  // Constants
-  const size_t str_len = strlen(STRING);
-  const size_t comp_range = strlen(DATA) - str_len;
+{
+  if (!DATA || !STRING) { // Catch bad calls
+    return 0;
+  }
 
-  // Variables
   size_t count = 0;
   size_t pos = 0;
+  size_t str_len = strlen(STRING);
+  size_t data_len = strlen(DATA);
+  size_t comp_range = data_len - str_len + 1;
 
-  for (pos = 0; pos < comp_range; pos++)
-  {
-    if (memcmp(&DATA[pos], STRING, str_len) == 0)
-    {
+  if (data_len < comp_range) {
+    return 0;
+  }
+
+  for (pos = 0; pos < comp_range; pos++) {
+    if (memcmp(&DATA[pos], STRING, str_len) == 0) {
       count ++;
       pos += str_len;
     }
   }
+
   return count;
 }
 
