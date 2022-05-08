@@ -795,7 +795,7 @@ int reset_variables_allocated_on_the_heap_test(void)
     memset(next_block_verifiers_list.block_verifiers_public_key[count],0,sizeof(next_block_verifiers_list.block_verifiers_public_key[count])); \
     memset(next_block_verifiers_list.block_verifiers_IP_address[count],0,sizeof(next_block_verifiers_list.block_verifiers_IP_address[count])); \
   } \
-  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++)
+  for (count = 0; count < BLOCK_VERIFIERS_TOTAL_AMOUNT; count++) \
   { \
     memset(data_test,0,strlen(data_test)); \
     memcpy(data_test,"public_address_",15); \
