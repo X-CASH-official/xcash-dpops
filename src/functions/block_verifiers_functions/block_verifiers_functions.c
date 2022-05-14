@@ -2333,7 +2333,7 @@ Return: 0 if an error has occured, 1 if successfull
 int block_verifiers_send_data_socket(const char* MESSAGE)
 {
   // Constants
-  const int TOTAL_BLOCK_VERIFIERS = test_settings == 0 ? BLOCK_VERIFIERS_AMOUNT : BLOCK_VERIFIERS_TOTAL_AMOUNT; 
+  const int TOTAL_BLOCK_VERIFIERS = test_settings == 0 ? BLOCK_VERIFIERS_AMOUNT : BLOCK_VERIFIERS_TOTAL_AMOUNT;
 
   // Variables
   char data[BUFFER_SIZE];
@@ -2343,7 +2343,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   struct tm current_UTC_date_and_time;
   int epoll_fd_copy;
   struct epoll_event events[TOTAL_BLOCK_VERIFIERS];
-  struct timeval SOCKET_TIMEOUT = {SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS, 0};   
+  struct timeval SOCKET_TIMEOUT = {SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS, 0};
   struct block_verifiers_send_data_socket block_verifiers_send_data_socket[TOTAL_BLOCK_VERIFIERS];
   size_t total;
   size_t sent;
@@ -2368,7 +2368,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   memcpy(data,MESSAGE,strnlen(MESSAGE,sizeof(data)));
   memcpy(data+strlen(data),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
   total = strnlen(data,BUFFER_SIZE);
-  
+
   // create the epoll file descriptor
   if ((epoll_fd_copy = epoll_create1(0)) == -1)
   {
@@ -2377,9 +2377,9 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
 
   // convert the port to a string
   snprintf(data2,sizeof(data2)-1,"%d",SEND_DATA_PORT);
-  
+
   for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)
-  {    
+  {
     if (strncmp(current_block_verifiers_list.block_verifiers_public_address[count],xcash_wallet_public_address,XCASH_WALLET_LENGTH) != 0)
     {
       // Variables
@@ -2415,12 +2415,12 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
         serv_addr.ai_family = AF_INET;
         serv_addr.ai_socktype = SOCK_STREAM;
       }
-  
+
       // convert the hostname if used, to an IP address
       memset(data3,0,sizeof(data3));
       memcpy(data3,block_verifiers_send_data_socket[count].IP_address,strnlen(block_verifiers_send_data_socket[count].IP_address,sizeof(data3)));
       if (getaddrinfo(data3, data2, &serv_addr, &settings) != 0)
-      { 
+      {
         freeaddrinfo(settings);
         continue;
       }
@@ -2441,16 +2441,16 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       SO_SNDTIMEO = allow the socket on sending data, to use the timeout settings
       */
       if (setsockopt(block_verifiers_send_data_socket[count].socket, SOL_SOCKET, SO_SNDTIMEO,&SOCKET_TIMEOUT, sizeof(struct timeval)) != 0)
-      { 
+      {
         freeaddrinfo(settings);
         continue;
-      } 
+      }
 
       /* create the epoll_event struct
       EPOLLIN = signal when the file descriptor is ready to read
       EPOLLOUT = signal when the file descriptor is ready to write
       EPOLLONESHOT = set the socket to only signal its ready once, since were using multiple threads
-      */  
+      */
       events[count].events = EPOLLIN | EPOLLOUT | EPOLLONESHOT;
       events[count].data.fd = block_verifiers_send_data_socket[count].socket;
 
@@ -2489,22 +2489,46 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   // get the current time
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
+  int num_sockets_open = 0;
+  bool socket_open[TOTAL_BLOCK_VERIFIERS];
+  memset(socket_open, 0, sizeof(socket_open));
+
   for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)
   {
     if (block_verifiers_send_data_socket[count].settings == 1)
     {
+      num_sockets_open++;
+      socket_open[count] = true;
       for (sent = 0; sent < total; sent += bytes == -1 ? 0 : bytes)
       {
         if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
-        {           
+        {
           break;
         }
       }
-    }    
+    }
   }
 
-  // wait for all of the data to be sent to the connected sockets
-  strstr(MESSAGE,"\"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\"") != NULL ? sleep(18) : sleep(3);
+  // repeatedly scan sockets for remote client close
+  int secdelay = strstr(MESSAGE,"\"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\"") != NULL ? 18 : 3;
+  time_t start = time(NULL);
+  char buf[32];
+
+  while (num_sockets_open > 0 && time(NULL) - start < secdelay)
+  {
+    for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)
+    {
+      if (socket_open[count] &&
+          recv(block_verifiers_send_data_socket[count].socket, buf, sizeof(buf), MSG_PEEK | MSG_DONTWAIT) == 0) // connection closed
+      {
+        socket_open[count] = false;
+        num_sockets_open--;
+      }
+    }
+// fprintf(stderr, "debug: remaining sockets: %d\n", num_sockets_open);
+
+    if (num_sockets_open > 0) sleep(1);
+  }
 
   // remove all of the sockets from the epoll file descriptor and close all of the sockets
   for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)
@@ -2516,7 +2540,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
     }
   }
   return 1;
-  
+
   #undef BLOCK_VERIFIERS_SEND_DATA_SOCKET
 }
 
