@@ -32,100 +32,114 @@ Return: 0 if an error has occured, 1 if successfull
 
 int parse_json_data(const char* DATA, const char* FIELD_NAME, char *result, const size_t RESULT_TOTAL_LENGTH)
 {
-  // Constants
-  const size_t MAXIMUM_AMOUNT = RESULT_TOTAL_LENGTH >= MAXIMUM_BUFFER_SIZE ? MAXIMUM_BUFFER_SIZE : RESULT_TOTAL_LENGTH+BUFFER_SIZE;
-
-  // Variables
-  char str[BUFFER_SIZE];
-  char* message = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char)); 
-  char* str1;
-  char* str2;
-  size_t start; 
-
-  // define macros
-  #define PARSE_JSON_DATA_ERROR \
+  // define macro
+  #define PARSE_JSON_DATA_ERROR(_msg) \
   if (debug_settings == 1) \
   { \
-  memcpy(error_message.function[error_message.total],"parse_json_data",15); \
-  memcpy(error_message.data[error_message.total],"Could not parse the message",27); \
-  error_message.total++; \
+    strcpy(error_message.function[error_message.total], __func__); \
+    strcpy(error_message.data[error_message.total], _msg); \
+    error_message.total++; \
   } \
-  pointer_reset(message); \
   return 0;
 
-  // reset the variables
-  memset(result,0,strlen(result));
-  memset(str,0,sizeof(str));
-
-  memcpy(str,"\"",sizeof(char));
-  memcpy(str+1,FIELD_NAME,strnlen(FIELD_NAME,sizeof(str)));
-  memcpy(str+strlen(str),"\"",sizeof(char));
-
-  // check if the field is in the data
-  if (strstr(DATA,str) != NULL)
-  { 
-    memset(str,0,sizeof(str));
-
-    // modify the field to add the field syntax
-    memcpy(str,"\"",sizeof(char));
-    memcpy(str+1,FIELD_NAME,strnlen(FIELD_NAME,sizeof(str)));
-    memcpy(str+strlen(str),"\": ",3);
-
-    // get the start of the field's data
-    start = strnlen(str,sizeof(str));
-    
-    // get the pointers location to the start of the field
-    if ((str1 = strstr(DATA,str)) == NULL)
-    {
-       // an error has occured, get the error message
-       str1 = strstr(DATA,"\"message\": ");
-       start = 11;
-       if (str1 == NULL)
-       {
-         PARSE_JSON_DATA_ERROR;
-       }
-    }
-
-    // get the end location of the data
-    if ((str2 = strstr(str1,"\r\n")) == NULL)
-    {
-      PARSE_JSON_DATA_ERROR;
-    }
-    
-    // get the length of the field's data
-    const size_t LENGTH = str2 - str1 - start;
-    if (LENGTH <= 0)
-    {
-      PARSE_JSON_DATA_ERROR;
-    }
-
-    // copy the field's data
-    memcpy(message,&str1[start],LENGTH);
-
-    // remove all the formating from the result, if it is not a database document
-    if (strstr(message,"username") == NULL && strstr(message,"total_vote_count") == NULL && strstr(message,"public_address_created_reserve_proof") == NULL && strstr(message,"reserve_bytes_data_hash") == NULL && strstr(message,"saddress") == NULL && strstr(message,"total_registered_renewed_amount") == NULL)
-    {
-      string_replace(message,MAXIMUM_AMOUNT,"\"","");
-      string_replace(message,MAXIMUM_AMOUNT,",","");
-      string_replace(message,MAXIMUM_AMOUNT,"[","");
-      string_replace(message,MAXIMUM_AMOUNT,"]","");
-      string_replace(message,MAXIMUM_AMOUNT,"{","");
-      string_replace(message,MAXIMUM_AMOUNT,"}","");
-    }
-    else
-    {
-      string_replace(message,MAXIMUM_AMOUNT,"\"{\"","{\"");
-    }
-    memcpy(result,message,strnlen(message,RESULT_TOTAL_LENGTH));
-  }
-  else
+  // Sanity check
+  if (!DATA || !DATA[0] || !FIELD_NAME || !FIELD_NAME[0] || !result)
   {
-    PARSE_JSON_DATA_ERROR;
+    char message[BUFFER_SIZE];
+    sprintf(message, "Invalid parameters passed in - DATA: %p, FIELD_NAME: %p, result: %p", DATA, FIELD_NAME, result);
+    PARSE_JSON_DATA_ERROR(message);
   }
-  pointer_reset(message);
-  return 1;
+
+  // Constants
+  const char* value_loc = NULL;
+
+  // Variables
+  bool database_doc = false;
+  char substr[BUFFER_SIZE];
+  size_t field_len = strlen(FIELD_NAME);
+  field_len = field_len < BUFFER_SIZE - 5 ? field_len : BUFFER_SIZE - 5;
+
+  // wrap the search field in quotes
+  memset(substr, 0, sizeof(substr));
+  strcpy(&substr[0], "\"");
+  memcpy(&substr[1], FIELD_NAME, field_len);
+  strcpy(&substr[field_len + 1], "\"");
+
+  // Search for the parameter we need
+  if ((value_loc = strstr(DATA, substr)) == NULL) {
+    char message[BUFFER_SIZE];
+    sprintf(message, "Cannot find FIELD_NAME '%s' (DATA is %40.40s)", FIELD_NAME, DATA);
+    PARSE_JSON_DATA_ERROR(message);
+  }
+
+  // Jump forward to just past the quoted field name
+  value_loc += field_len + 2;
+
+  if (value_loc[0] == ':') {
+    value_loc += 2; // skip past the ": "
+  }
+  else { // Something's wrong we found the field but no colon - let's see if we can find a message
+    if ((value_loc = strstr(DATA, "\"message\": ")) == NULL) {
+      char message[BUFFER_SIZE];
+      sprintf(message, "Cannot find FIELD_NAME '%s' nor the \"message\" tag (DATA is %40.40s)", FIELD_NAME, DATA);
+      PARSE_JSON_DATA_ERROR(message);
+    }
+    // ok, well, the message tag has been found - let's skip past it and grab the data
+    value_loc += 11;
+  }
+
+  // grab the end of the line
+  const char* value_end = strstr(value_loc, "\r");
+  if (value_end == NULL) {
+    char message[BUFFER_SIZE];
+    sprintf(message, "Cannot find field data '%s' (DATA length is %ld)", FIELD_NAME, strlen(DATA));
+    PARSE_JSON_DATA_ERROR(message);
+  }
+
+  // Calculate the length of the result data
+  size_t value_len = value_end - value_loc;
+
+  // Always strip the leading quote if there
+  if (value_loc[0]=='"') {
+    value_loc++;
+    value_len--;
+  }
+
+  // Bounds check and limit if necessary
+  value_len = value_len < RESULT_TOTAL_LENGTH ? value_len : RESULT_TOTAL_LENGTH;
+
+  // Determine if this is a database doc (check for db keywords)
+  if (value_len > 7) {
+    const char *str1 = "username", *str2 = "total_vote_count", *str3 = "public_address_created_reserve_proof", *str4 = "reserve_bytes_data_hash";
+    const size_t str1_len = 8, str2_len = 16, str3_len = 36, str4_len = 23;
+    const size_t str1_limit = value_len - str1_len;
+    const size_t str2_limit = value_len - str2_len;
+    const size_t str3_limit = value_len - str3_len;
+    const size_t str4_limit = value_len - str4_len;
+    size_t pos = 0, search_len = value_len - 7;
+    for (pos = 0; pos < search_len; pos++) {
+      if ((pos < str1_limit && memcmp(&value_loc[pos], str1, str1_len) == 0) ||
+          (pos < str2_limit && memcmp(&value_loc[pos], str2, str2_len) == 0) ||
+          (pos < str3_limit && memcmp(&value_loc[pos], str3, str3_len) == 0) ||
+          (pos < str4_limit && memcmp(&value_loc[pos], str4, str4_len) == 0) )
+      {
+        database_doc = true;
+        break;
+      }
+    }
+  }
+
+  // Copy in final result
+  if (database_doc)
+    memcpy(result, value_loc, value_len); // Just a straight copy if it's a database document
+  else
+    value_len = remove_characters(value_loc, value_len, "\",[]{}", 6, result); // remove all the formating from the result 
+
+  result[value_len] = 0; // Just in case we stray into uninitialized space
 
   #undef PARSE_JSON_DATA_ERROR
+
+  return 1;
 }
 
 
@@ -656,49 +670,70 @@ Return: 0 if an error has occured, 1 if successfull
 */
 
 int parse_reserve_bytes_data(char *result, const char* RESERVE_BYTES, const int ITEM)
-{  
+{
+  // define macro
+  #define PARSE_RESERVE_ERROR(_msg) \
+  if (debug_settings == 1) \
+  { \
+    strcpy(error_message.function[error_message.total], __func__); \
+    strcpy(error_message.data[error_message.total], _msg); \
+    error_message.total++; \
+  } \
+  return 0;
+
+  // Sanity check
+  if (!RESERVE_BYTES || !RESERVE_BYTES[0] || !result)
+  {
+    char message[BUFFER_SIZE];
+    sprintf(message, "Invalid parameters passed in - RESERVE_BYTES: %p, result: %p", RESERVE_BYTES, result);
+    PARSE_RESERVE_ERROR(message);
+  }
+
   // Constants
-  const size_t MAXIMUM_AMOUNT = strlen(RESERVE_BYTES) >= MAXIMUM_BUFFER_SIZE ? MAXIMUM_BUFFER_SIZE : strlen(RESERVE_BYTES)+SMALL_BUFFER_SIZE;
+  const size_t res_len = strlen(RESERVE_BYTES);
+  const size_t bc_ds_len = strlen(BLOCKCHAIN_DATA_SEGMENT_STRING);
+  const char* start_segment = RESERVE_BYTES;
 
   // Variables
-  char buffer[1024];
-  char* data = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
-  // since were going to be changing where data is referencing, we need to create a copy to pointer_reset
-  char* datacopy = data; 
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
-  int count;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"parse_reserve_bytes_data",15);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
-    exit(0);
-  }
-
-  memcpy(data,RESERVE_BYTES,strnlen(RESERVE_BYTES,MAXIMUM_AMOUNT));
+  size_t segment_len = 0;
+  char* end_segment = NULL;
+  int count = 0;
+  int ds_count = string_count(RESERVE_BYTES, BLOCKCHAIN_DATA_SEGMENT_STRING);
 
   // error check
-  if (ITEM > (int)string_count(RESERVE_BYTES,BLOCKCHAIN_DATA_SEGMENT_STRING))
+  if (ITEM > ds_count)
   {
-    pointer_reset(datacopy);
-    return 0;
+    char message[BUFFER_SIZE];
+    sprintf(message, "Blockchain Data Segment %d was requested, but there are only %d in the reserve bytes\n", ITEM, ds_count);
+    PARSE_RESERVE_ERROR(message);
   }
 
-  for (count = 0; count < ITEM; count++)
-  {
-    data = strstr(data,BLOCKCHAIN_DATA_SEGMENT_STRING) + strlen(BLOCKCHAIN_DATA_SEGMENT_STRING);
-  }  
-  memset(result,0,strlen(result));
-  memcpy(result,data,strnlen(data,MAXIMUM_AMOUNT) - strnlen(strstr(data,BLOCKCHAIN_DATA_SEGMENT_STRING),MAXIMUM_AMOUNT));
+  for (count = 0; start_segment != NULL && count < ITEM; count++) {
+    start_segment = strstr(start_segment, BLOCKCHAIN_DATA_SEGMENT_STRING) + bc_ds_len;
+  }
 
-  pointer_reset(datacopy);
+  if (start_segment == NULL)
+  {
+    char message[BUFFER_SIZE];
+    sprintf(message, "Failed to find the %d blockchain data segment", count);
+    PARSE_RESERVE_ERROR(message);
+  }
+
+  end_segment = strstr(start_segment, BLOCKCHAIN_DATA_SEGMENT_STRING);
+  if (end_segment == NULL) {
+    segment_len = strlen(start_segment);
+  }
+  else {
+    segment_len = end_segment - start_segment;
+  }
+
+  memset(result, 0, strlen(result));
+  memcpy(result, start_segment, segment_len);
+
+  #undef PARSE_RESERVE_ERROR
+
   return 1;
 }
-
 
 
 
@@ -756,3 +791,40 @@ int random_string(char *result, const size_t LENGTH)
   #undef MAXIMUM_COUNT
 }
 
+/*
+-----------------------------------------------------------------------------------------------------------
+Name: remove_characters
+Description: takes a character array and removes any single character found in that aray from the source,
+             placing the newly stripped string into the target. The assumption is that the target has
+			 enough room to hold the stripped string. This function does not null terminate.
+Parameters:
+  source - pointer to the string to be stripped (does not need to be null terminated)
+  source_len - the length of the string to be stripped
+  chars[] - the list of characters to be removed
+  array_len - the size of the chars array
+  target - the location where the stripped source string is written
+Return: the length of the stripped string placed into target
+-----------------------------------------------------------------------------------------------------------
+*/
+
+
+size_t remove_characters(const char* source, const size_t source_len, const char chars[], const size_t array_len, char* target)
+{
+  size_t offset = 0;
+  size_t src_pos = 0;
+  size_t tgt_pos = 0;
+
+  for (src_pos = 0; src_pos < source_len; src_pos++) {
+    for (offset = 0; offset < array_len; offset++) {
+      if (source[src_pos] == chars[offset]) {
+        src_pos++; // found one! Skip it
+        offset=-1; // restart the search
+      }
+    }
+
+    if (src_pos < source_len)
+      target[tgt_pos++] = source[src_pos];
+  }
+  
+  return tgt_pos;
+}

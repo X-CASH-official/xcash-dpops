@@ -2489,10 +2489,16 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   // get the current time
   get_current_UTC_time(current_date_and_time,current_UTC_date_and_time);
 
+  int num_sockets_open = 0;
+  bool socket_open[TOTAL_BLOCK_VERIFIERS];
+  memset(socket_open, 0, sizeof(socket_open));
+
   for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)
   {
     if (block_verifiers_send_data_socket[count].settings == 1)
     {
+      num_sockets_open++;
+      socket_open[count] = true;
       for (sent = 0; sent < total; sent += bytes == -1 ? 0 : bytes)
       {
         if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
@@ -2503,8 +2509,26 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
     }    
   }
 
-  // wait for all of the data to be sent to the connected sockets
-  strstr(MESSAGE,"\"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\"") != NULL ? sleep(18) : sleep(3);
+  // repeatedly scan sockets for remote client close
+  int secdelay = strstr(MESSAGE,"\"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\"") != NULL ? 18 : 3;
+  time_t start = time(NULL);
+  char buf[32];
+
+  while (num_sockets_open > 0 && time(NULL) - start < secdelay)
+  {
+    for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)
+    {
+      if (socket_open[count] &&
+          recv(block_verifiers_send_data_socket[count].socket, buf, sizeof(buf), MSG_PEEK | MSG_DONTWAIT) == 0) // connection closed
+      {
+        socket_open[count] = false;
+        num_sockets_open--;
+      }
+    }
+// fprintf(stderr, "debug: remaining sockets: %d\n", num_sockets_open);
+
+    if (num_sockets_open > 0) sleep(1);
+  }
 
   // remove all of the sockets from the epoll file descriptor and close all of the sockets
   for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)

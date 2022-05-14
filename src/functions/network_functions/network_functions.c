@@ -612,6 +612,7 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
   size_t total;
   size_t sent;
   long long int bytes = 1;
+  struct pollfd socket_file_descriptors;
 
   if (MESSAGE_SETTINGS == 1)
   {
@@ -667,11 +668,21 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
     total = strlen((const char*)data);
   }
 
+  socket_file_descriptors.fd = SOCKET;
+  socket_file_descriptors.events = POLLOUT;
   for (sent = 0; sent < total; sent += bytes == -1 ? 0 : bytes)
   {
-    if ((bytes = send(SOCKET,data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
-    {      
-      return 0;
+    if ((bytes = send(SOCKET,data+sent,total-sent,MSG_NOSIGNAL)) == -1) {
+      if (errno == EAGAIN || errno == EWOULDBLOCK)
+      {
+        if (poll(&socket_file_descriptors, 1, 1000) == -1) {
+          return 0; // Socket Failure
+        }
+      }
+      else
+      {
+        return 0;
+      }
     }
   }
   return 1;
@@ -698,6 +709,8 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
   // Variables
   char* buffer = (char*)calloc(LENGTH,sizeof(char)); 
   time_t start = time(NULL);
+  bool  needsPoll = false;
+  struct pollfd socket_file_descriptors;
 
   memset(message,0,strlen(message));
 
@@ -706,10 +719,14 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
     memset(buffer,0,strlen(buffer));
 
     // read the socket to see if there is any data, use MSG_DONTWAIT so we dont block the program if there is no data, but check errno to see if we should exit or try again
-    if (recvfrom(SOCKET, buffer, LENGTH, MSG_DONTWAIT, NULL, NULL) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
-    {
-      pointer_reset(buffer);
-      return 1;
+    if (recvfrom(SOCKET, buffer, LENGTH, MSG_DONTWAIT, NULL, NULL) == -1) {
+      if (errno == EAGAIN || errno == EWOULDBLOCK) {
+        needsPoll = true;
+      }
+      else {
+        pointer_reset(buffer);
+        return 1;
+      }
     }
 
     if (buffer[0] != '\0' && (strstr(buffer,SOCKET_END_STRING) == NULL && strstr(buffer,HTTP_SOCKET_END_STRING) == NULL && strstr(buffer,XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING) == NULL && strstr(buffer,XCASH_DAEMON_AND_WALLET_ERROR_SOCKET_END_STRING) == NULL))
@@ -738,6 +755,19 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
       pointer_reset(buffer);
       return 1;
     }
+
+    if (needsPoll) {
+      socket_file_descriptors.fd = SOCKET;
+      socket_file_descriptors.events = POLLIN;
+      time_t timeout = RECEIVE_DATA_SOCKET_TIMEOUT_SETTINGS == 1
+                       ? (RECEIVE_DATA_SOCKET_TIMEOUT - (time(NULL) - start)) * 1000
+                       : 1000;
+
+      if (poll(&socket_file_descriptors, 1, timeout) == -1) { // Socket Failure
+        pointer_reset(buffer);
+        return 1;
+      }
+      needsPoll = false;
+    }
   }
 }
-
