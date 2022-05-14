@@ -696,20 +696,26 @@ Return: 0 if an error would have occured from a buffer overflow, 1 if a timeout 
 int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int RECEIVE_DATA_SOCKET_TIMEOUT_SETTINGS, const int RECEIVE_DATA_SOCKET_TIMEOUT)
 {
   // Variables
-  char* buffer = (char*)calloc(LENGTH,sizeof(char)); 
+  char* buffer = (char*)calloc(LENGTH,sizeof(char));
   time_t start = time(NULL);
+  bool  needsPoll = false;
+  struct pollfd socket_file_descriptors;
 
   memset(message,0,strlen(message));
 
   for (;;)
-  { 
+  {
     memset(buffer,0,strlen(buffer));
 
     // read the socket to see if there is any data, use MSG_DONTWAIT so we dont block the program if there is no data, but check errno to see if we should exit or try again
-    if (recvfrom(SOCKET, buffer, LENGTH, MSG_DONTWAIT, NULL, NULL) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
-    {
-      pointer_reset(buffer);
-      return 1;
+    if (recvfrom(SOCKET, buffer, LENGTH, MSG_DONTWAIT, NULL, NULL) == -1) {
+      if (errno == EAGAIN || errno == EWOULDBLOCK) {
+        needsPoll = true;
+      }
+      else {
+        pointer_reset(buffer);
+        return 1;
+      }
     }
 
     if (buffer[0] != '\0' && (strstr(buffer,SOCKET_END_STRING) == NULL && strstr(buffer,HTTP_SOCKET_END_STRING) == NULL && strstr(buffer,XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING) == NULL && strstr(buffer,XCASH_DAEMON_AND_WALLET_ERROR_SOCKET_END_STRING) == NULL))
@@ -717,7 +723,7 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
       // there is data, but this is not the final data
       append_string(message,buffer,LENGTH);
     }
-    if (buffer[0] != '\0' && (strstr(buffer,SOCKET_END_STRING) != NULL || (strstr(buffer,HTTP_SOCKET_END_STRING) != NULL && (strstr(message,"Server: xcash-dpops") != NULL || strstr(buffer,"Server: xcash-dpops") != NULL || strstr(message,"User-Agent:") != NULL || strstr(buffer,"User-Agent:") != NULL)) || (strstr(buffer,XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING) != NULL) || (strstr(buffer,"\"untrusted\": false\r\n}") != NULL) || (strstr(buffer,XCASH_DAEMON_AND_WALLET_ERROR_SOCKET_END_STRING) != NULL)))
+    if (buffer[0] != '\0' && (strstr(buffer,SOCKET_END_STRING) != NULL || (strstr(buffer,HTTP_SOCKET_END_STRING) != NULL && (strstr(message,"Server: xcash-dpops") != NULL || strstr(buffer,"Server: xcash-dpops") != NULL || strstr(message,"User-Agent:") != NULL || strstr(buffer,"User-Agent:") != NULL)) || (strstr(buffer,XCASH_DAEMON_AND_WALLET_SOCKET_END_STRING) != NULL) || (strstr(buffer,XCASH_DAEMON_AND_WALLET_ERROR_SOCKET_END_STRING) != NULL)))
     {
       // there is data, and this is the final data
       append_string(message,buffer,LENGTH);
@@ -738,6 +744,19 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
       pointer_reset(buffer);
       return 1;
     }
+
+    if (needsPoll) {
+      socket_file_descriptors.fd = SOCKET;
+      socket_file_descriptors.events = POLLIN;
+      time_t timeout = RECEIVE_DATA_SOCKET_TIMEOUT_SETTINGS == 1
+                       ? (RECEIVE_DATA_SOCKET_TIMEOUT - (time(NULL) - start)) * 1000
+                       : 1000;
+
+      if (poll(&socket_file_descriptors, 1, timeout) == -1) { // Socket Failure
+        pointer_reset(buffer);
+        return 1;
+      }
+      needsPoll = false;
+    }
   }
 }
-
