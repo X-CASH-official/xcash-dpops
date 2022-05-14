@@ -667,12 +667,13 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
   {
     total = strlen((const char*)data);
   }
-
+  
   socket_file_descriptors.fd = SOCKET;
   socket_file_descriptors.events = POLLOUT;
+
   for (sent = 0; sent < total; sent += bytes == -1 ? 0 : bytes)
   {
-    if ((bytes = send(SOCKET,data+sent,total-sent,MSG_NOSIGNAL)) == -1) {
+      if ((bytes = send(SOCKET,data+sent,total-sent,MSG_NOSIGNAL)) == -1) {
       if (errno == EAGAIN || errno == EWOULDBLOCK)
       {
         if (poll(&socket_file_descriptors, 1, 1000) == -1) {
@@ -709,7 +710,7 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
   // Variables
   char* buffer = (char*)calloc(LENGTH,sizeof(char)); 
   time_t start = time(NULL);
-  bool  needsPoll = false;
+  int needsPoll = 0;
   struct pollfd socket_file_descriptors;
 
   memset(message,0,strlen(message));
@@ -720,8 +721,8 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
 
     // read the socket to see if there is any data, use MSG_DONTWAIT so we dont block the program if there is no data, but check errno to see if we should exit or try again
     if (recvfrom(SOCKET, buffer, LENGTH, MSG_DONTWAIT, NULL, NULL) == -1) {
-      if (errno == EAGAIN || errno == EWOULDBLOCK) {
-        needsPoll = true;
+    if (errno == EAGAIN || errno == EWOULDBLOCK) {
+        needsPoll = 1;
       }
       else {
         pointer_reset(buffer);
@@ -756,18 +757,16 @@ int receive_data(const int SOCKET, char *message, const size_t LENGTH, const int
       return 1;
     }
 
-    if (needsPoll) {
+    if (needsPoll == 1) {
       socket_file_descriptors.fd = SOCKET;
       socket_file_descriptors.events = POLLIN;
-      time_t timeout = RECEIVE_DATA_SOCKET_TIMEOUT_SETTINGS == 1
-                       ? (RECEIVE_DATA_SOCKET_TIMEOUT - (time(NULL) - start)) * 1000
-                       : 1000;
+      time_t timeout = RECEIVE_DATA_SOCKET_TIMEOUT_SETTINGS == 1 ? (RECEIVE_DATA_SOCKET_TIMEOUT - (time(NULL) - start)) * 1000 : 1000;
 
       if (poll(&socket_file_descriptors, 1, timeout) == -1) { // Socket Failure
         pointer_reset(buffer);
         return 1;
       }
-      needsPoll = false;
+      needsPoll = 0;
     }
   }
 }
