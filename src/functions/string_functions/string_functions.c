@@ -690,7 +690,6 @@ int parse_reserve_bytes_data(char *result, const char* RESERVE_BYTES, const int 
   }
 
   // Constants
-  const size_t res_len = strlen(RESERVE_BYTES);
   const size_t bc_ds_len = strlen(BLOCKCHAIN_DATA_SEGMENT_STRING);
   const char* start_segment = RESERVE_BYTES;
 
