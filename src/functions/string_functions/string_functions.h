@@ -20,4 +20,5 @@ void string_replace(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1
 void string_replace_limit(char *data, const size_t DATA_TOTAL_LENGTH, const char* STR1, const char* STR2, const int COUNT);
 int parse_reserve_bytes_data(char *result, const char* RESERVE_BYTES, const int ITEM);
 int random_string(char *result, const size_t LENGTH);
+size_t remove_characters(const char* source, const size_t source_len, const char chars[], const size_t array_len, char* target);
 #endif
