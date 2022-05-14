@@ -612,13 +612,14 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
   size_t total;
   size_t sent;
   long long int bytes = 1;
+  struct pollfd socket_file_descriptors;
 
   if (MESSAGE_SETTINGS == 1)
   {
     // append the SOCKET_END_STRING to the message since this is a socket message
     memcpy(data+strlen((const char*)data),SOCKET_END_STRING,sizeof(SOCKET_END_STRING)-1);
     total = strlen((const char*)data);
-  }    
+  }
   else if (MESSAGE_SETTINGS != 0)
   {
     // prepend the HTTP headers to the message
@@ -661,17 +662,27 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
     memcpy(data,message,count+DATA_LENGTH);
     total = count+DATA_LENGTH;
     pointer_reset(message);
-  } 
+  }
   else
   {
     total = strlen((const char*)data);
   }
 
+  socket_file_descriptors.fd = SOCKET;
+  socket_file_descriptors.events = POLLOUT;
   for (sent = 0; sent < total; sent += bytes == -1 ? 0 : bytes)
   {
-    if ((bytes = send(SOCKET,data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
-    {      
-      return 0;
+    if ((bytes = send(SOCKET,data+sent,total-sent,MSG_NOSIGNAL)) == -1) {
+      if (errno == EAGAIN || errno == EWOULDBLOCK)
+      {
+        if (poll(&socket_file_descriptors, 1, 1000) == -1) {
+          return 0; // Socket Failure
+        }
+      }
+      else
+      {
+        return 0;
+      }
     }
   }
   return 1;
