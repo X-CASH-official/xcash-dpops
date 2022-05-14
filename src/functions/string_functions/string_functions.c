@@ -670,49 +670,70 @@ Return: 0 if an error has occured, 1 if successfull
 */
 
 int parse_reserve_bytes_data(char *result, const char* RESERVE_BYTES, const int ITEM)
-{  
+{
+  // define macro
+  #define PARSE_RESERVE_ERROR(_msg) \
+  if (debug_settings == 1) \
+  { \
+    strcpy(error_message.function[error_message.total], __func__); \
+    strcpy(error_message.data[error_message.total], _msg); \
+    error_message.total++; \
+  } \
+  return 0;
+
+  // Sanity check
+  if (!RESERVE_BYTES || !RESERVE_BYTES[0] || !result)
+  {
+    char message[BUFFER_SIZE];
+    sprintf(message, "Invalid parameters passed in - RESERVE_BYTES: %p, result: %p", RESERVE_BYTES, result);
+    PARSE_RESERVE_ERROR(message);
+  }
+
   // Constants
-  const size_t MAXIMUM_AMOUNT = strlen(RESERVE_BYTES) >= MAXIMUM_BUFFER_SIZE ? MAXIMUM_BUFFER_SIZE : strlen(RESERVE_BYTES)+SMALL_BUFFER_SIZE;
+  const size_t res_len = strlen(RESERVE_BYTES);
+  const size_t bc_ds_len = strlen(BLOCKCHAIN_DATA_SEGMENT_STRING);
+  const char* start_segment = RESERVE_BYTES;
 
   // Variables
-  char buffer[1024];
-  char* data = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
-  // since were going to be changing where data is referencing, we need to create a copy to pointer_reset
-  char* datacopy = data; 
-  time_t current_date_and_time;
-  struct tm current_UTC_date_and_time;
-  int count;
-
-  // check if the memory needed was allocated on the heap successfully
-  if (data == NULL)
-  {
-    memcpy(error_message.function[error_message.total],"parse_reserve_bytes_data",15);
-    memcpy(error_message.data[error_message.total],"Could not allocate the memory needed on the heap",48);
-    error_message.total++;
-    print_error_message(current_date_and_time,current_UTC_date_and_time,buffer);  
-    exit(0);
-  }
-
-  memcpy(data,RESERVE_BYTES,strnlen(RESERVE_BYTES,MAXIMUM_AMOUNT));
+  size_t segment_len = 0;
+  char* end_segment = NULL;
+  int count = 0;
+  int ds_count = string_count(RESERVE_BYTES, BLOCKCHAIN_DATA_SEGMENT_STRING);
 
   // error check
-  if (ITEM > (int)string_count(RESERVE_BYTES,BLOCKCHAIN_DATA_SEGMENT_STRING))
+  if (ITEM > ds_count)
   {
-    pointer_reset(datacopy);
-    return 0;
+    char message[BUFFER_SIZE];
+    sprintf(message, "Blockchain Data Segment %d was requested, but there are only %d in the reserve bytes\n", ITEM, ds_count);
+    PARSE_RESERVE_ERROR(message);
   }
 
-  for (count = 0; count < ITEM; count++)
-  {
-    data = strstr(data,BLOCKCHAIN_DATA_SEGMENT_STRING) + strlen(BLOCKCHAIN_DATA_SEGMENT_STRING);
-  }  
-  memset(result,0,strlen(result));
-  memcpy(result,data,strnlen(data,MAXIMUM_AMOUNT) - strnlen(strstr(data,BLOCKCHAIN_DATA_SEGMENT_STRING),MAXIMUM_AMOUNT));
+  for (count = 0; start_segment != NULL && count < ITEM; count++) {
+    start_segment = strstr(start_segment, BLOCKCHAIN_DATA_SEGMENT_STRING) + bc_ds_len;
+  }
 
-  pointer_reset(datacopy);
+  if (start_segment == NULL)
+  {
+    char message[BUFFER_SIZE];
+    sprintf(message, "Failed to find the %d blockchain data segment", count);
+    PARSE_RESERVE_ERROR(message);
+  }
+
+  end_segment = strstr(start_segment, BLOCKCHAIN_DATA_SEGMENT_STRING);
+  if (end_segment == NULL) {
+    segment_len = strlen(start_segment);
+  }
+  else {
+    segment_len = end_segment - start_segment;
+  }
+
+  memset(result, 0, strlen(result));
+  memcpy(result, start_segment, segment_len);
+
+  #undef PARSE_RESERVE_ERROR
+
   return 1;
 }
-
 
 
 
