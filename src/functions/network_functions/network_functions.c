@@ -612,6 +612,7 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
   size_t total;
   size_t sent;
   long long int bytes = 1;
+  struct pollfd socket_file_descriptors;
 
   if (MESSAGE_SETTINGS == 1)
   {
@@ -666,12 +667,23 @@ int send_data(const int SOCKET, unsigned char* data, const long DATA_LENGTH, con
   {
     total = strlen((const char*)data);
   }
+  
+  socket_file_descriptors.fd = SOCKET;
+  socket_file_descriptors.events = POLLOUT;
 
   for (sent = 0; sent < total; sent += bytes == -1 ? 0 : bytes)
   {
-    if ((bytes = send(SOCKET,data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
-    {      
-      return 0;
+      if ((bytes = send(SOCKET,data+sent,total-sent,MSG_NOSIGNAL)) == -1) {
+      if (errno == EAGAIN || errno == EWOULDBLOCK)
+      {
+        if (poll(&socket_file_descriptors, 1, 1000) == -1) {
+          return 0; // Socket Failure
+        }
+      }
+      else
+      {
+        return 0;
+      }
     }
   }
   return 1;
