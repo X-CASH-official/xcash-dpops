@@ -519,6 +519,7 @@ void socket_thread(const int CLIENT_SOCKET)
   if (getpeername(CLIENT_SOCKET, (struct sockaddr *) &addr, &addrlength) != 0 || getnameinfo((struct sockaddr *)&addr, addrlength, client_IP_address, sizeof(client_IP_address), NULL, 0, NI_NUMERICHOST) != 0)
   {
     pointer_reset(buffer);
+    pthread_mutex_unlock(&lock);
     return;
   }
   pthread_mutex_unlock(&lock); 
