@@ -2539,6 +2539,8 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       close(block_verifiers_send_data_socket[count].socket);
     }
   }
+
+  close(epoll_fd_copy);
   return 1;
   
   #undef BLOCK_VERIFIERS_SEND_DATA_SOCKET

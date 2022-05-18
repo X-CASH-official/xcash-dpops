@@ -1310,6 +1310,8 @@ int get_delegates_online_status(void)
     }
   }
   POINTER_RESET_DELEGATES_STRUCT(count,MAXIMUM_AMOUNT_OF_DELEGATES);
+
+  close(epoll_fd_copy);
   return total_delegates_online;
 
   #undef DATABASE_COLLECTION
