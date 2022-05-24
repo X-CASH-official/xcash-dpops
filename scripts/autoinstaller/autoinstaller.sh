@@ -576,6 +576,10 @@ function start_systemd_service_files()
   sudo systemctl start xcash-daemon &>/dev/null
   sleep 30s
   sudo systemctl start xcash-rpc-wallet &>/dev/null
+
+  # Turbo Tx
+  sudo systemctl start xcash-rpc-wallet-turbo-tx &>/dev/null
+
   sleep 30s
   sudo systemctl start xcash-dpops &>/dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Starting Systemd Service Files${END_COLOR_PRINT}"
@@ -585,7 +589,7 @@ function start_systemd_service_files()
 function stop_systemd_service_files()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Stopping Systemd Service Files${END_COLOR_PRINT}"
-  sudo systemctl stop mongodb xcash-daemon xcash-rpc-wallet xcash-dpops &>/dev/null
+  sudo systemctl stop mongodb xcash-daemon xcash-rpc-wallet xcash-rpc-wallet-turbo-tx xcash-dpops &>/dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Stopping Systemd Service Files${END_COLOR_PRINT}"
   echo
 }
@@ -593,7 +597,7 @@ function stop_systemd_service_files()
 function enable_service_files_at_startup()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Enabling services to autostart on reboot${END_COLOR_PRINT}"
-  sudo systemctl enable mongodb.service xcash-daemon.service xcash-rpc-wallet.timer xcash-dpops.timer 2> /dev/null
+  sudo systemctl enable mongodb.service xcash-daemon.service xcash-rpc-wallet.timer xcash-rpc-wallet-turbo-tx.timer xcash-dpops.timer 2> /dev/null
   echo -ne "\r${COLOR_PRINT_GREEN}Enabling services to autostart on reboot${END_COLOR_PRINT}"
 }
 
@@ -1509,10 +1513,10 @@ function uninstall_systemd_service_files()
 {
   echo -ne "${COLOR_PRINT_YELLOW}Uninstall Systemd Service Files${END_COLOR_PRINT}"
   if [ "$container" == "lxc" ]; then
-    sudo truncate --size 0 /lib/systemd/system/firewall.service /lib/systemd/system/mongodb.service /lib/systemd/system/xcash-daemon.service /lib/systemd/system/xcash-dpops.service /lib/systemd/system/xcash-rpc-wallet.service 
-    sudo rm -f /lib/systemd/system/xcash-dpops.timer /lib/systemd/system/xcash-rpc-wallet.timer ${HOME}/firewall_script.sh
+    sudo truncate --size 0 /lib/systemd/system/firewall.service /lib/systemd/system/mongodb.service /lib/systemd/system/xcash-daemon.service /lib/systemd/system/xcash-dpops.service /lib/systemd/system/xcash-rpc-wallet.service /lib/systemd/system/xcash-rpc-wallet-turbo-tx.service 
+    sudo rm -f /lib/systemd/system/xcash-dpops.timer /lib/systemd/system/xcash-rpc-wallet.timer /lib/systemd/system/xcash-rpc-wallet-turbo-tx.timer ${HOME}/firewall_script.sh
   else
-    sudo rm -f /lib/systemd/system/firewall.service /lib/systemd/system/mongodb.service /lib/systemd/system/xcash-daemon.service /lib/systemd/system/xcash-dpops.service /lib/systemd/system/xcash-rpc-wallet.service /lib/systemd/system/xcash-dpops.timer /lib/systemd/system/xcash-rpc-wallet.timer ${HOME}/firewall_script.sh
+    sudo rm -f /lib/systemd/system/firewall.service /lib/systemd/system/mongodb.service /lib/systemd/system/xcash-daemon.service /lib/systemd/system/xcash-dpops.service /lib/systemd/system/xcash-rpc-wallet.service /lib/systemd/system/xcash-rpc-wallet-turbo-tx.service /lib/systemd/system/xcash-dpops.timer /lib/systemd/system/xcash-rpc-wallet.timer /lib/systemd/system/xcash-rpc-wallet-turbo-tx.timer ${HOME}/firewall_script.sh
   fi
   sudo systemctl daemon-reload
   echo -ne "\r${COLOR_PRINT_GREEN}Uninstall Systemd Service Files${END_COLOR_PRINT}"
@@ -1846,7 +1850,7 @@ function uninstall()
   echo -ne "${COLOR_PRINT_YELLOW}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
   sudo systemctl stop xcash-daemon &>/dev/null
   sleep 10s
-  sudo systemctl stop xcash-rpc-wallet &>/dev/null
+  sudo systemctl stop xcash-rpc-wallet xcash-rpc-wallet-turbo-tx &>/dev/null
   sleep 10s
   echo -ne "\r${COLOR_PRINT_GREEN}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
   echo
@@ -2437,7 +2441,7 @@ function backup()
   echo -ne "${COLOR_PRINT_YELLOW}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
   sudo systemctl stop xcash-daemon &>/dev/null
   sleep 10s
-  sudo systemctl stop xcash-rpc-wallet &>/dev/null
+  sudo systemctl stop xcash-rpc-wallet xcash-rpc-wallet-turbo-tx &>/dev/null
   sleep 10s
   echo -ne "\r${COLOR_PRINT_GREEN}Shutting Down X-CASH Wallet Systemd Service File and Restarting XCASH Daemon Systemd Service File${END_COLOR_PRINT}"
   echo
