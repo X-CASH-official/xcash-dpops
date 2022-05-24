@@ -2644,7 +2644,7 @@ function install_turbo_tx()
   echo
 
   echo -ne "${COLOR_PRINT_YELLOW}Checking the Autostart Settings${END_COLOR_PRINT}"
-  AUTOSTART_SETTINGS=$([ "$data" == "" ] && echo "$AUTOSTART_SETTINGS" || echo "YES")
+  AUTOSTART_SETTINGS=$(systemctl is-enabled --quiet xcash-rpc-wallet.timer && echo "YES" || echo "NO")
   echo -ne "\r${COLOR_PRINT_GREEN}Checking the Autostart Settings${END_COLOR_PRINT}"
 
   # Check if solo node
