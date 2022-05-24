@@ -176,9 +176,11 @@ function get_installation_settings()
   echo -ne "${COLOR_PRINT_YELLOW}17 = Configure Installation\n18 = Firewall\n19 = Shared Delegates Firewall\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}Backup\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_YELLOW}20 = Display wallet and xcash-dpops data, and backup shared delegates database\n\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_GREEN}X-Cash DPoPS Protocol Upgrades\n${END_COLOR_PRINT}"
+  echo -ne "${COLOR_PRINT_YELLOW}21 = Install Turbo Tx\n\n${END_COLOR_PRINT}"
   echo -ne "${COLOR_PRINT_GREEN}Enter the number of the chosen option (default 1): ${END_COLOR_PRINT}"
   read -r data
-  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] || [ "$data" == "11" ] || [ "$data" == "12" ] || [ "$data" == "13" ] || [ "$data" == "14" ] || [ "$data" == "15" ] || [ "$data" == "16" ] || [ "$data" == "17" ] || [ "$data" == "18" ] || [ "$data" == "19" ] || [ "$data" == "20" ] && echo "$data" || echo "1")
+  INSTALLATION_TYPE_SETTINGS=$([ "$data" == "2" ] || [ "$data" == "3" ] || [ "$data" == "4" ] || [ "$data" == "5" ] || [ "$data" == "6" ] || [ "$data" == "7" ] || [ "$data" == "8" ] || [ "$data" == "9" ] || [ "$data" == "10" ] || [ "$data" == "11" ] || [ "$data" == "12" ] || [ "$data" == "13" ] || [ "$data" == "14" ] || [ "$data" == "15" ] || [ "$data" == "16" ] || [ "$data" == "17" ] || [ "$data" == "18" ] || [ "$data" == "19" ] || [ "$data" == "20" ] || [ "$data" == "21" ] && echo "$data" || echo "1")
   echo -ne "\r"
   # Check if xcash-dpops is already installed, if the user choose to install
   if [ "$INSTALLATION_TYPE_SETTINGS" -eq "1" ]; then
@@ -193,7 +195,7 @@ function get_installation_settings()
   fi
 
   # Check if xcash-dpops is not installed, and if the user choose an option where xcash-dpops needed to be installed
-  if [ "$INSTALLATION_TYPE_SETTINGS" -eq "2" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "3" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "4" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "5" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "10" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "13" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "14" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "15" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "16" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "17" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "20" ]; then
+  if [ "$INSTALLATION_TYPE_SETTINGS" -eq "2" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "3" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "4" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "5" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "10" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "11" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "12" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "13" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "14" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "15" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "16" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "17" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "20" ] || [ "$INSTALLATION_TYPE_SETTINGS" -eq "21" ]; then
     data=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "$MAIN_INSTALL_DIRECTORY" -print | wc -l)
     if [ "$data" -eq "0" ]; then
       echo -e "\n${COLOR_PRINT_RED}This is an invalid option since xcash-dpops is not installed${END_COLOR_PRINT}"
@@ -2633,6 +2635,82 @@ function restore_tools()
   echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
 }
 
+function install_turbo_tx()
+{
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}                  Installing Turbo Tx${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo
+  echo
+
+  echo -ne "${COLOR_PRINT_YELLOW}Checking the Autostart Settings${END_COLOR_PRINT}"
+  AUTOSTART_SETTINGS=$([ "$data" == "" ] && echo "$AUTOSTART_SETTINGS" || echo "YES")
+  echo -ne "\r${COLOR_PRINT_GREEN}Checking the Autostart Settings${END_COLOR_PRINT}"
+
+  # Check if solo node
+  check_if_solo_node
+
+  # Get the installation directory
+  get_installation_directory
+
+  # Update the firewall to open the port for the turbo tx
+  echo -ne "${COLOR_PRINT_YELLOW}Updating The Firewall${END_COLOR_PRINT}"
+  sed '/^iptables -A INPUT -p tcp --dport 18283 -j ACCEPT.*/a iptables -A INPUT -p tcp --dport 18286 -j ACCEPT' ${HOME}/firewall_script.sh
+  sudo ${HOME}/firewall_script.sh
+  echo -ne "\r${COLOR_PRINT_GREEN}Updating The Firewall${END_COLOR_PRINT}"
+
+  # Installing the systemd service and timer files for the turbo tx
+  echo -ne "${COLOR_PRINT_YELLOW}Installing Systemd Service Files${END_COLOR_PRINT}"
+  SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX=$(cat <(curl -sSL $SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX_URL))
+  SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX="${SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX//'${USER}'/$USER}"
+  SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX="${SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX//'${XCASH_DIR}'/$XCASH_DIR}"
+  SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX="${SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX//'${XCASH_WALLET_DIR}'/$XCASH_WALLET_DIR}"
+  SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX="${SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX//'${WALLET_PASSWORD}'/$WALLET_PASSWORD}"
+
+  SYSTEMD_TIMER_FILE_XCASH_WALLET_TURBO_TX=$(cat <(curl -sSL $SYSTEMD_TIMER_FILE_XCASH_WALLET_TURBO_TX_URL))
+
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX}' > /lib/systemd/system/xcash-rpc-wallet-turbo-tx.service"
+  sudo bash -c "echo '${SYSTEMD_TIMER_FILE_XCASH_WALLET_TURBO_TX}' > /lib/systemd/system/xcash-rpc-wallet-turbo-tx.timer"
+
+  sed_services 's/\r$//g' /lib/systemd/system/xcash-rpc-wallet-turbo-tx.service
+  sed_services 's/\r$//g' /lib/systemd/system/xcash-rpc-wallet-turbo-tx.timer  
+
+  sudo systemctl daemon-reload
+  
+  if [ "${AUTOSTART_SETTINGS^^}" == "YES" ]; then
+    sudo systemctl enable xcash-rpc-wallet-turbo-tx.timer 2> /dev/null
+  fi  
+  echo -ne "\r${COLOR_PRINT_GREEN}Installing Systemd Service Files${END_COLOR_PRINT}"
+
+  # Create the wallet for the turbo tx
+  echo -ne "${COLOR_PRINT_YELLOW}Creating X-CASH Wallet For Turbo Tx (This Might Take A While)${END_COLOR_PRINT}"
+  cd "${XCASH_DPOPS_INSTALLATION_DIR}"
+  sudo rm -f "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/turbo-tx-wallet* || true 2&> /dev/null
+  echo "exit" | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/turbo-tx-wallet --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --trusted-daemon | stdbuf -oL tr '\r' '\n' | stdbuf -o 0 grep -C 1 "Height" | stdbuf -o 0 awk '{print "Processing: ",$1,$2,$3,$4}' ORS="\r"
+  echo -ne "                                                                              \r"
+  echo -ne "\r${COLOR_PRINT_GREEN}Creating X-CASH Wallet For Turbo Tx (This Might Take A While)${END_COLOR_PRINT}"
+
+  # Sync the wallet for the turbo tx
+  echo -ne "${COLOR_PRINT_YELLOW}Syncing X-CASH Wallet For Turbo Tx (This Might Take A While)${END_COLOR_PRINT}"
+  sudo systemctl start xcash-rpc-wallet-turbo-tx &>/dev/null
+  sleep 30s
+   while
+    data=$(curl -s -X POST http://127.0.0.1:18286/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"get_address"}' -H 'Content-Type: application/json') 
+    sleep 10s
+    [[ "$data" == "" ]]
+  do true; done
+  echo -ne "\r${COLOR_PRINT_GREEN}Syncing X-CASH Wallet For Turbo Tx (This Might Take A While)${END_COLOR_PRINT}"
+
+  cd ~
+
+  echo
+  echo
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}          Installing Turbo Tx Has Completed Successfully  ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+}
+
+
 # Check for a compatible OS
 check_ubuntu_version
 
@@ -2683,4 +2761,6 @@ elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "19" ]; then
   install_firewall_script_shared_delegates
 elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "20" ]; then
   backup
+elif [ "$INSTALLATION_TYPE_SETTINGS" -eq "21" ]; then
+  install_turbo_tx
 fi
