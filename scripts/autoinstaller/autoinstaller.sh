@@ -88,17 +88,17 @@ SYSTEMD_TIMER_FILE_XCASH_DPOPS=""
 SYSTEMD_TIMER_FILE_XCASH_WALLET=""
 
 # File URLs
-FIREWALL_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/firewall/firewall_script.sh"
-FIREWALL_SHARED_DELEGATES_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/firewall/firewall_shared_delegates_script.sh"
-FIREWALL_XCASH_NODE_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/firewall/firewall_script_xcash_node.sh"
-SYSTEMD_SERVICE_FILE_FIREWALL_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/systemd/firewall.service"
-SYSTEMD_SERVICE_FILE_MONGODB_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/systemd/MongoDB.service"
-SYSTEMD_SERVICE_FILE_XCASH_DAEMON_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/systemd/xcash-daemon.service"
-SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/systemd/xcash-dpops.service"
-SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/systemd/xcash-dpops-shared-delegate.service"
-SYSTEMD_SERVICE_FILE_XCASH_WALLET_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/systemd/xcash-rpc-wallet.service"
-SYSTEMD_TIMER_FILE_XCASH_DPOPS_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/systemd/xcash-dpops.timer"
-SYSTEMD_TIMER_FILE_XCASH_WALLET_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/master/scripts/systemd/xcash-rpc-wallet.timer"
+FIREWALL_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/${XCASH_DPOPS_BRANCH}/scripts/firewall/firewall_script.sh"
+FIREWALL_SHARED_DELEGATES_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/${XCASH_DPOPS_BRANCH}/scripts/firewall/firewall_shared_delegates_script.sh"
+FIREWALL_XCASH_NODE_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/${XCASH_DPOPS_BRANCH}/scripts/firewall/firewall_script_xcash_node.sh"
+SYSTEMD_SERVICE_FILE_FIREWALL_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/${XCASH_DPOPS_BRANCH}/scripts/systemd/firewall.service"
+SYSTEMD_SERVICE_FILE_MONGODB_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/${XCASH_DPOPS_BRANCH}/scripts/systemd/MongoDB.service"
+SYSTEMD_SERVICE_FILE_XCASH_DAEMON_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/${XCASH_DPOPS_BRANCH}/scripts/systemd/xcash-daemon.service"
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SOLO_DELEGATE_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/${XCASH_DPOPS_BRANCH}/scripts/systemd/xcash-dpops.service"
+SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/${XCASH_DPOPS_BRANCH}/scripts/systemd/xcash-dpops-shared-delegate.service"
+SYSTEMD_SERVICE_FILE_XCASH_WALLET_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/${XCASH_DPOPS_BRANCH}/scripts/systemd/xcash-rpc-wallet.service"
+SYSTEMD_TIMER_FILE_XCASH_DPOPS_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/${XCASH_DPOPS_BRANCH}/scripts/systemd/xcash-dpops.timer"
+SYSTEMD_TIMER_FILE_XCASH_WALLET_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/${XCASH_DPOPS_BRANCH}/scripts/systemd/xcash-rpc-wallet.timer"
 
 # System settings
 CPU_THREADS=$(nproc)
