@@ -1127,6 +1127,36 @@ function import_xcash_wallet()
   echo
 }
 
+# Turbo Tx
+function create_xcash_wallet_turbo_tx()
+{
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}      Creating X-CASH Wallet For Turbo Tx (This Might Take A While)  ${END_COLOR_PRINT}"
+  echo -e "${COLOR_PRINT_GREEN}############################################################${END_COLOR_PRINT}"
+
+  cd "${XCASH_DPOPS_INSTALLATION_DIR}"
+  sudo rm -f "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/turbo-tx-wallet* 2&> /dev/null
+
+  echo -ne "${COLOR_PRINT_YELLOW}Starting local daemon${END_COLOR_PRINT}"
+  sudo systemctl stop xcash-daemon &>/dev/null
+  sleep 10s
+  sudo systemctl start xcash-daemon &>/dev/null
+  sleep 20s
+  echo -ne "\r${COLOR_PRINT_GREEN}Starting local daemon${END_COLOR_PRINT}"
+  echo
+
+  echo -e "${COLOR_PRINT_GREEN}Starting Wallet Refresh${END_COLOR_PRINT}"
+  echo "exit" | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/turbo-tx-wallet --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --trusted-daemon | stdbuf -oL tr '\r' '\n' | stdbuf -o 0 grep -C 1 "Height" | stdbuf -o 0 awk '{print "Processing: ",$1,$2,$3,$4}' ORS="\r"
+  echo -ne "                                                                              \r"
+  echo -e "${COLOR_PRINT_GREEN}Wallet Refresh Completed${END_COLOR_PRINT}"
+
+  echo -ne "${COLOR_PRINT_YELLOW}Stopping local daemon${END_COLOR_PRINT}"
+  sudo systemctl stop xcash-daemon &>/dev/null
+  sleep 10s
+  echo -ne "\r${COLOR_PRINT_GREEN}Stopping local daemon${END_COLOR_PRINT}"
+  echo
+}
+
 
 
 
@@ -1568,6 +1598,9 @@ function install()
     import_xcash_wallet
   fi
 
+  # Turbo Tx
+  create_xcash_wallet_turbo_tx
+
   # Get the current xcash wallet data
   get_current_xcash_wallet_data
 
@@ -1653,6 +1686,9 @@ function configure()
   else
     import_xcash_wallet
   fi
+
+  # Turbo Tx
+  create_xcash_wallet_turbo_tx
 
   # Get the current xcash wallet data
   get_current_xcash_wallet_data
