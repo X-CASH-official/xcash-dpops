@@ -87,6 +87,10 @@ SYSTEMD_SERVICE_FILE_XCASH_WALLET=""
 SYSTEMD_TIMER_FILE_XCASH_DPOPS=""
 SYSTEMD_TIMER_FILE_XCASH_WALLET=""
 
+# Turbo Tx
+SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX=""
+SYSTEMD_TIMER_FILE_XCASH_WALLET_TURBO_TX=""
+
 # File URLs
 FIREWALL_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/${XCASH_DPOPS_BRANCH}/scripts/firewall/firewall_script.sh"
 FIREWALL_SHARED_DELEGATES_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/${XCASH_DPOPS_BRANCH}/scripts/firewall/firewall_shared_delegates_script.sh"
@@ -99,6 +103,10 @@ SYSTEMD_SERVICE_FILE_XCASH_DPOPS_SHARED_DELEGATE_URL="https://raw.githubusercont
 SYSTEMD_SERVICE_FILE_XCASH_WALLET_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/${XCASH_DPOPS_BRANCH}/scripts/systemd/xcash-rpc-wallet.service"
 SYSTEMD_TIMER_FILE_XCASH_DPOPS_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/${XCASH_DPOPS_BRANCH}/scripts/systemd/xcash-dpops.timer"
 SYSTEMD_TIMER_FILE_XCASH_WALLET_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/${XCASH_DPOPS_BRANCH}/scripts/systemd/xcash-rpc-wallet.timer"
+
+# Turbo TX
+SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/${XCASH_DPOPS_BRANCH}/scripts/systemd/xcash-rpc-wallet-turbo-tx.service"
+SYSTEMD_TIMER_FILE_XCASH_WALLET_TURBO_TX_URL="https://raw.githubusercontent.com/X-CASH-official/xcash-dpops/${XCASH_DPOPS_BRANCH}/scripts/systemd/xcash-rpc-wallet-turbo-tx.timer"
 
 # System settings
 CPU_THREADS=$(nproc)
@@ -324,6 +332,16 @@ SYSTEMD_SERVICE_FILE_XCASH_WALLET="${SYSTEMD_SERVICE_FILE_XCASH_WALLET//'${WALLE
 SYSTEMD_SERVICE_FILE_XCASH_WALLET="${SYSTEMD_SERVICE_FILE_XCASH_WALLET//'${XCASH_LOGS_DIR}'/$XCASH_LOGS_DIR}"
 
 SYSTEMD_TIMER_FILE_XCASH_WALLET=$(cat <(curl -sSL $SYSTEMD_TIMER_FILE_XCASH_WALLET_URL))
+
+# Turbo Tx
+
+SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX=$(cat <(curl -sSL $SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX_URL))
+SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX="${SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX//'${USER}'/$USER}"
+SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX="${SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX//'${XCASH_DIR}'/$XCASH_DIR}"
+SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX="${SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX//'${XCASH_WALLET_DIR}'/$XCASH_WALLET_DIR}"
+SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX="${SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX//'${WALLET_PASSWORD}'/$WALLET_PASSWORD}"
+
+SYSTEMD_TIMER_FILE_XCASH_WALLET_TURBO_TX=$(cat <(curl -sSL $SYSTEMD_TIMER_FILE_XCASH_WALLET_TURBO_TX_URL))
 
 }
 
@@ -864,6 +882,10 @@ function create_systemd_service_files()
   sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_WALLET}' > /lib/systemd/system/xcash-rpc-wallet.service"
   sudo bash -c "echo '${SYSTEMD_TIMER_FILE_XCASH_WALLET}' > /lib/systemd/system/xcash-rpc-wallet.timer"
 
+  # Turbo Tx
+  sudo bash -c "echo '${SYSTEMD_SERVICE_FILE_XCASH_WALLET_TURBO_TX}' > /lib/systemd/system/xcash-rpc-wallet-turbo-tx.service"
+  sudo bash -c "echo '${SYSTEMD_TIMER_FILE_XCASH_WALLET_TURBO_TX}' > /lib/systemd/system/xcash-rpc-wallet-turbo-tx.timer"
+
   sed_services 's/\r$//g' /lib/systemd/system/firewall.service
   sed_services 's/\r$//g' /lib/systemd/system/mongodb.service
   sed_services 's/\r$//g' /lib/systemd/system/xcash-daemon.service
@@ -871,6 +893,10 @@ function create_systemd_service_files()
   sed_services 's/\r$//g' /lib/systemd/system/xcash-dpops.service
   sed_services 's/\r$//g' /lib/systemd/system/xcash-rpc-wallet.service
   sed_services 's/\r$//g' /lib/systemd/system/xcash-rpc-wallet.timer
+
+  # Turbo Tx
+  sed_services 's/\r$//g' /lib/systemd/system/xcash-rpc-wallet-turbo-tx.service
+  sed_services 's/\r$//g' /lib/systemd/system/xcash-rpc-wallet-turbo-tx.timer  
 
   sudo systemctl daemon-reload
   echo -ne "\r${COLOR_PRINT_GREEN}Creating Systemd Service Files${END_COLOR_PRINT}"
