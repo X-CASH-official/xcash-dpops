@@ -1291,6 +1291,7 @@ function get_installation_directory()
   MONGODB_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -path "*/data/db" -print)/
   MONGODB_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -path "*/$MAIN_INSTALL_DIRECTORY/*" -type d -name "$MONGODB_LATEST_VERSION" -print)/
   MONGOC_DRIVER_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -path "*/$MAIN_INSTALL_DIRECTORY/*" -type d -name "$MONGOC_DRIVER_LATEST_VERSION" -print)/
+
   echo -ne "\r${COLOR_PRINT_GREEN}Getting Installation Directories${END_COLOR_PRINT}"
   echo
 
@@ -2646,18 +2647,36 @@ function install_turbo_tx()
   echo -ne "${COLOR_PRINT_YELLOW}Checking the Autostart Settings${END_COLOR_PRINT}"
   AUTOSTART_SETTINGS=$(systemctl is-enabled --quiet xcash-rpc-wallet.timer && echo "YES" || echo "NO")
   echo -ne "\r${COLOR_PRINT_GREEN}Checking the Autostart Settings${END_COLOR_PRINT}"
+  echo
 
   # Check if solo node
   check_if_solo_node
 
   # Get the installation directory
-  get_installation_directory
+  echo -ne "${COLOR_PRINT_YELLOW}Getting Installation Directories${END_COLOR_PRINT}"
+  XCASH_DPOPS_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name "$MAIN_INSTALL_DIRECTORY" -print)/
+  XCASH_BLOCKCHAIN_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -name ".X-CASH" -print)/
+  WALLET_PASSWORD=$(cat /lib/systemd/system/xcash-rpc-wallet.service | awk '/password/ {print $5}')
+  XCASH_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-core/
+  XCASH_WALLET_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-wallets/
+  XCASH_SYSTEMPID_DIR=${XCASH_DPOPS_INSTALLATION_DIR}systemdpid/
+  XCASH_LOGS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}logs/
+  XCASH_DPOPS_DIR=${XCASH_DPOPS_INSTALLATION_DIR}xcash-dpops/
+  XCASH_DPOPS_SHARED_DELEGATE_FOLDER_DIR=${XCASH_DPOPS_DIR}delegates-pool-website/
+  SHARED_DELEGATES_WEBSITE_DIR=${XCASH_DPOPS_INSTALLATION_DIR}delegates-pool-website/
+  NODEJS_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -path "*/$MAIN_INSTALL_DIRECTORY/*" -type d -name "$NODEJS_LATEST_VERSION" -print)/
+  MONGODB_INSTALLATION_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -type d -path "*/data/db" -print)/
+  MONGODB_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -path "*/$MAIN_INSTALL_DIRECTORY/*" -type d -name "$MONGODB_LATEST_VERSION" -print)/
+  MONGOC_DRIVER_DIR=$(sudo find / -path /sys -prune -o -path /proc -prune -o -path /dev -prune -o -path /var -prune -o -path "*/$MAIN_INSTALL_DIRECTORY/*" -type d -name "$MONGOC_DRIVER_LATEST_VERSION" -print)/
+  echo -ne "\r${COLOR_PRINT_GREEN}Getting Installation Directories${END_COLOR_PRINT}"
+  echo
 
   # Update the firewall to open the port for the turbo tx
   echo -ne "${COLOR_PRINT_YELLOW}Updating The Firewall${END_COLOR_PRINT}"
-  sed '/^iptables -A INPUT -p tcp --dport 18283 -j ACCEPT.*/a iptables -A INPUT -p tcp --dport 18286 -j ACCEPT' ${HOME}/firewall_script.sh
+  sed '/^iptables -A INPUT -p tcp --dport 18283 -j ACCEPT.*/a iptables -A INPUT -p tcp --dport 18286 -j ACCEPT' -i ${HOME}/firewall_script.sh
   sudo ${HOME}/firewall_script.sh
   echo -ne "\r${COLOR_PRINT_GREEN}Updating The Firewall${END_COLOR_PRINT}"
+  echo
 
   # Installing the systemd service and timer files for the turbo tx
   echo -ne "${COLOR_PRINT_YELLOW}Installing Systemd Service Files${END_COLOR_PRINT}"
@@ -2681,6 +2700,7 @@ function install_turbo_tx()
     sudo systemctl enable xcash-rpc-wallet-turbo-tx.timer 2> /dev/null
   fi  
   echo -ne "\r${COLOR_PRINT_GREEN}Installing Systemd Service Files${END_COLOR_PRINT}"
+  echo
 
   # Create the wallet for the turbo tx
   echo -ne "${COLOR_PRINT_YELLOW}Creating X-CASH Wallet For Turbo Tx (This Might Take A While)${END_COLOR_PRINT}"
@@ -2689,6 +2709,7 @@ function install_turbo_tx()
   echo "exit" | "${XCASH_DIR}"build/release/bin/xcash-wallet-cli --generate-new-wallet "${XCASH_DPOPS_INSTALLATION_DIR}"xcash-wallets/turbo-tx-wallet --password "${WALLET_PASSWORD}" --mnemonic-language English --restore-height 0 --trusted-daemon | stdbuf -oL tr '\r' '\n' | stdbuf -o 0 grep -C 1 "Height" | stdbuf -o 0 awk '{print "Processing: ",$1,$2,$3,$4}' ORS="\r"
   echo -ne "                                                                              \r"
   echo -ne "\r${COLOR_PRINT_GREEN}Creating X-CASH Wallet For Turbo Tx (This Might Take A While)${END_COLOR_PRINT}"
+  echo
 
   # Sync the wallet for the turbo tx
   echo -ne "${COLOR_PRINT_YELLOW}Syncing X-CASH Wallet For Turbo Tx (This Might Take A While)${END_COLOR_PRINT}"
@@ -2700,6 +2721,7 @@ function install_turbo_tx()
     [[ "$data" == "" ]]
   do true; done
   echo -ne "\r${COLOR_PRINT_GREEN}Syncing X-CASH Wallet For Turbo Tx (This Might Take A While)${END_COLOR_PRINT}"
+  echo
 
   cd ~
 
