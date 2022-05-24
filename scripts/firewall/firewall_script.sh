@@ -86,6 +86,7 @@ iptables -A INPUT -p icmp -j ACCEPT
 iptables -A INPUT -p tcp --dport 18280 -j ACCEPT
 iptables -A INPUT -p tcp --dport 18281 -j ACCEPT
 iptables -A INPUT -p tcp --dport 18283 -j ACCEPT
+iptables -A INPUT -p tcp --dport 18286 -j ACCEPT
  
 # Allow ssh (allow 100 login attempts in 1 hour from the same ip, if more than ban them for 1 hour)
 iptables -A INPUT -p tcp -m tcp --dport ${SSH_PORT_NUMBER} -m state --state NEW -m recent --set --name DEFAULT --rsource

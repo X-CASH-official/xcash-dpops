@@ -1,0 +1,13 @@
+[Unit]
+Description=X-Cash RPC wallet turbo tx background process
+After=network.target xcash-daemon.service
+ 
+[Service]
+Type=simple
+User=${USER}
+ExecStart=${XCASH_DIR}build/release/bin/xcash-wallet-rpc --wallet-file ${XCASH_WALLET_DIR}turbo-tx-wallet --password ${WALLET_PASSWORD} --rpc-bind-ip 0.0.0.0 --rpc-bind-port 18286 --restricted-rpc --confirm-external-bind --daemon-port 18281 --disable-rpc-login --trusted-daemon
+Restart=always
+RestartSec=5
+ 
+[Install]
+WantedBy=multi-user.target
