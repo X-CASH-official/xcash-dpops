@@ -1892,12 +1892,18 @@ Parameters:
 
 void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_name(const int CLIENT_SOCKET, const char* MESSAGE)
 {
+  // Constants
+  const char* HTTP_HEADERS[] = {"Content-Type: application/json","Accept: application/json"}; 
+  const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
+
   // Variables
   char data[SMALL_BUFFER_SIZE];
   char data2[SMALL_BUFFER_SIZE];
   char public_address[SMALL_BUFFER_SIZE];
   char saddress[SMALL_BUFFER_SIZE];
   char paddress[SMALL_BUFFER_SIZE];
+  char saddress_signature[SMALL_BUFFER_SIZE];
+  char paddress_signature[SMALL_BUFFER_SIZE];
   char tx_hash[SMALL_BUFFER_SIZE];
   char name[SMALL_BUFFER_SIZE];
   char delegates_public_address[SMALL_BUFFER_SIZE];
@@ -1927,6 +1933,8 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_na
   memset(public_address,0,sizeof(public_address));
   memset(saddress,0,sizeof(saddress));
   memset(paddress,0,sizeof(paddress));
+  memset(saddress_signature,0,sizeof(saddress_signature));
+  memset(paddress_signature,0,sizeof(paddress_signature));
   memset(tx_hash,0,sizeof(tx_hash));
   memset(name,0,sizeof(name));
   memset(delegates_public_address,0,sizeof(delegates_public_address));
@@ -1961,13 +1969,29 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_na
     }
     if (count == 2)
     {
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_SIGN_DATA_LENGTH)
+      {
+        REMOTE_DATA_PURCHASE_NAME_ERROR;
+      }
+      memcpy(saddress_signature,&MESSAGE[count2],data_size);
+    }
+    if (count == 3)
+    {
       if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
       {
         REMOTE_DATA_PURCHASE_NAME_ERROR;
       }
       memcpy(paddress,&MESSAGE[count2],data_size);
     }
-    if (count == 3)
+    if (count == 4)
+    {
+      if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_SIGN_DATA_LENGTH)
+      {
+        REMOTE_DATA_PURCHASE_NAME_ERROR;
+      }
+      memcpy(paddress_signature,&MESSAGE[count2],data_size);
+    }
+    if (count == 5)
     {
       if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != TRANSACTION_HASH_LENGTH)
       {
@@ -1975,7 +1999,7 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_na
       }
       memcpy(tx_hash,&MESSAGE[count2],data_size);
     }
-    if (count == 4)
+    if (count == 6)
     {
       if ((data_size = strlen(MESSAGE) - strlen(strstr(MESSAGE+count2,"|")) - count2) != XCASH_WALLET_LENGTH)
       {
@@ -1987,10 +2011,56 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_purchase_na
   }
 
   // check if the data is valid
-  if (strlen(public_address) != XCASH_WALLET_LENGTH || strncmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(saddress) != XCASH_WALLET_LENGTH || strncmp(saddress,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(paddress) != XCASH_WALLET_LENGTH || strncmp(paddress,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(tx_hash) != TRANSACTION_HASH_LENGTH)
+  if (strlen(public_address) != XCASH_WALLET_LENGTH || strncmp(public_address,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(saddress) != XCASH_WALLET_LENGTH || strncmp(saddress,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(saddress_signature) != XCASH_SIGN_DATA_LENGTH || strncmp(saddress_signature,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) != 0 || strlen(paddress) != XCASH_WALLET_LENGTH || strncmp(paddress,XCASH_WALLET_PREFIX,sizeof(XCASH_WALLET_PREFIX)-1) != 0 || strlen(paddress_signature) != XCASH_SIGN_DATA_LENGTH || strncmp(paddress_signature,XCASH_SIGN_DATA_PREFIX,sizeof(XCASH_SIGN_DATA_PREFIX)-1) != 0 || strlen(tx_hash) != TRANSACTION_HASH_LENGTH)
   {
     REMOTE_DATA_PURCHASE_NAME_ERROR;
   }
+
+  // check if the signature is valid for the saddress
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memcpy(data,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"verify\",\"params\":{\"data\":\"",62);
+  memcpy(data+strlen(data),saddress,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\",\"address\":\"",13);
+  memcpy(data+strlen(data),saddress,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\",\"signature\":\"",15);
+  memcpy(data+strlen(data),saddress_signature,XCASH_SIGN_DATA_LENGTH);
+  memcpy(data+strlen(data),"\"}}",3);
+
+  if (send_http_request(data2,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0)
+  {
+    REMOTE_DATA_PURCHASE_NAME_ERROR;
+  }
+  memset(data,0,sizeof(data));
+    
+  if (parse_json_data(data2,"good",data,sizeof(data)) == 0 || strncmp(data,"true",BUFFER_SIZE) != 0)
+  {
+    REMOTE_DATA_PURCHASE_NAME_ERROR;
+  }
+
+  // check if the signature is valid for the paddress
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
+  memcpy(data,"{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"verify\",\"params\":{\"data\":\"",62);
+  memcpy(data+strlen(data),paddress,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\",\"address\":\"",13);
+  memcpy(data+strlen(data),paddress,XCASH_WALLET_LENGTH);
+  memcpy(data+strlen(data),"\",\"signature\":\"",15);
+  memcpy(data+strlen(data),paddress_signature,XCASH_SIGN_DATA_LENGTH);
+  memcpy(data+strlen(data),"\"}}",3);
+
+  if (send_http_request(data2,"127.0.0.1","/json_rpc",xcash_wallet_port,"POST", HTTP_HEADERS, HTTP_HEADERS_LENGTH,data,SEND_OR_RECEIVE_SOCKET_DATA_TIMEOUT_SETTINGS) <= 0)
+  {
+    REMOTE_DATA_PURCHASE_NAME_ERROR;
+  }
+  memset(data,0,sizeof(data));
+    
+  if (parse_json_data(data2,"good",data,sizeof(data)) == 0 || strncmp(data,"true",BUFFER_SIZE) != 0)
+  {
+    REMOTE_DATA_PURCHASE_NAME_ERROR;
+  }  
+  memset(data,0,sizeof(data));
+  memset(data2,0,sizeof(data2));
 
   // check that the address,saddress and paddress are different
   if (strncmp(public_address,saddress,BUFFER_SIZE) == 0 || strncmp(public_address,paddress,BUFFER_SIZE) == 0 || strncmp(saddress,paddress,BUFFER_SIZE) == 0)
