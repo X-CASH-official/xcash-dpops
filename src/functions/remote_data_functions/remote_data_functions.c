@@ -771,9 +771,9 @@ int server_receive_data_socket_remote_data_get_name_status(const int CLIENT_SOCK
   } 
 
   // create the message
-  memcpy(message,"{\"name\":\"",9);
+  memcpy(message,"{\"name\":{\"$regex\":\"",19);
   memcpy(message+strlen(message),name,strlen(name));
-  memcpy(message+strlen(message),"\"}",2);
+  memcpy(message+strlen(message),"\",\"$options\":\"i\"}}",18);
 
   count = count_documents_in_collection(remote_data_database_name,DATABASE_COLLECTION,message);
 
@@ -1735,9 +1735,9 @@ void server_receive_data_socket_remote_data_nodes_to_block_verifiers_save_name(c
   }
 
   // check if the name is already in the database
-  memcpy(data,"{\"name\":\"",9);
+  memcpy(data,"{\"name\":{\"$regex\":\"",19);
   memcpy(data+strlen(data),name,strlen(name));
-  memcpy(data+strlen(data),"\"}",2);
+  memcpy(data+strlen(data),"\",\"$options\":\"i\"}}",18);
 
   if (count_documents_in_collection(remote_data_database_name,DATABASE_COLLECTION,data) > 0)
   {
