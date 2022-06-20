@@ -209,6 +209,7 @@ Using define statements instead of constants for increased efficiency
 
 // Turbo tx
 #define BLOCK_HEIGHT_TURBO_TX 912025 // The first block of the turbo tx
+#define TX_VERIFICATION_MAXIMUM_SIZE 225443840 // 215 MB
 
 #define NETWORK_DATA_NODE_1_PUBLIC_ADDRESS_PRODUCTION "XCA1Sk2CRVQ9EoKzkv2mnzfAwgA4zvj2HfXJrzYYCtJAdLXDPuSr1UGEJPKSTGCan9fmNpqTGefkMGZ4JX3zUf357vm5VMzMir"
 #define NETWORK_DATA_NODE_1_IP_ADDRESS_PRODUCTION "dpops-test-internal-1.xcash.foundation"

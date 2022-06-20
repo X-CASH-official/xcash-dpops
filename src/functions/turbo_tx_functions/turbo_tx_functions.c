@@ -44,7 +44,7 @@ int get_block_verifiers_transactions(char *data)
   const size_t HTTP_HEADERS_LENGTH = sizeof(HTTP_HEADERS)/sizeof(HTTP_HEADERS[0]);
 
   // Variables
-  char* data2 = (char*)calloc(15728640,sizeof(char)); // 15 MB
+  char* data2 = (char*)calloc(TX_VERIFICATION_MAXIMUM_SIZE,sizeof(char)); // 215 MB
   // since were going to be changing where data2 is referencing, we need to create a copy to pointer_reset
   char* data3 = data2;
   char message[BUFFER_SIZE];
