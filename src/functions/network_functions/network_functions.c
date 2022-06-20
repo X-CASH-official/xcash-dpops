@@ -94,13 +94,12 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   const size_t URL_LENGTH = strnlen(URL,BUFFER_SIZE);
   const size_t DATA_LENGTH = strlen(DATA);
   const size_t HOST_LENGTH = strnlen(HOST,BUFFER_SIZE);
-  const size_t MAXIMUM_AMOUNT = DATA_LENGTH >= MAXIMUM_BUFFER_SIZE ? MAXIMUM_BUFFER_SIZE : DATA_LENGTH+BUFFER_SIZE;
 
   // Variables
   char buffer2[BUFFER_SIZE];
   char* post_request_data;
   char str[BUFFER_SIZE]; 
-  char* message = (char*)calloc(MAXIMUM_AMOUNT,sizeof(char));
+  char* message = (char*)calloc(TX_VERIFICATION_MAXIMUM_SIZE,sizeof(char));
   time_t current_date_and_time;
   struct tm current_UTC_date_and_time;
   int count;  
@@ -247,10 +246,12 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   }
    
   // get the result
-  if (receive_data(network_socket,message,MAXIMUM_AMOUNT,1,DATA_TIMEOUT_SETTINGS) < 2)
+  if (receive_data(network_socket,message,TX_VERIFICATION_MAXIMUM_SIZE,1,DATA_TIMEOUT_SETTINGS) < 2)
   {
     SEND_HTTP_REQUEST_ERROR("Error receiving data from host",1);
   }
+
+fprintf(stderr,"tx message size = %zu",strlen(message));
 
   // check if the data recived is correct
   if (strstr(message,"{") == NULL && strstr(message,"error") == NULL)
