@@ -251,8 +251,6 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
     SEND_HTTP_REQUEST_ERROR("Error receiving data from host",1);
   }
 
-fprintf(stderr,"tx message size = %zu",strlen(message));
-
   // check if the data recived is correct
   if (strstr(message,"{") == NULL && strstr(message,"error") == NULL)
   {
@@ -265,12 +263,12 @@ fprintf(stderr,"tx message size = %zu",strlen(message));
   {
     // the HTTP result does contain a header
     post_request_data = strstr(message,"{");
-    memcpy(result+strlen(result),post_request_data,strnlen(post_request_data,BUFFER_SIZE));
+    memcpy(result+strlen(result),post_request_data,strlen(post_request_data);
   }
   else
   {
     // the HTTP result does not contain a header
-    memcpy(result+strlen(result),message,strnlen(message,BUFFER_SIZE));
+    memcpy(result+strlen(result),message,strlen(message);
   }
   freeaddrinfo(settings);
   pointer_reset(message);
