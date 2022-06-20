@@ -263,12 +263,12 @@ int send_http_request(char *result, const char* HOST, const char* URL, const int
   {
     // the HTTP result does contain a header
     post_request_data = strstr(message,"{");
-    memcpy(result+strlen(result),post_request_data,strlen(post_request_data);
+    memcpy(result+strlen(result),post_request_data,strlen(post_request_data));
   }
   else
   {
     // the HTTP result does not contain a header
-    memcpy(result+strlen(result),message,strlen(message);
+    memcpy(result+strlen(result),message,strlen(message));
   }
   freeaddrinfo(settings);
   pointer_reset(message);
