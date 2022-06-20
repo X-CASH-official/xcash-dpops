@@ -110,7 +110,7 @@ int verify_block_verifiers_transactions(void)
   color_print("Turbo tx - Verify block producer tx","yellow");
 
   // verify all of the transactions
-  for (valid_tx_count = 0,count = 0; count < blockchain_data.transaction_amount; count++)
+  for (valid_tx_count = 0,count = 0; count < blockchain_data.transaction_amount; count++, valid_tx_count = 0)
   {
     for (count2 = 0; count2 < BLOCK_VERIFIERS_AMOUNT; count2++)
     {

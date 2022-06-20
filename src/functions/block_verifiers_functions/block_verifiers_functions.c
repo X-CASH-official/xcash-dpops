@@ -2334,7 +2334,6 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
 {
   // Constants
   const int TOTAL_BLOCK_VERIFIERS = test_settings == 0 ? BLOCK_VERIFIERS_AMOUNT : BLOCK_VERIFIERS_TOTAL_AMOUNT; 
-  const int SECOND_DELAY = strstr(MESSAGE,"\"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\"") != NULL ? 18 : 3;
 
   // Variables
   char data[BUFFER_SIZE];
@@ -2352,9 +2351,6 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   int count;
   int count2;
   int number;
-  time_t start;
-  int num_sockets_open = 0;
-  int socket_open[TOTAL_BLOCK_VERIFIERS];
 
   // define macros
   #define BLOCK_VERIFIERS_SEND_DATA_SOCKET(message) \
@@ -2366,7 +2362,6 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   memset(data,0,sizeof(data));
   memset(data2,0,sizeof(data2));
   memset(data3,0,sizeof(data3));
-  memset(&block_verifiers_send_data_socket, 0, sizeof(block_verifiers_send_data_socket));
 
   // create the message
   memcpy(data,MESSAGE,strnlen(MESSAGE,sizeof(data)));
@@ -2391,6 +2386,7 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
       struct addrinfo* settings = NULL;
 
       // initialize the block_verifiers_send_data_socket struct
+      memset(block_verifiers_send_data_socket[count].IP_address,0,sizeof(block_verifiers_send_data_socket[count].IP_address));
       memcpy(block_verifiers_send_data_socket[count].IP_address,current_block_verifiers_list.block_verifiers_IP_address[count],strnlen(current_block_verifiers_list.block_verifiers_IP_address[count],sizeof(block_verifiers_send_data_socket[count].IP_address)));
       block_verifiers_send_data_socket[count].settings = 0;
 
@@ -2497,8 +2493,6 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
   {
     if (block_verifiers_send_data_socket[count].settings == 1)
     {
-      num_sockets_open++;
-      socket_open[count] = 1;
       for (sent = 0; sent < total; sent += bytes == -1 ? 0 : bytes)
       {
         if ((bytes = send(block_verifiers_send_data_socket[count].socket,data+sent,total-sent,MSG_NOSIGNAL)) == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
@@ -2509,35 +2503,15 @@ int block_verifiers_send_data_socket(const char* MESSAGE)
     }    
   }
 
-  // repeatedly scan sockets for remote client close
-  start = time(NULL);
-
-  while (num_sockets_open > 0 && time(NULL) - start < SECOND_DELAY)
-  {
-    for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)
-    {
-      memset(data,0,sizeof(data));
-
-      if (socket_open[count] == 1 && recv(block_verifiers_send_data_socket[count].socket, data, sizeof(data), MSG_PEEK | MSG_DONTWAIT) == 0)
-      {
-        socket_open[count] = 0;
-        num_sockets_open--;
-      }
-    }
-    sleep(1);
-  }
+  // wait for all of the data to be sent to the connected sockets
+  strstr(MESSAGE,"\"message_settings\": \"NETWORK_DATA_NODES_TO_NETWORK_DATA_NODES_DATABASE_SYNC_CHECK\"") != NULL ? sleep(18) : sleep(3);
 
   // remove all of the sockets from the epoll file descriptor and close all of the sockets
   for (count = 0; count < TOTAL_BLOCK_VERIFIERS; count++)
   {
-    if (block_verifiers_send_data_socket[count].socket > -1)
-    {
-      epoll_ctl(epoll_fd_copy, EPOLL_CTL_DEL, block_verifiers_send_data_socket[count].socket, &events[count]);
-      close(block_verifiers_send_data_socket[count].socket);
-    }
+    epoll_ctl(epoll_fd_copy, EPOLL_CTL_DEL, block_verifiers_send_data_socket[count].socket, &events[count]);
+    close(block_verifiers_send_data_socket[count].socket);
   }
-
-  close(epoll_fd_copy);
   return 1;
   
   #undef BLOCK_VERIFIERS_SEND_DATA_SOCKET
