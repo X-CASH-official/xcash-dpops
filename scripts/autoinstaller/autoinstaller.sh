@@ -924,9 +924,10 @@ function install_mongodb()
   # check if we need to install libssl 1.1
   UBUNTU_VERSION=$(lsb_release -r | awk '{print $2}' | sed s"|\.||g")
   if [ "$UBUNTU_VERSION" -ge 2204 ]; then
-    wget -q http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1l-1ubuntu1.3_amd64.deb
-    sudo dpkg -i libssl1.1_1.1.1l-1ubuntu1.3_amd64.deb &>/dev/null
-    rm libssl1.1_1.1.1l-1ubuntu1.3_amd64.deb &>/dev/null
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3B4FE6ACC0B21F32 &>/dev/null
+    echo "deb http://security.ubuntu.com/ubuntu bionic-security main" | sudo tee /etc/apt/sources.list.d/bionic-security.list &>/dev/null
+    sudo apt update &>/dev/null
+    sudo apt install -y libssl1.1 &>/dev/null
   fi
 
   echo -ne "\r${COLOR_PRINT_GREEN}Installing MongoDB${END_COLOR_PRINT}"
