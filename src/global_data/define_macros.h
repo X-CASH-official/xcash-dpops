@@ -17,8 +17,8 @@ Using define statements instead of constants for increased efficiency
 #define XCASH_EMMISION_FACTOR 524288 // The emmision factor (2^19)
 #define XCASH_DPOPS_EMMISION_FACTOR 262144 // The xcash-dpops emmision factor (2^18)
 #define FIRST_BLOCK_MINING_REWARD 190734.863281 // The first blocks mining reward
-#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 978000 // The start block height for X-CASH proof of stake
-#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_DATA "978000" // The start block height for X-CASH proof of stake
+#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT 980000 // The start block height for X-CASH proof of stake
+#define XCASH_PROOF_OF_STAKE_BLOCK_HEIGHT_DATA "980000" // The start block height for X-CASH proof of stake
 #define BLOCK_TIME 5 // The block time in minutes
 #define BLOCKS_PER_DAY_FIVE_MINUTE_BLOCK_TIME 288 // The blocks per day with a 5 minute block time
 #define UNLOCK_BLOCK_AMOUNT 60 // The default unlock block amount for a block reward transaction
@@ -180,7 +180,7 @@ Using define statements instead of constants for increased efficiency
 #define TIME_SF_V_1_0_5_PART_1 1917984900 // Postponed for now - fix allocation of memory for delegates database
 #define TIME_SF_V_1_0_5_PART_2 1918071300 // Postponed for now - re add missing seed nodes (need to run restart script on missing seed nodes after)
 #define TIME_SF_V_1_0_6 1618244100 // 1618244100 Monday, April 12, 2021 16:15:00 UTC - Dont add block heights to the delegates database, remove all block heights from the delegates database, add missing seed nodes to the delegates database
-#define BLOCK_HEIGHT_SF_V_1_2_0 978100 // stealth address verification
+#define BLOCK_HEIGHT_SF_V_1_2_0 980100 // stealth address verification
 #define TIME_SF_V_1_2_0 1647042941 // _id field sort all collections
 
 // Remote data
