@@ -1508,6 +1508,7 @@ function uninstall_packages()
 {
     wait_for_package_manager
     echo -ne "${COLOR_PRINT_YELLOW}Uninstalling Packages${END_COLOR_PRINT}"
+    sudo apt update &>/dev/null
     sudo apt --purge remove ${XCASH_DPOPS_PACKAGES} -y &>/dev/null
     echo -ne "\r${COLOR_PRINT_GREEN}Uninstalling Packages${END_COLOR_PRINT}"
     echo
