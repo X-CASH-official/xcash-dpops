@@ -39,7 +39,7 @@ NODEJS_LATEST_VERSION="node-v14.10.1-linux-x64"
 # Restore versions
 MONGODB_RESTORE_VERSION="mongodb-linux-x86_64-ubuntu1804-4.4.1"
 MONGODB_TOOLS_RESTORE_VERSION="mongodb-database-tools-ubuntu1804-x86_64-100.2.1"
-MONGOC_DRIVER_RESTORE_VERSION="mongo-c-driver-1.17.0"
+MONGOC_DRIVER_RESTORE_VERSION="mongo-c-driver-1.21.1"
 NODEJS_RESTORE_VERSION="node-v14.10.1-linux-x64"
 NODEJS_RESTORE_URL="https://nodejs.org/dist/${NODEJS_RESTORE_VERSION:5:8}/${NODEJS_RESTORE_VERSION}.tar.xz"
 MONGODB_RESTORE_URL="https://fastdl.mongodb.org/linux/${MONGODB_RESTORE_VERSION}.tgz"
